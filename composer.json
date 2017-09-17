@@ -1,0 +1,30 @@
+{
+    "name": "genealabs/laravel-cached-model",
+    "description": "Automatic caching for Eloquent models.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mike Bronner",
+            "email": "hello@genealabs.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "illuminate/cache": "5.5.*",
+        "illuminate/database": "5.5.*"
+    },
+    "require-dev": {
+        "laravel/laravel": "5.5.*",
+        "mockery/mockery": "0.9.*",
+        "phpmd/phpmd": "^2.6",
+        "phpunit/phpunit": "5.7.*",
+        "satooshi/php-coveralls" : "dev-master@dev",
+        "sebastian/phpcpd": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeneaLabs\\LaravelCachedModel\\": "src/",
+            "GeneaLabs\\LaravelCachedModel\\Tests\\": "tests/"
+        }
+    }
+}
