@@ -23,8 +23,8 @@
     },
     "autoload": {
         "psr-4": {
-            "GeneaLabs\\LaravelCachedModel\\": "src/",
-            "GeneaLabs\\LaravelCachedModel\\Tests\\": "tests/"
+            "GeneaLabs\\LaravelModelCaching\\": "src/",
+            "GeneaLabs\\LaravelModelCaching\\Tests\\": "tests/"
         }
     }
 }
