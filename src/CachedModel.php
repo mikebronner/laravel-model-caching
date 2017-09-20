@@ -1,9 +1,11 @@
-<?php namespace GeneaLabs\LaravelCachableModel\Traits;
+<?php namespace GeneaLabs\LaravelModelCaching;
 
-use Closure;
+use Builder;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use LogicException;
 
 abstract class CachedModel extends Model
 {
