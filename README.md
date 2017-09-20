@@ -1,3 +1,5 @@
+** DO NOT INSTALL -- STILL IN EXPERIMENTAL STAGE**
+
 # Laravel-cached-models
 
 ## Features
