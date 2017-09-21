@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
 use Closure;
+use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class Builder extends EloquentBuilder
