@@ -37,21 +37,23 @@ abstract class CachedModel extends Model
     public static function boot()
     {
         parent::boot();
+        $class = get_called_class();
+        $instance = new $class;
 
-        static::created(function () {
-            self::flushCache();
+        static::created(function () use ($instance) {
+            $instance->flushCache();
         });
 
-        static::deleted(function () {
-            self::flushCache();
+        static::deleted(function () use ($instance) {
+            $instance->flushCache();
         });
 
-        static::saved(function () {
-            self::flushCache();
+        static::saved(function () use ($instance) {
+            $instance->flushCache();
         });
 
-        static::updated(function () {
-            self::flushCache();
+        static::updated(function () use ($instance) {
+            $instance->flushCache();
         });
     }
 
@@ -67,15 +69,8 @@ abstract class CachedModel extends Model
         return $cache;
     }
 
-    public static function flushCache(array $tags = [])
+    public function flushCache(array $tags = [])
     {
-        $cache = cache();
-
-        if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
-            array_push($tags, str_slug(get_called_class()));
-            $cache = cache()->tags($tags);
-        }
-
-        $cache->flush();
+        $this->cache($tags)->flush();
     }
 }
