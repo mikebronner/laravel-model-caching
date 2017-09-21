@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use LogicException;
 
+use Illuminate\Cache\TaggedCache;
+
 abstract class CachedModel extends Model
 {
     protected function getRelationshipFromMethod($method)
@@ -59,15 +61,21 @@ abstract class CachedModel extends Model
 
         if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
             array_push($tags, str_slug(get_called_class()));
-            $cache = $cache->tags($tags);
+            $cache = cache()->tags($tags);
         }
 
         return $cache;
     }
 
-    public static function flushCache()
+    public static function flushCache(array $tags = [])
     {
-        cache()->tags([str_slug(get_called_class())])
-            ->flush();
+        $cache = cache();
+
+        if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
+            array_push($tags, str_slug(get_called_class()));
+            $cache = cache()->tags($tags);
+        }
+
+        $cache->flush();
     }
 }

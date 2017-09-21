@@ -13,6 +13,8 @@ class CacheTest extends TestCase
     {
         parent::setUp();
 
+        cache()->flush();
+
         factory(Author::class, 10)->create()
             ->each(function($author) {
                 factory(Book::class, random_int(2, 10))->make()
@@ -25,22 +27,54 @@ class CacheTest extends TestCase
 
     public function testCacheIsEmptyBeforeLoadingModels()
     {
-        $this->assertNull(cache()->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'));
+        $results = cache()->tags([
+                'genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabslaravelmodelcachingtestsfixturesbook'
+            ])
+            ->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks');
+
+        $this->assertNull($results);
     }
 
     public function testCacheIsNotEmptyAfterLoadingModels()
     {
-        (new Author)->with('books')->get();
+        (new Author)->with('books')->get()->first();
 
-        $this->assertNotNull(cache()->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'));
+        $results = cache()->tags([
+                'genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabslaravelmodelcachingtestsfixturesbook'
+            ])
+            ->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks');
+
+        $this->assertNotNull($results);
     }
 
-    public function testChangingModelClearsCache()
+    public function testCreatingModelClearsCache()
     {
-        $author = (new Author)->with('books')->first();
+        $author = (new Author)->with('books')->get()->first();
         $author->name = "John Jinglheimer";
         $author->save();
 
-        $this->assertNull(cache()->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'));
+        $results = cache()->tags([
+                'genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabslaravelmodelcachingtestsfixturesbook'
+            ])
+            ->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks');
+
+        $this->assertNull($results);
+    }
+
+    public function testDeletingModelClearsCache()
+    {
+        $author = (new Author)->with('books')->get()->first();
+        $author->delete();
+
+        $results = cache()->tags([
+                'genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabslaravelmodelcachingtestsfixturesbook'
+            ])
+            ->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks');
+
+        $this->assertNull($results);
     }
 }

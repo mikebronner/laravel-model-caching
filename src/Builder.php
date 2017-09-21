@@ -15,13 +15,13 @@ class Builder extends EloquentBuilder
         $parentIds = implode('_', collect($models)->pluck('id')->toArray());
         $parentName = str_slug(get_class($relation->getParent()));
         $childName = str_slug(get_class($relation->getRelated()));
-        $cache = cache();
+        // $cache = cache();
+        //
+        // if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
+        //     $cache->tags([$parentName, $childName]);
+        // }
 
-        if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
-            $cache->tags([$parentName, $childName]);
-        }
-
-        $results = $cache
+        $results = cache()->tags([$parentName, $childName])
             ->rememberForever("{$parentName}_{$parentIds}-{$childName}s", function () use ($relation) {
                 return $relation->getEager();
             });
