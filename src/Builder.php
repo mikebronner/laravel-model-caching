@@ -1,72 +1,26 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
-use Illuminate\Cache\CacheManager;
-use Illuminate\Cache\TaggableStore;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use LogicException;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
-abstract class CachedModel extends Model
+class Builder extends EloquentBuilder
 {
-    protected function getRelationshipFromMethod($method)
+    protected function eagerLoadRelation(array $models, $name, Closure $constraints)
     {
-        $relation = $this->$method();
+        $relation = $this->getRelation($name);
+        $relation->addEagerConstraints($models);
+        $constraints($relation);
 
-        if (! $relation instanceof Relation) {
-            throw new LogicException(get_class($this).'::'.$method.' must return a relationship instance.');
-        }
-
-        $results = $this->cache([$method])
-            ->rememberForever(str_slug(get_called_class()) . "-{$method}", function () use ($relation) {
-                return $relation->getResults();
+        $parentName = str_slug(get_class($relation->getParent()));
+        $childName = str_slug(get_class($relation->getModel()));
+        $results = cache()->tags([$parentName, $childName])
+            ->rememberForever("{$parentName}-{$childName}-relation", function () use ($relation) {
+                return $relation->getEager();
             });
 
-        return tap($results, function ($results) use ($method) {
-            $this->setRelation($method, $results);
-        });
-    }
-
-    public function newEloquentBuilder($query)
-    {
-        return new Builder($query);
-    }
-
-    public static function boot()
-    {
-        parent::boot();
-
-        static::created(function () {
-            self::flushCache();
-        });
-
-        static::deleted(function () {
-            self::flushCache();
-        });
-
-        static::saved(function () {
-            self::flushCache();
-        });
-
-        static::updated(function () {
-            self::flushCache();
-        });
-    }
-
-    public function cache(array $tags = [])
-    {
-        $cache = cache();
-
-        if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
-            array_push($tags, str_slug(get_called_class()));
-            $cache = $cache->tags($tags);
-        }
-
-        return $cache;
-    }
-
-    public static function flushCache()
-    {
-        cache()->tags([str_slug(get_called_class())])
-            ->flush();
+        return $relation->match(
+            $relation->initRelation($models, $name),
+            $results,
+            $name
+        );
     }
 }
