@@ -19,7 +19,6 @@
         "mockery/mockery": "0.9.*",
         "phpmd/phpmd": "^2.6",
         "phpunit/phpunit": "5.7.*",
-        "predis/predis": "*",
         "satooshi/php-coveralls" : "dev-master@dev",
         "sebastian/phpcpd": "*"
     },

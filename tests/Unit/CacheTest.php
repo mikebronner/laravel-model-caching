@@ -34,4 +34,13 @@ class CacheTest extends TestCase
 
         $this->assertNotNull(cache()->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'));
     }
+
+    public function testChangingModelClearsCache()
+    {
+        $author = (new Author)->with('books')->first();
+        $author->name = "John Jinglheimer";
+        $author->save();
+
+        $this->assertNull(cache()->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'));
+    }
 }
