@@ -11,10 +11,17 @@ class Builder extends EloquentBuilder
         $relation->addEagerConstraints($models);
         $constraints($relation);
 
+        $parentIds = implode('_', collect($models)->pluck('id')->toArray());
         $parentName = str_slug(get_class($relation->getParent()));
-        $childName = str_slug(get_class($relation->getModel()));
-        $results = cache()->tags([$parentName, $childName])
-            ->rememberForever("{$parentName}-{$childName}-relation", function () use ($relation) {
+        $childName = str_slug(get_class($relation->getRelated()));
+        $cache = cache();
+
+        if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
+            $cache->tags([$parentName, $childName]);
+        }
+
+        $results = $cache
+            ->rememberForever("{$parentName}_{$parentIds}-{$childName}s", function () use ($relation) {
                 return $relation->getEager();
             });
 

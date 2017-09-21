@@ -11,7 +11,7 @@ However, not every pull request will automatically be accepted. I will review ea
 ## Testing
 - [ ] After making your changes, make sure the tests still pass.
 - [ ] When adding new functionality, also add new tests.
-- [ ] Make sure there are no build errors on our CI server (https://ci.genealabs.com/build-status/view/7)
+- [ ] Make sure there are no build errors on our CI server (https://ci.genealabs.com/build-status/view/8)
 - [ ] All code must past PHPCS and PHPMD PSR2 validation.
 
 ## Submitting changes
