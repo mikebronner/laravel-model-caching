@@ -1,0 +1,17 @@
+language: php
+
+php:
+    - 7.0
+    - 7.1
+
+before_script:
+    - travis_retry composer self-update
+    - travis_retry composer install --no-interaction --prefer-source --dev
+
+script:
+  - ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
+
+after_script:
+  - php vendor/bin/coveralls
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
