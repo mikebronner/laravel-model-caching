@@ -11,24 +11,6 @@ use Illuminate\Cache\TaggedCache;
 
 abstract class CachedModel extends Model
 {
-    protected function getRelationshipFromMethod($method)
-    {
-        $relation = $this->$method();
-
-        if (! $relation instanceof Relation) {
-            throw new LogicException(get_class($this).'::'.$method.' must return a relationship instance.');
-        }
-
-        $results = $this->cache([$method])
-            ->rememberForever(str_slug(get_called_class()) . "-{$method}", function () use ($relation) {
-                return $relation->getResults();
-            });
-
-        return tap($results, function ($results) use ($method) {
-            $this->setRelation($method, $results);
-        });
-    }
-
     public function newEloquentBuilder($query)
     {
         return new Builder($query);
