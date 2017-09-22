@@ -23,11 +23,15 @@
         "sebastian/phpcpd": "*"
     },
     "autoload": {
+        "psr-4": {
+            "GeneaLabs\\LaravelModelCaching\\": "src/"
+        }
+    },
+    "autoload-dev": {
         "classmap": [
             "tests/database/factories"
         ],
         "psr-4": {
-            "GeneaLabs\\LaravelModelCaching\\": "src/",
             "GeneaLabs\\LaravelModelCaching\\Tests\\": "tests/"
         }
     }
