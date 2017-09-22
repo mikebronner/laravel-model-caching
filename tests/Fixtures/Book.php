@@ -2,6 +2,7 @@
 
 use GeneaLabs\LaravelModelCaching\CachedModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Book extends CachedModel
 {
@@ -17,5 +18,10 @@ class Book extends CachedModel
     public function author() : BelongsTo
     {
         return $this->belongsTo(Author::class);
+    }
+
+    public function stores() : BelongsToMany
+    {
+        return $this->belongsToMany(Store::class);
     }
 }

@@ -2,6 +2,7 @@
 
 use GeneaLabs\LaravelModelCaching\CachedModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Author extends CachedModel
 {
@@ -13,5 +14,10 @@ class Author extends CachedModel
     public function books() : HasMany
     {
         return $this->hasMany(Book::class);
+    }
+
+    public function profile() : HasOne
+    {
+        return $this->hasOne(Profile::class);
     }
 }
