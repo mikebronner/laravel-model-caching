@@ -15,14 +15,10 @@ class Builder extends EloquentBuilder
         $relation->addEagerConstraints($models);
         $constraints($relation);
 
-        return $relation->match(
-            $relation->initRelation($models, $name),
-            $this->cacheResults($relation, $models),
-            $name
-        );
+        return $this->cacheResults($relation, $models, $name);
     }
 
-    protected function cacheResults(Relation $relation, array $models) : Collection
+    protected function cacheResults(Relation $relation, array $models, string $name) : array
     {
         $parentIds = implode('_', collect($models)->pluck('id')->toArray());
         $parentName = str_slug(get_class($relation->getParent()));
@@ -30,12 +26,20 @@ class Builder extends EloquentBuilder
         $cache = cache();
 
         if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
-            $cache->tags([$parentName, $childName]);
+            $cache = $cache->tags([$parentName, $childName]);
         }
 
-        return cache()->tags([$parentName, $childName])
-            ->rememberForever("{$parentName}_{$parentIds}-{$childName}s", function () use ($relation) {
-                return $relation->getEager();
-            });
+        $cachedResults = $cache->rememberForever(
+            "{$parentName}_{$parentIds}-{$childName}s",
+            function () use ($relation, $models, $name) {
+                return $relation->match(
+                   $relation->initRelation($models, $name),
+                   $relation->getEager(),
+                   $name
+               );
+            }
+        );
+
+        return $cachedResults;
     }
 }

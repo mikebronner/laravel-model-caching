@@ -43,9 +43,9 @@ abstract class CachedModel extends Model
     {
         $cache = cache();
 
-        if (is_subclass_of(cache()->getStore(), TaggableStore::class)) {
+        if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
             array_push($tags, str_slug(get_called_class()));
-            $cache = cache()->tags($tags);
+            $cache = $cache->tags($tags);
         }
 
         return $cache;

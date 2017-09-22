@@ -49,7 +49,7 @@ class CacheTest extends TestCase
 
     public function testCacheIsNotEmptyAfterLoadingModels()
     {
-        (new Author)->with('books')->get()->first();
+        (new Author)->with('books')->get();
 
         $results = cache()->tags([
                 'genealabslaravelmodelcachingtestsfixturesauthor',
@@ -61,6 +61,21 @@ class CacheTest extends TestCase
     }
 
     public function testCreatingModelClearsCache()
+    {
+        $author = (new Author)->with('books')->get();
+
+        factory(Author::class)->create();
+
+        $results = cache()->tags([
+                'genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabslaravelmodelcachingtestsfixturesbook'
+            ])
+            ->get('genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks');
+
+        $this->assertNull($results);
+    }
+
+    public function testUpdatingModelClearsCache()
     {
         $author = (new Author)->with('books')->get()->first();
         $author->name = "John Jinglheimer";
@@ -94,27 +109,35 @@ class CacheTest extends TestCase
         $authors = (new Author)->with('books')->get();
         $authorIds = implode('_', $authors->pluck('id')->toArray());
 
-        $results = cache()->tags([
+        $results = collect(cache()->tags([
                 'genealabslaravelmodelcachingtestsfixturesauthor',
                 'genealabslaravelmodelcachingtestsfixturesbook'
             ])
-            ->get("genealabslaravelmodelcachingtestsfixturesauthor_{$authorIds}-genealabslaravelmodelcachingtestsfixturesbooks");
+            ->get("genealabslaravelmodelcachingtestsfixturesauthor_{$authorIds}-genealabslaravelmodelcachingtestsfixturesbooks"));
 
         $this->assertNotNull($results);
+        $this->assertEmpty($authors->diffAssoc($results));
+        $this->assertNotEmpty($authors);
+        $this->assertNotEmpty($results);
+        $this->assertEquals($authors->count(), $results->count());
     }
 
     public function testBelongsToRelationshipIsCached()
     {
-        $books = (new Book)->with('author')->get()->first();
+        $books = (new Book)->with('author')->get();
         $bookIds = implode('_', $books->pluck('id')->toArray());
 
-        $results = cache()->tags([
+        $results = collect(cache()->tags([
                 'genealabslaravelmodelcachingtestsfixturesbook',
                 'genealabslaravelmodelcachingtestsfixturesauthor'
             ])
-            ->get("genealabslaravelmodelcachingtestsfixturesbook_{$bookIds}-genealabslaravelmodelcachingtestsfixturesauthors");
+            ->get("genealabslaravelmodelcachingtestsfixturesbook_{$bookIds}-genealabslaravelmodelcachingtestsfixturesauthors"));
 
         $this->assertNotNull($results);
+        $this->assertEmpty($books->diffAssoc($results));
+        $this->assertNotEmpty($books);
+        $this->assertNotEmpty($results);
+        $this->assertEquals($books->count(), $results->count());
     }
 
     public function testBelongsToManyRelationshipIsCached()
@@ -122,13 +145,17 @@ class CacheTest extends TestCase
         $books = (new Book)->with('stores')->get();
         $bookIds = implode('_', $books->pluck('id')->toArray());
 
-        $results = cache()->tags([
+        $results = collect(cache()->tags([
                 'genealabslaravelmodelcachingtestsfixturesbook',
                 'genealabslaravelmodelcachingtestsfixturesstore'
             ])
-            ->get("genealabslaravelmodelcachingtestsfixturesbook_{$bookIds}-genealabslaravelmodelcachingtestsfixturesstores");
+            ->get("genealabslaravelmodelcachingtestsfixturesbook_{$bookIds}-genealabslaravelmodelcachingtestsfixturesstores"));
 
         $this->assertNotNull($results);
+        $this->assertEmpty($books->diffAssoc($results));
+        $this->assertNotEmpty($books);
+        $this->assertNotEmpty($results);
+        $this->assertEquals($books->count(), $results->count());
     }
 
     public function testHasOneRelationshipIsCached()
@@ -136,12 +163,17 @@ class CacheTest extends TestCase
         $authors = (new Author)->with('profile')->get();
         $authorIds = implode('_', $authors->pluck('id')->toArray());
 
-        $results = cache()->tags([
+        $results = collect(cache()
+            ->tags([
                 'genealabslaravelmodelcachingtestsfixturesauthor',
                 'genealabslaravelmodelcachingtestsfixturesprofile'
             ])
-            ->get("genealabslaravelmodelcachingtestsfixturesauthor_{$authorIds}-genealabslaravelmodelcachingtestsfixturesprofiles");
+            ->get("genealabslaravelmodelcachingtestsfixturesauthor_{$authorIds}-genealabslaravelmodelcachingtestsfixturesprofiles"));
 
         $this->assertNotNull($results);
+        $this->assertEmpty($authors->diffAssoc($results));
+        $this->assertNotEmpty($authors);
+        $this->assertNotEmpty($results);
+        $this->assertEquals($authors->count(), $results->count());
     }
 }
