@@ -62,7 +62,7 @@ class CacheTest extends TestCase
 
     public function testCreatingModelClearsCache()
     {
-        $author = (new Author)->with('books')->get();
+        (new Author)->with('books')->get();
 
         factory(Author::class)->create();
 
