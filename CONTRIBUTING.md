@@ -11,13 +11,14 @@ However, not every pull request will automatically be accepted. I will review ea
 ## Testing
 - [ ] After making your changes, make sure the tests still pass.
 - [ ] When adding new functionality, also add new tests.
+- [ ] When fixing errors write and satisfy new unit tests that replicate the issue.
 - [ ] Make sure there are no build errors on our CI server (https://ci.genealabs.com/build-status/view/8)
 - [ ] All code must past PHPCS and PHPMD PSR2 validation.
 
 ## Submitting changes
 When submitting a pull request, it is important to make sure to complete the following:
-- [ ] Add a descriptive header that explains in a single scentence what problem the PR solves.
-- [ ] Add a detailed description with animated screengrab GIFs vidualizing how it works.
+- [ ] Add a descriptive header that explains in a single sentence what problem the PR solves.
+- [ ] Add a detailed description with animated screen-grab GIFs visualizing how it works.
 - [ ] Explain why you think it should be implemented one way vs. another, highlight performance improvements, etc.
 
 ## Coding conventions
