@@ -109,7 +109,7 @@ public function getByTypes(array $types) : Collection
 }
 ```
 
-## Dedication to Quality
+## Commitment to Quality
 During package development I try as best as possible to embrace good design and
 development practices to try to ensure that this package is as good as it can
 be. My checklist for package development includes:
