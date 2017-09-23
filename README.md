@@ -1,3 +1,5 @@
+**DO NOT INSTALL - STILL IN EXPERIMENTAL PHASE**
+
 ![pexels-photo-325229](https://user-images.githubusercontent.com/1791050/30768358-0df9d0f2-9fbb-11e7-9f10-ad40b83bbf59.jpg)
 
 # Model Caching for Laravel
