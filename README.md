@@ -7,6 +7,7 @@
 [![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
 [![GitHub (pre-)release](https://img.shields.io/github/release/GeneaLabs/laravel-model-caching/all.svg)](https://github.com/GeneaLabs/laravel-model-caching)
 [![Packagist](https://img.shields.io/packagist/dt/GeneaLabs/laravel-model-caching.svg)](https://packagist.org/packages/genealabs/laravel-model-caching)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
 
 ## Impetus
 I created this package in response to a client project that had complex, nested
@@ -108,7 +109,7 @@ public function getByTypes(array $types) : Collection
 }
 ```
 
-## Dedication to Quality
+## Commitment to Quality
 During package development I try as best as possible to embrace good design and
 development practices to try to ensure that this package is as good as it can
 be. My checklist for package development includes:
