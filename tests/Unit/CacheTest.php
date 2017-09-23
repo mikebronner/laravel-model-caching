@@ -176,4 +176,26 @@ class CacheTest extends TestCase
         $this->assertNotEmpty($results);
         $this->assertEquals($authors->count(), $results->count());
     }
+
+    // test get()
+
+    // test find()
+
+    // test all()
+
+    // test count()
+
+    // test chunk()
+
+    // test cursor()
+
+    // test max()
+
+    // test min()
+
+    // test avg()
+
+    // test value()
+
+    // test pluck()
 }
