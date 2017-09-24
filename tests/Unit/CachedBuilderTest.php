@@ -351,8 +351,8 @@ class CachedBuilderTest extends TestCase
     public function testPluckModelResultsCreatesCache()
     {
         $authors = (new Author)->with('books', 'profile')
-            ->pluck('id');
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_id-books-profile-pluck_id';
+            ->pluck('name', 'id');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-pluck_name_id';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -362,7 +362,7 @@ class CachedBuilderTest extends TestCase
         $cachedResults = cache()->tags($tags)
             ->get($key);
         $liveResults = (new UncachedAuthor)->with('books', 'profile')
-            ->pluck('id');
+            ->pluck('name', 'id');
 
         $this->assertEmpty($authors->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));

@@ -20,15 +20,10 @@ class Builder extends EloquentBuilder
         return $cache;
     }
 
-    protected function getCacheKey(array $columns = ['*'], $ids = null) : string
+    protected function getCacheKey(array $columns = ['*'], $idColumn = null) : string
     {
         $key = str_slug(get_class($this->model));
-
-        if ($ids) {
-            $key .= '_' . (is_array($ids)
-                ? implode('_', $ids)
-                : $ids);
-        }
+        $key .= $idColumn ? "_{$idColumn}" : '';
 
         if ($columns !== ['*']) {
             $key .= '_' . implode('_', $columns);
