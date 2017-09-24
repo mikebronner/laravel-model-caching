@@ -278,7 +278,7 @@ class CachedBuilderTest extends TestCase
 
     public function testFindModelResultsCreatesCache()
     {
-        $author = (new Author)->find(1);
+        $author = collect()->push((new Author)->find(1));
         $key = 'genealabslaravelmodelcachingtestsfixturesauthor_1';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
@@ -288,7 +288,7 @@ class CachedBuilderTest extends TestCase
             ->get($key));
         $liveResults = collect()->push((new UncachedAuthor)->find(1));
 
-        $this->assertEquals($author, $cachedResults->first());
+        $this->assertEmpty($author->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 

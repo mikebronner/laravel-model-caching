@@ -14,6 +14,6 @@ class UncachedProfile extends CachedModel
 
     public function author() : BelongsTo
     {
-        return $this->belongsTo(UnachedAuthor::class);
+        return $this->belongsTo(UncachedAuthor::class);
     }
 }
