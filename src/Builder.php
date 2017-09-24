@@ -20,33 +20,95 @@ class Builder extends EloquentBuilder
         return $cache;
     }
 
-    protected function cacheResults(Relation $relation, array $models, string $name) : array
+    // protected function cacheResults(Relation $relation, array $models, string $name) : array
+    // {
+    //     $parentIds = implode('_', collect($models)->pluck('id')->toArray());
+    //     $parentName = str_slug(get_class($relation->getParent()));
+    //     $childName = str_slug(get_class($relation->getRelated()));
+    //
+    //     $cachedResults = $this->cache([$parentName, $childName])->rememberForever(
+    //         "{$parentName}_{$parentIds}-{$childName}s",
+    //         function () use ($relation, $models, $name) {
+    //             return $relation->match(
+    //                $relation->initRelation($models, $name),
+    //                $relation->getEager(),
+    //                $name
+    //            );
+    //         }
+    //     );
+    //
+    //     return $cachedResults;
+    // }
+    //
+    // protected function eagerLoadRelation(array $models, $name, Closure $constraints)
+    // {
+    //     $relation = $this->getRelation($name);
+    //     $relation->addEagerConstraints($models);
+    //     $constraints($relation);
+    //
+    //     return $this->cacheResults($relation, $models, $name);
+    // }
+
+    protected function getCacheKey(array $columns = ['*'], $ids = null) : string
     {
-        $parentIds = implode('_', collect($models)->pluck('id')->toArray());
-        $parentName = str_slug(get_class($relation->getParent()));
-        $childName = str_slug(get_class($relation->getRelated()));
+        $key = str_slug(get_class($this->model));
 
-        $cachedResults = $this->cache([$parentName, $childName])->rememberForever(
-            "{$parentName}_{$parentIds}-{$childName}s",
-            function () use ($relation, $models, $name) {
-                return $relation->match(
-                   $relation->initRelation($models, $name),
-                   $relation->getEager(),
-                   $name
-               );
-            }
-        );
+        if ($ids) {
+            $key .= '_' . (is_array($ids)
+                ? implode('_', $ids)
+                : $ids);
+        }
 
-        return $cachedResults;
+        if ($columns !== ['*']) {
+            $key .= '_' . implode('_', $columns);
+        }
+
+        $key .= collect($this->query->wheres)->reduce(function ($carry, $where) {
+            $value = $where['value'] ?? implode('_', $where['values']) ?? '';
+
+            return "{$carry}-{$where['column']}_{$value}";
+        });
+
+        if (collect($this->eagerLoad)->isNotEmpty()) {
+            $key .= '-' . implode('-', collect($this->eagerLoad)->keys()->toArray());
+        }
+
+        if ($this->query->offset) {
+            $key .= "-offset_{$this->query->offset}";
+        }
+
+        if ($this->query->limit) {
+            $key .= "-limit_{$this->query->limit}";
+        }
+
+        return $key;
     }
 
-    protected function eagerLoadRelation(array $models, $name, Closure $constraints)
+    protected function getCacheTags() : array
     {
-        $relation = $this->getRelation($name);
-        $relation->addEagerConstraints($models);
-        $constraints($relation);
+        return collect($this->eagerLoad)->keys()
+            ->map(function ($name) {
+                return str_slug(get_class(
+                    $this->model
+                        ->{$name}()
+                        ->getQuery()
+                        ->model
+                ));
+            })
+            ->prepend(str_slug(get_class($this->model)))
+            ->values()
+            ->toArray();
+    }
 
-        return $this->cacheResults($relation, $models, $name);
+    public function count($columns = ['*'])
+    {
+        $tags = [str_slug(get_class($this->model))];
+        $key = str_slug(get_class($this->model)) ."-count";
+
+        return $this->cache($tags)
+            ->rememberForever($key, function () use ($columns) {
+                return parent::count($columns);
+            });
     }
 
     /**
@@ -54,49 +116,32 @@ class Builder extends EloquentBuilder
      */
     public function find($id, $columns = ['*'])
     {
-        $tag = str_slug(get_class($this->model));
-        $key = "{$tag}_{$id}_" . implode('_', $columns);
+        $tags = $this->getCacheTags();
+        $key = $this->getCacheKey($columns, $id);
 
-        return $this->cache([$tag])
+        return $this->cache($tags)
             ->rememberForever($key, function () use ($id, $columns) {
                 return parent::find($id, $columns);
             });
     }
 
-    public function count($columns = '*')
-    {
-        $tag = str_slug(get_class($this->model));
-        $key = "{$tag}_" . implode('_', $columns);
-
-        return $this->cache([$tag])
-            ->rememberForever($key, function () use ($id, $columns) {
-                return parent::count($columns);
-            });
-    }
-
     public function first($columns = ['*'])
     {
-        $tag = str_slug(get_class($this->model));
-        $key = "{$tag}_" . implode('_', $columns);
+        $tags = $this->getCacheTags();
+        $key = $this->getCacheKey($columns);
 
-        return $this->cache([$tag])
-            ->rememberForever($key, function () use ($id, $columns) {
+        return $this->cache($tags)
+            ->rememberForever($key, function () use ($columns) {
                 return parent::first($columns);
             });
     }
 
     public function get($columns = ['*'])
     {
-        $tag = str_slug(get_class($this->model));
-        $key = "{$tag}_" . implode('_', $columns);
-        $key .= collect($this->query->wheres)->reduce(function ($carry, $where) {
-            $value = $where['value'] ?? implode('_', $where['values']) ?? '';
+        $tags = $this->getCacheTags();
+        $key = $this->getCacheKey($columns);
 
-            return "{$carry}-{$where['column']}_{$value}";
-        });
-        $key .= '-' . implode('-', collect($this->eagerLoad)->keys()->toArray());
-
-        return $this->cache([$tag])
+        return $this->cache($tags)
             ->rememberForever($key, function () use ($columns) {
                 return parent::get($columns);
             });

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use LogicException;
 
 use Illuminate\Cache\TaggedCache;
+use Illuminate\Support\Collection;
 
 abstract class CachedModel extends Model
 {
@@ -54,5 +55,18 @@ abstract class CachedModel extends Model
     public function flushCache(array $tags = [])
     {
         $this->cache($tags)->flush();
+    }
+
+    public static function all($columns = ['*'])
+    {
+        $class = get_called_class();
+        $instance = new $class;
+        $tags = [str_slug(get_called_class())];
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+
+        return $instance->cache($tags)
+            ->rememberForever($key, function () use ($columns) {
+                return parent::all($columns);
+            });
     }
 }
