@@ -20,35 +20,6 @@ class Builder extends EloquentBuilder
         return $cache;
     }
 
-    // protected function cacheResults(Relation $relation, array $models, string $name) : array
-    // {
-    //     $parentIds = implode('_', collect($models)->pluck('id')->toArray());
-    //     $parentName = str_slug(get_class($relation->getParent()));
-    //     $childName = str_slug(get_class($relation->getRelated()));
-    //
-    //     $cachedResults = $this->cache([$parentName, $childName])->rememberForever(
-    //         "{$parentName}_{$parentIds}-{$childName}s",
-    //         function () use ($relation, $models, $name) {
-    //             return $relation->match(
-    //                $relation->initRelation($models, $name),
-    //                $relation->getEager(),
-    //                $name
-    //            );
-    //         }
-    //     );
-    //
-    //     return $cachedResults;
-    // }
-    //
-    // protected function eagerLoadRelation(array $models, $name, Closure $constraints)
-    // {
-    //     $relation = $this->getRelation($name);
-    //     $relation->addEagerConstraints($models);
-    //     $constraints($relation);
-    //
-    //     return $this->cacheResults($relation, $models, $name);
-    // }
-
     protected function getCacheKey(array $columns = ['*'], $ids = null) : string
     {
         $key = str_slug(get_class($this->model));
