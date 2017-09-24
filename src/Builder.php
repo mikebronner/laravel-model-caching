@@ -100,6 +100,17 @@ class Builder extends EloquentBuilder
             ->toArray();
     }
 
+    public function avg($column)
+    {
+        $tags = [str_slug(get_class($this->model))];
+        $key = str_slug(get_class($this->model)) ."-avg_{$column}";
+
+        return $this->cache($tags)
+            ->rememberForever($key, function () use ($column) {
+                return parent::avg($column);
+            });
+    }
+
     public function count($columns = ['*'])
     {
         $tags = [str_slug(get_class($this->model))];
@@ -108,6 +119,17 @@ class Builder extends EloquentBuilder
         return $this->cache($tags)
             ->rememberForever($key, function () use ($columns) {
                 return parent::count($columns);
+            });
+    }
+
+    public function cursor()
+    {
+        $tags = [str_slug(get_class($this->model))];
+        $key = str_slug(get_class($this->model)) ."-cursor";
+
+        return $this->cache($tags)
+            ->rememberForever($key, function () {
+                return collect(parent::cursor());
             });
     }
 
@@ -128,7 +150,7 @@ class Builder extends EloquentBuilder
     public function first($columns = ['*'])
     {
         $tags = $this->getCacheTags();
-        $key = $this->getCacheKey($columns);
+        $key = $this->getCacheKey($columns) . '-first';
 
         return $this->cache($tags)
             ->rememberForever($key, function () use ($columns) {
@@ -144,6 +166,54 @@ class Builder extends EloquentBuilder
         return $this->cache($tags)
             ->rememberForever($key, function () use ($columns) {
                 return parent::get($columns);
+            });
+    }
+
+    public function max($column)
+    {
+        $tags = [str_slug(get_class($this->model))];
+        $key = str_slug(get_class($this->model)) ."-max_{$column}";
+
+        return $this->cache($tags)
+            ->rememberForever($key, function () use ($column) {
+                return parent::max($column);
+            });
+    }
+
+    public function min($column)
+    {
+        $tags = [str_slug(get_class($this->model))];
+        $key = str_slug(get_class($this->model)) ."-min_{$column}";
+
+        return $this->cache($tags)
+            ->rememberForever($key, function () use ($column) {
+                return parent::min($column);
+            });
+    }
+
+    public function pluck($column, $key = null)
+    {
+        $tags = $this->getCacheTags();
+        $cacheKey = $this->getCacheKey([$column]) . "-pluck_{$column}";
+
+        if ($key) {
+            $cacheKey .= "_{$key}";
+        }
+
+        return $this->cache($tags)
+            ->rememberForever($cacheKey, function () use ($column, $key) {
+                return parent::pluck($column, $key);
+            });
+    }
+
+    public function sum($column)
+    {
+        $tags = [str_slug(get_class($this->model))];
+        $key = str_slug(get_class($this->model)) ."-sum_{$column}";
+
+        return $this->cache($tags)
+            ->rememberForever($key, function () use ($column) {
+                return parent::sum($column);
             });
     }
 }

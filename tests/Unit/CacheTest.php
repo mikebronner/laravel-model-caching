@@ -197,6 +197,24 @@ class CacheTest extends TestCase
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
+    public function testAvgModelResultsCreatesCache()
+    {
+        $authorId = (new Author)->with('books', 'profile')
+            ->avg('id');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-avg_id';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResult = cache()->tags($tags)
+            ->get($key);
+        $liveResult = (new UncachedAuthor)->with('books', 'profile')
+            ->avg('id');
+
+        $this->assertEquals($authorId, $cachedResult);
+        $this->assertEquals($liveResult, $cachedResult);
+    }
+
     public function testChunkModelResultsCreatesCache()
     {
         $cachedChunks = collect([
@@ -257,6 +275,24 @@ class CacheTest extends TestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
+    public function testCursorModelResultsCreatesCache()
+    {
+        $authors = (new Author)->with('books', 'profile')
+            ->cursor();
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-cursor';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = collect((new UncachedAuthor)->with('books', 'profile')
+            ->cursor());
+
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
+
     public function testFindModelResultsCreatesCache()
     {
         $author = (new Author)->find(1);
@@ -293,15 +329,99 @@ class CacheTest extends TestCase
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
-    // test cursor()
+    public function testMaxModelResultsCreatesCache()
+    {
+        $authorId = (new Author)->with('books', 'profile')
+            ->max('id');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-max_id';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
 
-    // test max()
+        $cachedResult = cache()->tags($tags)
+            ->get($key);
+        $liveResult = (new UncachedAuthor)->with('books', 'profile')
+            ->max('id');
 
-    // test min()
+        $this->assertEquals($authorId, $cachedResult);
+        $this->assertEquals($liveResult, $cachedResult);
+    }
 
-    // test avg()
+    public function testMinModelResultsCreatesCache()
+    {
+        $authorId = (new Author)->with('books', 'profile')
+            ->min('id');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-min_id';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
 
-    // test value()
+        $cachedResult = cache()->tags($tags)
+            ->get($key);
+        $liveResult = (new UncachedAuthor)->with('books', 'profile')
+            ->min('id');
 
-    // test pluck()
+        $this->assertEquals($authorId, $cachedResult);
+        $this->assertEquals($liveResult, $cachedResult);
+    }
+
+    public function testPluckModelResultsCreatesCache()
+    {
+        $authors = (new Author)->with('books', 'profile')
+            ->pluck('id');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_id-books-profile-pluck_id';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)->with('books', 'profile')
+            ->pluck('id');
+
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
+
+    public function testSumModelResultsCreatesCache()
+    {
+        $authorId = (new Author)->with('books', 'profile')
+            ->sum('id');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-sum_id';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResult = cache()->tags($tags)
+            ->get($key);
+        $liveResult = (new UncachedAuthor)->with('books', 'profile')
+            ->sum('id');
+
+        $this->assertEquals($authorId, $cachedResult);
+        $this->assertEquals($liveResult, $cachedResult);
+    }
+
+    public function testValueModelResultsCreatesCache()
+    {
+        $authors = (new Author)->with('books', 'profile')
+            ->value('name');
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-first';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key)
+            ->name;
+
+        $liveResults = (new UncachedAuthor)->with('books', 'profile')
+            ->value('name');
+
+        $this->assertEquals($authors, $cachedResults);
+        $this->assertEquals($liveResults, $cachedResults);
+    }
 }
