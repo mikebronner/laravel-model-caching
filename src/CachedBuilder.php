@@ -95,7 +95,7 @@ class CachedBuilder extends EloquentBuilder
         return collect($this->eagerLoad)->keys()
             ->map(function ($relationName) {
                 $relation = collect(explode('.', $relationName))
-                    ->reduce(function ($carry, $name) use ($relationName) {
+                    ->reduce(function ($carry, $name) {
                         if (! $carry) {
                             $carry = $this->model;
                         }
