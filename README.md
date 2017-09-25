@@ -1,5 +1,3 @@
-**DO NOT INSTALL - STILL IN EXPERIMENTAL PHASE**
-
 ![pexels-photo-325229](https://user-images.githubusercontent.com/1791050/30768358-0df9d0f2-9fbb-11e7-9f10-ad40b83bbf59.jpg)
 
 # Model Caching for Laravel
@@ -20,10 +18,9 @@ relationships. This package is the attempt to address those requirements.
 
 ## Features
 -   automatic, self-invalidating relationship caching.
+-   automatic, self-invalidating model query caching.
 -   automatic use of cache flags for cache providers that support them (will
     flush entire cache for providers that don't).
--   provides simple caching methods for use in query methods for models that
-    take advantage of the automatic cache management features mentioned.
 
 ## Requirements
 -   PHP >= 7.0.0
@@ -35,14 +32,11 @@ memcached). While this is optional, using a non-taggable cache provider will
 mean that the entire cache is cleared each time a model is created, saved,
 updated, or deleted.
 
-For best implementation results, I would recommend adding a `BaseModel` model
-from which all your other models are extended. The BaseModel should extend from
-`CachedModel`.
+For ease of maintenance, I would recommend adding a `BaseModel` model that
+extends `CachedModel`, from which all your other models are extended. If you
+don't want to do that, simply extend your models directly from `CachedModel`.
 
-### Automatic Relationship Caching
-When writing custom queries in your models, use `$this->cache()` instead of
-`cache()` to automatically tag and cache the queries. These will also be auto-
-invalidated.
+Here's an example `BaseModel` class:
 
 ```php
 <?php namespace App;
@@ -55,61 +49,12 @@ abstract class BaseModel extends CachedModel
 }
 ```
 
-```php
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
+**That's all you need to do. All model queries and relationships are now
+cached!**
 
-class Venue extends BaseModel
-{
-    protected $fillable = [
-        'name',
-    ];
-
-    public function address() : BelongsTo
-    {
-        return $this->belongsTo(Address::class);
-    }
-
-    public function getAll() : Collection
-    {
-        return $this->cache()
-            ->rememberForever("venues-getAll", function () {
-                return $this->orderBy('name')
-                    ->get();
-            });
-    }
-}
-```
-
-### Custom Query Caching
-**`$this->cache(array $keys)`**
-This method is available in any model that extends `CachedModel`, as well
-as automatically invalidate them. Pass in respective additional models that are
-represented in the query being cached. This is most often necessary when eager-
-loading relationships.
-
-When you create the cache key, be sure to build the key in such a way that it
-uniquely represents the query and does not overwrite keys of other queries. The
-best way to achieve this is to build the key as follows: `<model slug>-<model
-method>-<unique key>`. The `unique key` portion is only necessary if you pass in
-parameters for your query where clauses.
-
-```php
-public function getByTypes(array $types) : Collection
-{
-    $key = implode('-', $types);
-
-    return $this->cache([ContactType::class])
-        ->rememberForever("contacts-getByTypes-{$key}", function () use ($types) {
-            return $this
-                ->with(['contactTypes' => function ($query) use ($types) {
-                    $query->whereIn('title', $types);
-                }])
-                ->orderBy('name')
-                ->get();
-        });
-}
-```
+In testing this has optimized performance on some pages up to 900%! Most often
+you should see somewhere around 100% performance increase. (I will show some
+concrete examples here soon, still working on optimizing things first.)
 
 ## Commitment to Quality
 During package development I try as best as possible to embrace good design and
