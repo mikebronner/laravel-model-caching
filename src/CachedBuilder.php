@@ -73,7 +73,7 @@ class CachedBuilder extends EloquentBuilder
     protected function getWhereClauses() : string
     {
         return collect($this->query->wheres)->reduce(function ($carry, $where) {
-            $value = $where['value'] ?? implode('_', $where['values']) ?? '';
+            $value = $where['value'] ?? implode('_', ($where['values'] ?? []));
 
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';
@@ -93,13 +93,21 @@ class CachedBuilder extends EloquentBuilder
     protected function getCacheTags() : array
     {
         return collect($this->eagerLoad)->keys()
-            ->map(function ($name) {
-                return str_slug(get_class(
-                    $this->model
-                        ->{$name}()
-                        ->getQuery()
-                        ->model
-                ));
+            ->map(function ($relationName) {
+                $relation = collect(explode('.', $relationName))
+                    ->reduce(function ($carry, $name) use ($relationName) {
+                        if (! $carry) {
+                            $carry = $this->model;
+                        }
+
+                        if ($carry instanceof Relation) {
+                            $carry = $carry->getQuery()->model;
+                        }
+
+                        return $carry->{$name}();
+                    });
+
+                return str_slug(get_class($relation->getQuery()->model));
             })
             ->prepend(str_slug(get_class($this->model)))
             ->values()
