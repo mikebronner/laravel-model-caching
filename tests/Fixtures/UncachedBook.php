@@ -21,6 +21,11 @@ class UncachedBook extends CachedModel
         return $this->belongsTo(UncachedAuthor::class);
     }
 
+    public function publisher() : BelongsTo
+    {
+        return $this->belongsTo(UncachedPublisher::class);
+    }
+
     public function stores() : BelongsToMany
     {
         return $this->belongsToMany(UncachedStore::class);

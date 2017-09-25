@@ -20,6 +20,11 @@ class Book extends CachedModel
         return $this->belongsTo(Author::class);
     }
 
+    public function publisher() : BelongsTo
+    {
+        return $this->belongsTo(Publisher::class);
+    }
+
     public function stores() : BelongsToMany
     {
         return $this->belongsToMany(Store::class);
