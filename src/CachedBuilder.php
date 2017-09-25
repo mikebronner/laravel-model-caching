@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class Builder extends EloquentBuilder
+class CachedBuilder extends EloquentBuilder
 {
     protected function cache(array $tags = [])
     {
@@ -22,32 +22,72 @@ class Builder extends EloquentBuilder
 
     protected function getCacheKey(array $columns = ['*'], $idColumn = null) : string
     {
-        $key = str_slug(get_class($this->model));
-        $key .= $idColumn ? "_{$idColumn}" : '';
+        $key = $this->getModelSlug();
+        $key .= $this->getIdColumn($idColumn ?: '');
+        $key .= $this->getQueryColumns($columns);
+        $key .= $this->getWhereClauses();
+        $key .= $this->getWithModels();
+        $key .= $this->getOffsetClause();
+        $key .= $this->getLimitClause();
 
-        if ($columns !== ['*']) {
-            $key .= '_' . implode('_', $columns);
+        return $key;
+    }
+
+    protected function getIdColumn(string $idColumn) : string
+    {
+        return $idColumn ? "_{$idColumn}" : '';
+    }
+
+    protected function getLimitClause() : string
+    {
+        if (! $this->query->limit) {
+            return '';
         }
 
-        $key .= collect($this->query->wheres)->reduce(function ($carry, $where) {
+        return "-limit_{$this->query->limit}";
+    }
+
+    protected function getModelSlug() : string
+    {
+        return str_slug(get_class($this->model));
+    }
+
+    protected function getOffsetClause() : string
+    {
+        if (! $this->query->offset) {
+            return '';
+        }
+
+        return "-offset_{$this->query->offset}";
+    }
+
+    protected function getQueryColumns(array $columns) : string
+    {
+        if ($columns === ['*'] || $columns === []) {
+            return '';
+        }
+
+        return '_' . implode('_', $columns);
+    }
+
+    protected function getWhereClauses() : string
+    {
+        return collect($this->query->wheres)->reduce(function ($carry, $where) {
             $value = $where['value'] ?? implode('_', $where['values']) ?? '';
 
             return "{$carry}-{$where['column']}_{$value}";
-        });
+        }) ?: '';
+    }
 
-        if (collect($this->eagerLoad)->isNotEmpty()) {
-            $key .= '-' . implode('-', collect($this->eagerLoad)->keys()->toArray());
+    protected function getWithModels() : string
+    {
+        $eagerLoads = collect($this->eagerLoad);
+
+        if ($eagerLoads->isEmpty()) {
+            return '';
         }
 
-        if ($this->query->offset) {
-            $key .= "-offset_{$this->query->offset}";
-        }
-
-        if ($this->query->limit) {
-            $key .= "-limit_{$this->query->limit}";
-        }
-
-        return $key;
+        return '-' . implode('-', $eagerLoads->keys()->toArray());
     }
 
     protected function getCacheTags() : array

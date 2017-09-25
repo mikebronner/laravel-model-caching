@@ -1,6 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
-use GeneaLabs\LaravelModelCaching\Builder;
+use GeneaLabs\LaravelModelCaching\CachedBuilder as Builder;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
