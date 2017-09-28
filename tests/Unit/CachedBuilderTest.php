@@ -438,4 +438,19 @@ class CachedBuilderTest extends TestCase
         $this->assertEmpty($authors->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
+
+    public function testNonEagerloadedRelationshipResolvesThroughCachedBuilder()
+    {
+        $books = (new Author)->first()->books;
+        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)->get($key);
+        $liveResults = (new UncachedAuthor)->first()->books;
+
+        $this->assertEmpty($books->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
 }
