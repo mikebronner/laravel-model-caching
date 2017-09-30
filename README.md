@@ -19,7 +19,7 @@ relationships. This package is the attempt to address those requirements.
 ## Features
 -   automatic, self-invalidating relationship (both eager- and lazy-loaded) caching.
 -   automatic, self-invalidating model query caching.
--   automatic use of cache flags for cache providers that support them (will
+-   automatic use of cache tags for cache providers that support them (will
     flush entire cache for providers that don't).
 
 ## Requirements
