@@ -76,7 +76,7 @@ class CachedBuilder extends EloquentBuilder
             $value = $where['value'] ?? implode('_', ($where['values'] ?? []));
 
             if (! $value) {
-                return '';
+                return $carry . '';
             }
 
             return "{$carry}-{$where['column']}_{$value}";
