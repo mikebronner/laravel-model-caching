@@ -1,9 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
-use GeneaLabs\LaravelModelCaching\CachedModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class UncachedStore extends CachedModel
+class UncachedStore extends Model
 {
     protected $fillable = [
         'address',

@@ -1,10 +1,10 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
-use GeneaLabs\LaravelModelCaching\CachedModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class UncachedProfile extends CachedModel
+class UncachedProfile extends Model
 {
     protected $fillable = [
         'first_name',

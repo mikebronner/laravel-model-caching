@@ -85,6 +85,7 @@ class CachedBuilder extends EloquentBuilder
             }
 
             $value = $where['type'] === 'Null' ? 'null' : $value;
+            $value = $where['type'] === 'NotNull' ? 'notnull' : $value;
 
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';

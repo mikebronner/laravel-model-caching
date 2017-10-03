@@ -1,10 +1,10 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
-use GeneaLabs\LaravelModelCaching\CachedModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class UncachedBook extends CachedModel
+class UncachedBook extends Model
 {
     protected $dates = [
         'published_at',
