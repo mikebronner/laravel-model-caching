@@ -35,6 +35,7 @@ class CachedBuilder extends EloquentBuilder
 
     protected function getIdColumn(string $idColumn) : string
     {
+
         return $idColumn ? "_{$idColumn}" : '';
     }
 
@@ -72,12 +73,19 @@ class CachedBuilder extends EloquentBuilder
 
     protected function getWhereClauses() : string
     {
+        // dump($this->query->wheres);
         return collect($this->query->wheres)->reduce(function ($carry, $where) {
-            $value = $where['value'] ?? implode('_', ($where['values'] ?? []));
-
-            if (! $value) {
+            if (! $where['column'] ?? false) {
                 return $carry . '';
             }
+
+            $value = $where['value'] ?? '';
+
+            if ($where['values'] ??  false) {
+                $value .= 'in_' . implode('_', $where['values']);
+            }
+
+            $value = $where['type'] === 'Null' ? 'null' : $value;
 
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';
