@@ -73,19 +73,16 @@ class CachedBuilder extends EloquentBuilder
 
     protected function getWhereClauses() : string
     {
-        // dump($this->query->wheres);
         return collect($this->query->wheres)->reduce(function ($carry, $where) {
-            if (! $where['column'] ?? false) {
-                return $carry . '';
+            $value = array_get($where, 'value');
+
+            if (in_array($where['type'], ['In', 'Null', 'NotNull'])) {
+                $value = strtolower($where['type']);
             }
 
-            $value = $where['value'] ?? '';
-
-            if ($where['values'] ??  false) {
-                $value .= 'in_' . implode('_', $where['values']);
+            if (is_array(array_get($where, 'values'))) {
+                $value .= '_' . implode('_', $where['values']);
             }
-
-            $value = $where['type'] === 'Null' ? 'null' : $value;
 
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';

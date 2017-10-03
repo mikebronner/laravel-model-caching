@@ -415,10 +415,9 @@ class CachedBuilderTest extends TestCase
 
     public function testNestedRelationshipEagerloading()
     {
-        $authors = collect()->push(
-            (new Author)->with('books.publisher')
-                ->first()
-        );
+        $authors = collect([(new Author)->with('books.publisher')
+                ->first()]);
+
         $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-books.publisher-first';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
@@ -426,15 +425,10 @@ class CachedBuilderTest extends TestCase
             'genealabslaravelmodelcachingtestsfixturespublisher',
         ];
 
-        $cachedResults = collect()->push(
-            cache()->tags($tags)
-                ->get($key)
-        );
-
-        $liveResults = collect()->push(
-            (new UncachedAuthor)->with('books.publisher')
-                ->first()
-        );
+        $cachedResults = collect([cache()->tags($tags)
+                ->get($key)]);
+        $liveResults = collect([(new UncachedAuthor)->with('books.publisher')
+                ->first()]);
 
         $this->assertEmpty($authors->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
@@ -443,7 +437,7 @@ class CachedBuilderTest extends TestCase
     public function testLazyLoadedRelationshipResolvesThroughCachedBuilder()
     {
         $books = (new Author)->first()->books;
-        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1';
+        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -458,7 +452,7 @@ class CachedBuilderTest extends TestCase
     public function testLazyLoadingOnResourceIsCached()
     {
         $books = (new AuthorResource((new Author)->first()))->books;
-        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1';
+        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
