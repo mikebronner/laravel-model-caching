@@ -73,7 +73,6 @@ class CachedBuilder extends EloquentBuilder
 
     protected function getWhereClauses() : string
     {
-        // dump($this->query->wheres);
         return collect($this->query->wheres)->reduce(function ($carry, $where) {
             if (! $where['column'] ?? false) {
                 return $carry . '';
