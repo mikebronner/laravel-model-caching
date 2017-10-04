@@ -463,4 +463,28 @@ class CachedBuilderTest extends TestCase
         $this->assertEmpty($books->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
+
+    public function testNestedRelationshipWhereClauseParsing()
+    {
+        // -> with('modelA.modelB')
+        $this->markTestIncomplete();
+    }
+
+    public function testExistsRelationshipWhereClauseParsing()
+    {
+        // ->whereHas(...)
+        $this->markTestIncomplete();
+    }
+
+    public function testColumnsRelationshipWhereClauseParsing()
+    {
+        // ???
+        $this->markTestIncomplete();
+    }
+
+    public function testRawWhereClauseParsing()
+    {
+        // ->whereRaw(...)
+        $this->markTestIncomplete();
+    }
 }

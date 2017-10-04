@@ -71,9 +71,27 @@ class CachedBuilder extends EloquentBuilder
         return '_' . implode('_', $columns);
     }
 
-    protected function getWhereClauses() : string
+    protected function getWhereClauses(array $wheres = []) : string
     {
-        return collect($this->query->wheres)->reduce(function ($carry, $where) {
+        $wheres = collect($wheres);
+
+        if ($wheres->isEmpty()) {
+            $wheres = collect($this->query->wheres);
+        }
+
+        return $wheres->reduce(function ($carry, $where) {
+            if (in_array($where['type'], ['Exists', 'Nested'])) {
+                return $this->getWhereClauses($where['query']->wheres);
+            }
+
+            if ($where['type'] === 'Column') {
+                return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
+            }
+
+            if ($where['type'] === 'raw') {
+                return "_{$where['boolean']}_" . str_slug($where['sql']);
+            }
+
             $value = array_get($where, 'value');
 
             if (in_array($where['type'], ['In', 'Null', 'NotNull'])) {
