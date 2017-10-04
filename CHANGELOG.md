@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.2.5] - 2017-10-04
 ### Fixed
-- parsing of nested where clauses.
+- parsing of nested, exists, and column where clauses.
 
 ## [0.2.4] - 2017-10-03
 ### Added

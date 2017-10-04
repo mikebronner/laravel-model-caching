@@ -466,6 +466,19 @@ class CachedBuilderTest extends TestCase
 
     public function testNestedRelationshipWhereClauseParsing()
     {
+        // -> with('modelA.modelB')
+        $this->markTestIncomplete();
+    }
+
+    public function testExistsRelationshipWhereClauseParsing()
+    {
+        // ->whereHas(...)
+        $this->markTestIncomplete();
+    }
+
+    public function testColumnsRelationshipWhereClauseParsing()
+    {
+        // ???
         $this->markTestIncomplete();
     }
 }

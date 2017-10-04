@@ -80,8 +80,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $wheres->reduce(function ($carry, $where) {
-            if ($where['type'] === 'Nested') {
+            if (in_array($where['type'], ['Exists', 'Nested'])) {
                 return $this->getWhereClauses($where['query']->wheres);
+            }
+
+            if ($where['type'] === 'Column') {
+                return "{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
             }
 
             $value = array_get($where, 'value');
@@ -97,6 +101,7 @@ class CachedBuilder extends EloquentBuilder
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';
     }
+
 
     protected function getWithModels() : string
     {
