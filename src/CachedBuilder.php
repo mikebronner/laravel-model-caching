@@ -85,7 +85,11 @@ class CachedBuilder extends EloquentBuilder
             }
 
             if ($where['type'] === 'Column') {
-                return "{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
+                return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
+            }
+
+            if ($where['type'] === 'raw') {
+                return "_{$where['boolean']}_" . str_slug($where['sql']);
             }
 
             $value = array_get($where, 'value');
@@ -101,7 +105,6 @@ class CachedBuilder extends EloquentBuilder
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';
     }
-
 
     protected function getWithModels() : string
     {

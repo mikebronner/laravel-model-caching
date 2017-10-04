@@ -481,4 +481,10 @@ class CachedBuilderTest extends TestCase
         // ???
         $this->markTestIncomplete();
     }
+
+    public function testRawWhereClauseParsing()
+    {
+        // ->whereRaw(...)
+        $this->markTestIncomplete();
+    }
 }
