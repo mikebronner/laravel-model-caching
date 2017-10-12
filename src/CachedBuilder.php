@@ -27,7 +27,7 @@ class CachedBuilder extends EloquentBuilder
         $key .= $this->getQueryColumns($columns);
         $key .= $this->getWhereClauses();
         $key .= $this->getWithModels();
-        $key .= $this->getOrderClauses();
+        $key .= $this->getOrderByClauses();
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
 
@@ -118,16 +118,14 @@ class CachedBuilder extends EloquentBuilder
         return '-' . implode('-', $eagerLoads->keys()->toArray());
     }
 
-	protected function getOrderClauses(){
+	protected function getOrderByClauses(){
         $orders = collect($this->query->orders);
 
         return $orders->reduce(function($carry, $order){
-            $carry .= '_sort_' . array_get($order, 'column') . '_' . array_get($order, 'direction');
-
-            return $carry;
+            return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
         });
     }
-	
+
     protected function getCacheTags() : array
     {
         return collect($this->eagerLoad)->keys()
