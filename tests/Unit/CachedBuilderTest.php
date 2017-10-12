@@ -227,7 +227,7 @@ class CachedBuilderTest extends TestCase
                 }
 
                 $cachedChunks['authors']->push($chunk);
-                $cachedChunks['keys']->push("genealabslaravelmodelcachingtestsfixturesauthor-books-profile{$offset}-limit_3");
+                $cachedChunks['keys']->push("genealabslaravelmodelcachingtestsfixturesauthor-books-profile_orderBy_authors.id_asc{$offset}-limit_3");
             });
 
         (new UncachedAuthor)->with('books', 'profile')
@@ -461,6 +461,22 @@ class CachedBuilderTest extends TestCase
         $liveResults = (new UncachedAuthor)->first()->books;
 
         $this->assertEmpty($books->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
+
+    public function testOrderByClauseParsing()
+    {
+        $authors = (new Author)->orderBy('name')->get();
+
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_orderBy_name_asc';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = cache()->tags($tags)->get($key);
+        $liveResults = (new UncachedAuthor)->orderBy('name')->get();
+
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 

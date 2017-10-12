@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.6] - 2017-10-12
+### Added
+- orderBy clause to cache key. Thanks @RobMKR for the PR!
+
 ## [0.2.5] - 2017-10-04
 ### Fixed
 - parsing of nested, exists, raw, and column where clauses.
