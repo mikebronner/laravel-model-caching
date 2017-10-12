@@ -500,7 +500,18 @@ class CachedBuilderTest extends TestCase
 
     public function testRawWhereClauseParsing()
     {
-        // ->whereRaw(...)
-        $this->markTestIncomplete();
+        $authors = collect([(new Author)
+            ->whereRaw('name <> \'\'')->first()]);
+
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_and_name-first';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = collect([cache()->tags($tags)->get($key)]);
+
+        $liveResults = collect([(new UncachedAuthor)
+            ->whereRaw('name <> \'\'')->first()]);
+
+        $this->assertTrue($authors->diffAssoc($cachedResults)->isEmpty());
+        $this->assertTrue($liveResults->diffAssoc($cachedResults)->isEmpty());
     }
 }
