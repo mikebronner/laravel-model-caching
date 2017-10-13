@@ -482,8 +482,22 @@ class CachedBuilderTest extends TestCase
 
     public function testNestedRelationshipWhereClauseParsing()
     {
-        // -> with('modelA.modelB')
-        $this->markTestIncomplete();
+        $authors = collect([(new Author)
+            ->with('books.publisher')->where('name','<>','')->first()]);
+
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-name_-books-books.publisher-first';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturespublisher',
+        ];
+
+        $cachedResults = collect([cache()->tags($tags)->get($key)]);
+        
+        $liveResults = collect([(new UncachedAuthor)->with('books.publisher')->where('name','<>','')->first()]);
+        
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
     public function testExistsRelationshipWhereClauseParsing()
