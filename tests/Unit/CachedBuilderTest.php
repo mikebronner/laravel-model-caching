@@ -510,8 +510,19 @@ class CachedBuilderTest extends TestCase
 
     public function testColumnsRelationshipWhereClauseParsing()
     {
-        // ???
-        $this->markTestIncomplete();
+        $author = (new Author)->orderBy('name')->first();
+
+        $authors = collect([(new Author)->where('name', '=', $author->name)->first()]);
+
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-name_' . $author->name . '-first';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = collect([cache()->tags($tags)->get($key)]);
+
+        $liveResults = collect([(new UncachedAuthor)->where('name', '=', $author->name)->first()]);
+
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
     public function testRawWhereClauseParsing()
