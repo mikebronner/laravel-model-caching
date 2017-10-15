@@ -413,7 +413,7 @@ class CachedBuilderTest extends TestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
-    public function testNestedRelationshipEagerloading()
+    public function testNestedRelationshipEagerLoading()
     {
         $authors = collect([(new Author)->with('books.publisher')
                 ->first()]);
