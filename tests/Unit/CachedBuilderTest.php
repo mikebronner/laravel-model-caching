@@ -507,11 +507,31 @@ class CachedBuilderTest extends TestCase
         $authors = (new Author)->whereHas('books')
             ->get();
 
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_and_authors.id_=_books.author_id';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_exists_and_authors.id_=_books.author_id';
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = cache()->tags($tags)->get($key);
         $liveResults = (new UncachedAuthor)->whereHas('books')
+            ->get();
+
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
+
+    public function testDoesntHaveWhereClaseParsing()
+    {
+        $authors = (new Author)
+            ->doesntHave('books')
+            ->get();
+
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_notexists_and_authors.id_=_books.author_id';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = cache()
+            ->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->doesntHave('books')
             ->get();
 
         $this->assertEmpty($authors->diffAssoc($cachedResults));

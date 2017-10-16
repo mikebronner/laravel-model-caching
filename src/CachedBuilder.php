@@ -81,8 +81,8 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $wheres->reduce(function ($carry, $where) {
-            if (in_array($where['type'], ['Exists', 'Nested'])) {
-                return $this->getWhereClauses($where['query']->wheres);
+            if (in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
+                return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
             }
 
             if ($where['type'] === 'Column') {
