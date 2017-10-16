@@ -504,26 +504,17 @@ class CachedBuilderTest extends TestCase
 
     public function testExistsRelationshipWhereClauseParsing()
     {
-
-        $authors = collect([(new Author)->whereHas('books')->first()]);
-
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_and_authors.id_=_books.author_id-first';
+        $authors = (new Author)->whereHas('books')
+            ->get();
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_and_authors.id_=_books.author_id';
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
-        $cachedResults = collect([cache()->tags($tags)->get($key)]);
+        $cachedResults = cache()->tags($tags)->get($key);
+        $liveResults = (new UncachedAuthor)->whereHas('books')
+            ->get();
 
-        $liveResults = collect([(new UncachedAuthor)
-            ->whereHas('books')->first()]);
-
-        $this->assertTrue($authors->diffAssoc($cachedResults)->isEmpty());
-        $this->assertTrue($liveResults->diffAssoc($cachedResults)->isEmpty());        
-
-    }
-
-    public function testColumnsRelationshipWhereClauseParsing()
-    {
-        // ???
-        $this->markTestIncomplete();
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
     public function testRawWhereClauseParsing()
