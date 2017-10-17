@@ -269,9 +269,6 @@ class CachedBuilderTest extends TestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
-    /**
-     * @group test
-     */
     public function testCursorModelResultsCreatesCache()
     {
         $authors = (new Author)
