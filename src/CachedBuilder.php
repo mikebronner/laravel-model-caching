@@ -1,20 +1,16 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-use GeneaLabs\LaravelModelCaching\Traits\CacheKeyable;
-use GeneaLabs\LaravelModelCaching\Traits\CacheTagable;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class CachedBuilder extends EloquentBuilder
 {
     use Cachable;
-    use CacheKeyable;
-    use CacheTagable;
 
     public function avg($column)
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this) . "-avg_{$column}", function () use ($column) {
+            ->rememberForever($this->makeCacheKey() . "-avg_{$column}", function () use ($column) {
                 return parent::avg($column);
             });
     }
@@ -22,7 +18,7 @@ class CachedBuilder extends EloquentBuilder
     public function count($columns = ['*'])
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this) . "-count", function () use ($columns) {
+            ->rememberForever($this->makeCacheKey() . "-count", function () use ($columns) {
                 return parent::count($columns);
             });
     }
@@ -30,7 +26,7 @@ class CachedBuilder extends EloquentBuilder
     public function cursor()
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this) . "-cursor", function () {
+            ->rememberForever($this->makeCacheKey() . "-cursor", function () {
                 return collect(parent::cursor());
             });
     }
@@ -41,7 +37,7 @@ class CachedBuilder extends EloquentBuilder
     public function find($id, $columns = ['*'])
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this, $columns, $id), function () use ($id, $columns) {
+            ->rememberForever($this->makeCacheKey($columns, $id), function () use ($id, $columns) {
                 return parent::find($id, $columns);
             });
     }
@@ -49,7 +45,7 @@ class CachedBuilder extends EloquentBuilder
     public function first($columns = ['*'])
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this, $columns) . '-first', function () use ($columns) {
+            ->rememberForever($this->makeCacheKey($columns) . '-first', function () use ($columns) {
                 return parent::first($columns);
             });
     }
@@ -57,7 +53,7 @@ class CachedBuilder extends EloquentBuilder
     public function get($columns = ['*'])
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this, $columns), function () use ($columns) {
+            ->rememberForever($this->makeCacheKey($columns), function () use ($columns) {
                 return parent::get($columns);
             });
     }
@@ -65,7 +61,7 @@ class CachedBuilder extends EloquentBuilder
     public function max($column)
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this) . "-max_{$column}", function () use ($column) {
+            ->rememberForever($this->makeCacheKey() . "-max_{$column}", function () use ($column) {
                 return parent::max($column);
             });
     }
@@ -73,14 +69,14 @@ class CachedBuilder extends EloquentBuilder
     public function min($column)
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this) . "-min_{$column}", function () use ($column) {
+            ->rememberForever($this->makeCacheKey() . "-min_{$column}", function () use ($column) {
                 return parent::min($column);
             });
     }
 
     public function pluck($column, $key = null)
     {
-        $cacheKey = $this->makeCacheKey($this, [$column]) . "-pluck_{$column}";
+        $cacheKey = $this->makeCacheKey([$column]) . "-pluck_{$column}";
 
         if ($key) {
             $cacheKey .= "_{$key}";
@@ -95,8 +91,20 @@ class CachedBuilder extends EloquentBuilder
     public function sum($column)
     {
         return $this->cache($this->makeCacheTags($this))
-            ->rememberForever($this->makeCacheKey($this) . "-sum_{$column}", function () use ($column) {
+            ->rememberForever($this->makeCacheKey() . "-sum_{$column}", function () use ($column) {
                 return parent::sum($column);
             });
+    }
+
+    protected function makeCacheKey(array $columns = ['*'], $idColumn = null) : string
+    {
+        return (new CacheKey($this->eagerLoad, $this->model, $this->query))
+            ->make($columns, $idColumn);
+    }
+
+    protected function makeCacheTags() : array
+    {
+        return (new CacheTags($this->eagerLoad, $this->model))
+            ->make();
     }
 }

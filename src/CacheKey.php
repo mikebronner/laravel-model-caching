@@ -1,23 +1,32 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php namespace GeneaLabs\LaravelModelCaching;
 
-use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
-trait CacheKeyable
+class CacheKey
 {
-    protected function makeCacheKey(
-        CachedBuilder $builder,
-        array $columns = ['*'],
-        $idColumn = null
-    ) : string {
-        $key = $this->getModelSlug($builder);
+    protected $eagerLoad;
+    protected $model;
+    protected $query;
+
+    public function __construct(array $eagerLoad, Model $model, Builder $query)
+    {
+        $this->eagerLoad = $eagerLoad;
+        $this->model = $model;
+        $this->query = $query;
+    }
+
+    public function make(array $columns = ['*'], $idColumn = null) : string
+    {
+        $key = $this->getModelSlug();
         $key .= $this->getIdColumn($idColumn ?: '');
         $key .= $this->getQueryColumns($columns);
-        $key .= $this->getWhereClauses($builder);
-        $key .= $this->getWithModels($builder);
-        $key .= $this->getOrderByClauses($builder);
-        $key .= $this->getOffsetClause($builder);
-        $key .= $this->getLimitClause($builder);
+        $key .= $this->getWhereClauses();
+        $key .= $this->getWithModels();
+        $key .= $this->getOrderByClauses();
+        $key .= $this->getOffsetClause();
+        $key .= $this->getLimitClause();
 
         return $key;
     }
@@ -27,32 +36,32 @@ trait CacheKeyable
         return $idColumn ? "_{$idColumn}" : '';
     }
 
-    protected function getLimitClause(CachedBuilder $builder) : string
+    protected function getLimitClause() : string
     {
-        if (! $builder->query->limit) {
+        if (! $this->query->limit) {
             return '';
         }
 
-        return "-limit_{$builder->query->limit}";
+        return "-limit_{$this->query->limit}";
     }
 
-    protected function getModelSlug(CachedBuilder $builder) : string
+    protected function getModelSlug() : string
     {
-        return str_slug(get_class($builder->model));
+        return str_slug(get_class($this->model));
     }
 
-    protected function getOffsetClause(CachedBuilder $builder) : string
+    protected function getOffsetClause() : string
     {
-        if (! $builder->query->offset) {
+        if (! $this->query->offset) {
             return '';
         }
 
-        return "-offset_{$builder->query->offset}";
+        return "-offset_{$this->query->offset}";
     }
 
-    protected function getOrderByClauses(CachedBuilder $builder) : string
+    protected function getOrderByClauses() : string
     {
-        $orders = collect($builder->query->orders);
+        $orders = collect($this->query->orders);
 
         return $orders->reduce(function($carry, $order){
             return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
@@ -83,12 +92,12 @@ trait CacheKeyable
             : '';
     }
 
-    protected function getWhereClauses(CachedBuilder $builder, array $wheres = []) : string
+    protected function getWhereClauses(array $wheres = []) : string
     {
-        return $this->getWheres($builder, $wheres)
-            ->reduce(function ($carry, $where) use ($builder) {
+        return $this->getWheres($wheres)
+            ->reduce(function ($carry, $where) {
                 if (in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
-                    return '_' . strtolower($where['type']) . $this->getWhereClauses($builder, $where['query']->wheres);
+                    return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
                 }
 
                 if ($where['type'] === 'Column') {
@@ -108,20 +117,20 @@ trait CacheKeyable
             . '';
     }
 
-    protected function getWheres(CachedBuilder $builder, array $wheres) : Collection
+    protected function getWheres(array $wheres) : Collection
     {
         $wheres = collect($wheres);
 
         if ($wheres->isEmpty()) {
-            $wheres = collect($builder->query->wheres);
+            $wheres = collect($this->query->wheres);
         }
 
         return $wheres;
     }
 
-    protected function getWithModels(CachedBuilder $builder) : string
+    protected function getWithModels() : string
     {
-        $eagerLoads = collect($builder->eagerLoad);
+        $eagerLoads = collect($this->eagerLoad);
 
         if ($eagerLoads->isEmpty()) {
             return '';
