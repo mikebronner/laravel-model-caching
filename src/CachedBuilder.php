@@ -94,14 +94,12 @@ class CachedBuilder extends EloquentBuilder
             }
 
             $value = array_get($where, 'value');
-
-            if (in_array($where['type'], ['In', 'Null', 'NotNull'])) {
-                $value = strtolower($where['type']);
-            }
-
-            if (is_array(array_get($where, 'values'))) {
-                $value .= '_' . implode('_', $where['values']);
-            }
+            $value .= in_array($where['type'], ['In', 'Null', 'NotNull'])
+                ? strtolower($where['type'])
+                : '';
+            $value .= is_array(array_get($where, 'values'))
+                ? '_' . implode('_', $where['values'])
+                : '';
 
             return "{$carry}-{$where['column']}_{$value}";
         }) ?: '';
@@ -124,6 +122,16 @@ class CachedBuilder extends EloquentBuilder
         return $orders->reduce(function($carry, $order){
             return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
         });
+    }
+
+    protected function getMethodKey(string $postfix = null) : string
+    {
+        return str_slug(get_class($this->model)) . $postfix;
+    }
+
+    protected function getModelTag() : array
+    {
+        return [str_slug(get_class($this->model))];
     }
 
     protected function getCacheTags() : array
@@ -152,33 +160,24 @@ class CachedBuilder extends EloquentBuilder
 
     public function avg($column)
     {
-        $tags = [str_slug(get_class($this->model))];
-        $key = str_slug(get_class($this->model)) ."-avg_{$column}";
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($column) {
+        return $this->cache($this->getModelTag())
+            ->rememberForever($this->getMethodKey("-avg_{$column}"), function () use ($column) {
                 return parent::avg($column);
             });
     }
 
     public function count($columns = ['*'])
     {
-        $tags = [str_slug(get_class($this->model))];
-        $key = str_slug(get_class($this->model)) ."-count";
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($columns) {
+        return $this->cache($this->getModelTag())
+            ->rememberForever($this->getMethodKey("-count"), function () use ($columns) {
                 return parent::count($columns);
             });
     }
 
     public function cursor()
     {
-        $tags = [str_slug(get_class($this->model))];
-        $key = str_slug(get_class($this->model)) ."-cursor";
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () {
+        return $this->cache($this->getModelTag())
+            ->rememberForever($this->getMethodKey("-cursor"), function () {
                 return collect(parent::cursor());
             });
     }
@@ -188,69 +187,53 @@ class CachedBuilder extends EloquentBuilder
      */
     public function find($id, $columns = ['*'])
     {
-        $tags = $this->getCacheTags();
-        $key = $this->getCacheKey($columns, $id);
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($id, $columns) {
+        return $this->cache($this->getCacheTags())
+            ->rememberForever($this->getCacheKey($columns, $id), function () use ($id, $columns) {
                 return parent::find($id, $columns);
             });
     }
 
     public function first($columns = ['*'])
     {
-        $tags = $this->getCacheTags();
-        $key = $this->getCacheKey($columns) . '-first';
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($columns) {
+        return $this->cache($this->getCacheTags())
+            ->rememberForever($this->getCacheKey($columns) . '-first', function () use ($columns) {
                 return parent::first($columns);
             });
     }
 
     public function get($columns = ['*'])
     {
-        $tags = $this->getCacheTags();
-        $key = $this->getCacheKey($columns);
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($columns) {
+        return $this->cache($this->getCacheTags())
+            ->rememberForever($this->getCacheKey($columns), function () use ($columns) {
                 return parent::get($columns);
             });
     }
 
     public function max($column)
     {
-        $tags = [str_slug(get_class($this->model))];
-        $key = str_slug(get_class($this->model)) ."-max_{$column}";
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($column) {
+        return $this->cache($this->getModelTag())
+            ->rememberForever($this->getMethodKey("-max_{$column}"), function () use ($column) {
                 return parent::max($column);
             });
     }
 
     public function min($column)
     {
-        $tags = [str_slug(get_class($this->model))];
-        $key = str_slug(get_class($this->model)) ."-min_{$column}";
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($column) {
+        return $this->cache($this->getModelTag())
+            ->rememberForever($this->getMethodKey("-min_{$column}"), function () use ($column) {
                 return parent::min($column);
             });
     }
 
     public function pluck($column, $key = null)
     {
-        $tags = $this->getCacheTags();
         $cacheKey = $this->getCacheKey([$column]) . "-pluck_{$column}";
 
         if ($key) {
             $cacheKey .= "_{$key}";
         }
 
-        return $this->cache($tags)
+        return $this->cache($this->getCacheTags())
             ->rememberForever($cacheKey, function () use ($column, $key) {
                 return parent::pluck($column, $key);
             });
@@ -258,11 +241,8 @@ class CachedBuilder extends EloquentBuilder
 
     public function sum($column)
     {
-        $tags = [str_slug(get_class($this->model))];
-        $key = str_slug(get_class($this->model)) ."-sum_{$column}";
-
-        return $this->cache($tags)
-            ->rememberForever($key, function () use ($column) {
+        return $this->cache($this->getModelTag())
+            ->rememberForever($this->getMethodKey("-sum_{$column}"), function () use ($column) {
                 return parent::sum($column);
             });
     }
