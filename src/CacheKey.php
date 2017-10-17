@@ -96,25 +96,54 @@ class CacheKey
     {
         return $this->getWheres($wheres)
             ->reduce(function ($carry, $where) {
-                if (in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
-                    return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
-                }
+                $value = $this->getNestedClauses($where);
+                $value .= $this->getColumnClauses($where);
+                $value .= $this->getRawClauses($where);
+                $value .= $this->getOtherClauses($where, $carry);
 
-                if ($where['type'] === 'Column') {
-                    return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
-                }
-
-                if ($where['type'] === 'raw') {
-                    return "_{$where['boolean']}_" . str_slug($where['sql']);
-                }
-
-                $value = array_get($where, 'value');
-                $value .= $this->getTypeClause($where);
-                $value .= $this->getValuesClause($where);
-
-                return "{$carry}-{$where['column']}_{$value}";
+                return $value;
             })
             . '';
+    }
+
+    protected function getNestedClauses(array $where) : string
+    {
+        if (! in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
+            return '';
+        }
+
+        return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
+    }
+
+    protected function getColumnClauses(array $where) : string
+    {
+        if ($where['type'] !== 'Column') {
+            return '';
+        }
+
+        return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
+    }
+
+    protected function getRawClauses(array $where) : string
+    {
+        if ($where['type'] !== 'raw') {
+            return '';
+        }
+
+        return "_{$where['boolean']}_" . str_slug($where['sql']);
+    }
+
+    protected function getOtherClauses(array $where, string $carry = null) : string
+    {
+        if (in_array($where['type'], ['Exists', 'Nested', 'NotExists', 'raw', 'Column'])) {
+            return '';
+        }
+
+        $value = array_get($where, 'value');
+        $value .= $this->getTypeClause($where);
+        $value .= $this->getValuesClause($where);
+
+        return "{$carry}-{$where['column']}_{$value}";
     }
 
     protected function getWheres(array $wheres) : Collection
