@@ -15,7 +15,8 @@ use GeneaLabs\LaravelModelCaching\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+* @SuppressWarnings(PHPMD.TooManyPublicMethods)
+* @SuppressWarnings(PHPMD.TooManyMethods)
  */
 class CachedBuilderTest extends TestCase
 {
@@ -189,9 +190,11 @@ class CachedBuilderTest extends TestCase
     {
         $authorId = (new Author)->with('books', 'profile')
             ->avg('id');
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-avg_id';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-avg_id';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
         $cachedResult = cache()->tags($tags)
@@ -247,11 +250,14 @@ class CachedBuilderTest extends TestCase
 
     public function testCountModelResultsCreatesCache()
     {
-        $authors = (new Author)->with('books', 'profile')
+        $authors = (new Author)
+            ->with('books', 'profile')
             ->count();
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-count';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-count';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
         $cachedResults = cache()->tags($tags)
@@ -263,19 +269,29 @@ class CachedBuilderTest extends TestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
+    /**
+     * @group test
+     */
     public function testCursorModelResultsCreatesCache()
     {
-        $authors = (new Author)->with('books', 'profile')
+        $authors = (new Author)
+            ->with('books', 'profile')
             ->cursor();
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-cursor';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-cursor';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
-        $cachedResults = cache()->tags($tags)
+        $cachedResults = cache()
+            ->tags($tags)
             ->get($key);
-        $liveResults = collect((new UncachedAuthor)->with('books', 'profile')
-            ->cursor());
+        $liveResults = collect(
+            (new UncachedAuthor)
+                ->with('books', 'profile')
+                ->cursor()
+        );
 
         $this->assertEmpty($authors->diffAssoc($cachedResults));
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
@@ -321,9 +337,11 @@ class CachedBuilderTest extends TestCase
     {
         $authorId = (new Author)->with('books', 'profile')
             ->max('id');
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-max_id';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-max_id';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
         $cachedResult = cache()->tags($tags)
@@ -339,9 +357,11 @@ class CachedBuilderTest extends TestCase
     {
         $authorId = (new Author)->with('books', 'profile')
             ->min('id');
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-min_id';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-min_id';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
         $cachedResult = cache()->tags($tags)
@@ -377,9 +397,11 @@ class CachedBuilderTest extends TestCase
     {
         $authorId = (new Author)->with('books', 'profile')
             ->sum('id');
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-sum_id';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-sum_id';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
         $cachedResult = cache()->tags($tags)
