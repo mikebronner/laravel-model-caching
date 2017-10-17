@@ -74,7 +74,7 @@ Please observe and respect all aspects of the included Code of Conduct <https://
 
 ### Reporting Issues
 When reporting issues, please fill out the included template as completely as
-possible. Incomplete issues may be ignore or closed if there is not enough
+possible. Incomplete issues may be ignored or closed if there is not enough
 information included to be actionable.
 
 ### Submitting Pull Requests
