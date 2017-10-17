@@ -1,18 +1,19 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 trait CacheTagable
 {
-    public function makeCacheTags() : array
+    public function makeCacheTags(CachedBuilder $builder) : array
     {
-        return collect($this->eagerLoad)
+        return collect($builder->eagerLoad)
             ->keys()
-            ->map(function ($relationName) {
+            ->map(function ($relationName) use ($builder) {
                 $relation = collect(explode('.', $relationName))
-                    ->reduce(function ($carry, $name) {
+                    ->reduce(function ($carry, $name) use ($builder) {
                         if (! $carry) {
-                            $carry = $this->model;
+                            $carry = $builder->model;
                         }
 
                         if ($carry instanceof Relation) {
@@ -24,7 +25,7 @@ trait CacheTagable
 
                 return str_slug(get_class($relation->getQuery()->model));
             })
-            ->prepend(str_slug(get_class($this->model)))
+            ->prepend(str_slug(get_class($builder->model)))
             ->values()
             ->toArray();
     }
