@@ -74,31 +74,27 @@ class CachedBuilder extends EloquentBuilder
 
     protected function getWhereClauses(array $wheres = []) : string
     {
-        $wheres = collect($wheres);
+        return $this->getWheres($wheres)
+            ->reduce(function ($carry, $where) {
+                if (in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
+                    return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
+                }
 
-        if ($wheres->isEmpty()) {
-            $wheres = collect($this->query->wheres);
-        }
+                if ($where['type'] === 'Column') {
+                    return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
+                }
 
-        return $wheres->reduce(function ($carry, $where) {
-            if (in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
-                return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
-            }
+                if ($where['type'] === 'raw') {
+                    return "_{$where['boolean']}_" . str_slug($where['sql']);
+                }
 
-            if ($where['type'] === 'Column') {
-                return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
-            }
+                $value = array_get($where, 'value');
+                $value .= $this->getTypeClause($where);
+                $value .= $this->getValuesClause($where);
 
-            if ($where['type'] === 'raw') {
-                return "_{$where['boolean']}_" . str_slug($where['sql']);
-            }
-
-            $value = array_get($where, 'value');
-            $value .= $this->getTypeClause($where);
-            $value .= $this->getValuesClause($where);
-
-            return "{$carry}-{$where['column']}_{$value}";
-        }) . '';
+                return "{$carry}-{$where['column']}_{$value}";
+            })
+            . '';
     }
 
     protected function getWithModels() : string
@@ -255,5 +251,16 @@ class CachedBuilder extends EloquentBuilder
         return is_array(array_get($where, 'values'))
             ? '_' . implode('_', $where['values'])
             : '';
+    }
+
+    protected function getWheres(array $wheres) : Collection
+    {
+        $wheres = collect($wheres);
+
+        if ($wheres->isEmpty()) {
+            $wheres = collect($this->query->wheres);
+        }
+
+        return $wheres;
     }
 }
