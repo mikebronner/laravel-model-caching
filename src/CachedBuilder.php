@@ -94,15 +94,11 @@ class CachedBuilder extends EloquentBuilder
             }
 
             $value = array_get($where, 'value');
-            $value .= in_array($where['type'], ['In', 'Null', 'NotNull'])
-                ? strtolower($where['type'])
-                : '';
-            $value .= is_array(array_get($where, 'values'))
-                ? '_' . implode('_', $where['values'])
-                : '';
+            $value .= $this->getTypeClause($where);
+            $value .= $this->getValuesClause($where);
 
             return "{$carry}-{$where['column']}_{$value}";
-        }) ?: '';
+        }) . '';
     }
 
     protected function getWithModels() : string
@@ -245,5 +241,19 @@ class CachedBuilder extends EloquentBuilder
             ->rememberForever($this->getMethodKey("-sum_{$column}"), function () use ($column) {
                 return parent::sum($column);
             });
+    }
+
+    protected function getTypeClause($where)
+    {
+        return in_array($where['type'], ['In', 'Null', 'NotNull'])
+            ? strtolower($where['type'])
+            : '';
+    }
+
+    protected function getValuesClause($where)
+    {
+        return is_array(array_get($where, 'values'))
+            ? '_' . implode('_', $where['values'])
+            : '';
     }
 }
