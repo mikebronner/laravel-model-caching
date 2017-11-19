@@ -63,10 +63,10 @@ class CacheKey
     {
         $orders = collect($this->query->orders);
 
-        return $orders->reduce(function($carry, $order){
+        return $orders->reduce(function ($carry, $order) {
             return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
         })
-        ?: '';
+            ?: '';
     }
 
     protected function getQueryColumns(array $columns) : string
