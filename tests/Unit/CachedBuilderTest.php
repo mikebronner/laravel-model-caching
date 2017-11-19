@@ -537,7 +537,7 @@ class CachedBuilderTest extends TestCase
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
-    public function testDoesntHaveWhereClaseParsing()
+    public function testDoesntHaveWhereClauseParsing()
     {
         $authors = (new Author)
             ->doesntHave('books')
@@ -583,7 +583,8 @@ class CachedBuilderTest extends TestCase
     public function testRawWhereClauseParsing()
     {
         $authors = collect([(new Author)
-            ->whereRaw('name <> \'\'')->first()]);
+            ->whereRaw('name <> \'\'')
+            ->first()]);
 
         $key = 'genealabslaravelmodelcachingtestsfixturesauthor_and_name-first';
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
@@ -595,5 +596,47 @@ class CachedBuilderTest extends TestCase
 
         $this->assertTrue($authors->diffAssoc($cachedResults)->isEmpty());
         $this->assertTrue($liveResults->diffAssoc($cachedResults)->isEmpty());
+    }
+
+    public function testScopeClauseParsing()
+    {
+        $author = factory(Author::class, 1)
+            ->create(['name' => 'Anton'])
+            ->first();
+        $authors = (new Author)
+            ->startsWithA()
+            ->get();
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-name_A%';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = cache()->tags($tags)->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->startsWithA()
+            ->get();
+
+        $this->assertTrue($authors->contains($author));
+        $this->assertTrue($cachedResults->contains($author));
+        $this->assertTrue($liveResults->contains($author));
+    }
+
+    public function testRelationshipQueriesAreCached()
+    {
+        $books = (new Author)
+            ->first()
+            ->books()
+            ->get();
+        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook'
+        ];
+
+        $cachedResults = cache()->tags($tags)->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->first()
+            ->books()
+            ->get();
+
+        $this->assertTrue($cachedResults->diffAssoc($books)->isEmpty());
+        $this->assertTrue($liveResults->diffAssoc($books)->isEmpty());
     }
 }

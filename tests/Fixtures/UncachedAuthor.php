@@ -1,5 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -20,5 +21,10 @@ class UncachedAuthor extends Model
     public function profile() : HasOne
     {
         return $this->hasOne(UncachedProfile::class, 'author_id', 'id');
+    }
+
+    public function scopeStartsWithA(Builder $query) : Builder
+    {
+        return $query->where('name', 'LIKE', 'A%');
     }
 }
