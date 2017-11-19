@@ -618,4 +618,25 @@ class CachedBuilderTest extends TestCase
         $this->assertTrue($cachedResults->contains($author));
         $this->assertTrue($liveResults->contains($author));
     }
+
+    public function testRelationshipQueriesAreCached()
+    {
+        $books = (new Author)
+            ->first()
+            ->books()
+            ->get();
+        $key = 'genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull';
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook'
+        ];
+
+        $cachedResults = cache()->tags($tags)->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->first()
+            ->books()
+            ->get();
+
+        $this->assertTrue($cachedResults->diffAssoc($books)->isEmpty());
+        $this->assertTrue($liveResults->diffAssoc($books)->isEmpty());
+    }
 }
