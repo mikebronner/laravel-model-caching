@@ -63,9 +63,14 @@ class CacheKey
     {
         $orders = collect($this->query->orders);
 
-        return $orders->reduce(function ($carry, $order) {
-            return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
-        })
+        return $orders
+            ->reduce(function ($carry, $order) {
+                if ($order['type'] === 'Raw') {
+                    return $carry . '_orderByRaw_' . str_slug($order['sql']);
+                }
+
+                return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
+            })
             ?: '';
     }
 

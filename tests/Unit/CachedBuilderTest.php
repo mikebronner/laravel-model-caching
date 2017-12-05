@@ -639,4 +639,25 @@ class CachedBuilderTest extends TestCase
         $this->assertTrue($cachedResults->diffAssoc($books)->isEmpty());
         $this->assertTrue($liveResults->diffAssoc($books)->isEmpty());
     }
+
+    public function testRawOrderByWithoutColumnReference()
+    {
+        $authors = (new Author)
+            ->orderByRaw('DATE()')
+            ->get();
+
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_orderByRaw_date';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = cache()
+            ->tags($tags)
+            ->get($key);
+
+        $liveResults = (new UncachedAuthor)
+            ->orderByRaw('DATE()')
+            ->get();
+
+        $this->assertTrue($cachedResults->diffAssoc($authors)->isEmpty());
+        $this->assertTrue($liveResults->diffAssoc($authors)->isEmpty());
+    }
 }
