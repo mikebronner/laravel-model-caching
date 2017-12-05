@@ -65,7 +65,7 @@ class CacheKey
 
         return $orders
             ->reduce(function ($carry, $order) {
-                if ($order['type'] === 'Raw') {
+                if (($order['type'] ?? '') === 'Raw') {
                     return $carry . '_orderByRaw_' . str_slug($order['sql']);
                 }
 
