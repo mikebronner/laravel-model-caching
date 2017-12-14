@@ -14,6 +14,12 @@ abstract class CachedModel extends Model
 {
     public function newEloquentBuilder($query)
     {
+        if (session('genealabs-laravel-model-caching-is-disabled')) {
+            session()->forget('genealabs-laravel-model-caching-is-disabled');
+
+            return new EloquentBuilder($query);
+        }
+
         return new Builder($query);
     }
 
@@ -52,11 +58,11 @@ abstract class CachedModel extends Model
         return $cache;
     }
 
-    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    public function disableCache() : self
     {
-        $query->disableCache();
+        session(['genealabs-laravel-model-caching-is-disabled' => true]);
 
-        return $query;
+        return $this;
     }
 
     public function flushCache(array $tags = [])

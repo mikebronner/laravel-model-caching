@@ -29,7 +29,7 @@ class CachedBuilderTest extends TestCase
         cache()->flush();
         $publishers = factory(Publisher::class, 10)->create();
         factory(Author::class, 10)->create()
-            ->each(function($author) use ($publishers) {
+            ->each(function ($author) use ($publishers) {
                 factory(Book::class, random_int(2, 10))->make()
                     ->each(function ($book) use ($author, $publishers) {
                         $book->author()->associate($author);
