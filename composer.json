@@ -19,7 +19,7 @@
         "mockery/mockery": "0.9.*",
         "phpmd/phpmd": "^2.6",
         "phpunit/phpunit": "5.7.*",
-        "satooshi/php-coveralls" : "dev-master@dev",
+        "satooshi/php-coveralls" : "*",
         "sebastian/phpcpd": "*"
     },
     "autoload": {
