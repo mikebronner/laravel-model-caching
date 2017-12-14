@@ -3,17 +3,23 @@
 use GeneaLabs\LaravelModelCaching\CachedBuilder as Builder;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
+use Illuminate\Cache\TaggedCache;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use LogicException;
-
-use Illuminate\Cache\TaggedCache;
 use Illuminate\Support\Collection;
+use LogicException;
 
 abstract class CachedModel extends Model
 {
     public function newEloquentBuilder($query)
     {
+        if (session('genealabs-laravel-model-caching-is-disabled')) {
+            session()->forget('genealabs-laravel-model-caching-is-disabled');
+
+            return new EloquentBuilder($query);
+        }
+
         return new Builder($query);
     }
 
@@ -50,6 +56,13 @@ abstract class CachedModel extends Model
         }
 
         return $cache;
+    }
+
+    public function disableCache() : self
+    {
+        session(['genealabs-laravel-model-caching-is-disabled' => true]);
+
+        return $this;
     }
 
     public function flushCache(array $tags = [])

@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.12] - 14 Dec 2017
+### Added
+- chainable method to disable caching of queries.
+
+## [0.2.11] - 13 Dec 2017
+### Added
+- functionality to clear corresponding cache tags when model is deleted.
+
+## [0.2.10] - 5 Dec 2017
+### Fixed
+- caching when using `orderByRaw()`.
+
+## [0.2.9] - 19 Nov 2017
+### Added
+- test for query scopes.
+- test for relationship query.
+
+### Updated
+- readme file.
+- travis configuration.
+
 ## [0.2.8] - 2017-10-17
 ### Updated
 - code with optimizations and refactoring.

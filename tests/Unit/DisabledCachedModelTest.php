@@ -13,7 +13,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CachedModelTest extends TestCase
+class DisabledCachedModelTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -44,13 +44,13 @@ class CachedModelTest extends TestCase
         cache()->flush();
     }
 
-    public function testAllModelResultsCreatesCache()
+    public function testAllModelResultsIsNotCached()
     {
-        $authors = (new Author)->all();
         $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
-        $tags = [
-            'genealabslaravelmodelcachingtestsfixturesauthor',
-        ];
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new Author)
+            ->disableCache()
+            ->all();
 
         $cachedResults = cache()
             ->tags($tags)
@@ -58,27 +58,7 @@ class CachedModelTest extends TestCase
         $liveResults = (new UncachedAuthor)
             ->all();
 
-        $this->assertEquals($authors, $cachedResults);
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
-    }
-
-    /**
-     * @group test
-     **/
-    public function testScopeDisablesCaching()
-    {
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
-        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
-        $authors = (new Author)
-            ->where("name", "Bruno")
-            ->disableCache()
-            ->get();
-
-        $cachedResults = cache()
-            ->tags($tags)
-            ->get($key);
-
+        $this->assertEmpty($liveResults->diffAssoc($authors));
         $this->assertNull($cachedResults);
-        $this->assertNotEquals($authors, $cachedResults);
     }
 }
