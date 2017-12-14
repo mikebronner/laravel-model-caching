@@ -660,4 +660,27 @@ class CachedBuilderTest extends TestCase
         $this->assertTrue($cachedResults->diffAssoc($authors)->isEmpty());
         $this->assertTrue($liveResults->diffAssoc($authors)->isEmpty());
     }
+
+    public function testDelete()
+    {
+        $author = (new Author)
+            ->first();
+        $liveResult = (new UncachedAuthor)
+            ->first();
+        $authorId = $author->id;
+        $liveResultId = $liveResult->id;
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $author->delete();
+        $liveResult->delete();
+        $cachedResult = cache()
+            ->tags($tags)
+            ->get($key);
+        $deletedAuthor = (new Author)->find($authorId);
+
+        $this->assertEquals($liveResultId, $authorId);
+        $this->assertNull($cachedResult);
+        $this->assertNull($deletedAuthor);
+    }
 }

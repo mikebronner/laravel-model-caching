@@ -31,6 +31,14 @@ class CachedBuilder extends EloquentBuilder
             });
     }
 
+    public function delete()
+    {
+        $this->cache($this->makeCacheTags())
+            ->flush();
+
+        return parent::delete();
+    }
+
     /**
      * @SuppressWarnings(PHPMD.ShortVariable)
      */
