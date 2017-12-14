@@ -7,6 +7,19 @@ class CachedBuilder extends EloquentBuilder
 {
     use Cachable;
 
+    protected $isCacheDisabled = false;
+
+    public function __call(string $method, array $parameters)
+    {
+        if (method_exists($this, $method)) {
+            if (isCacheDisabled) {
+                return parent::$method($parameters);
+            }
+
+            $this->$method($parameters);
+        }
+    }
+
     public function avg($column)
     {
         return $this->cache($this->makeCacheTags())

@@ -3,12 +3,12 @@
 use GeneaLabs\LaravelModelCaching\CachedBuilder as Builder;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
+use Illuminate\Cache\TaggedCache;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use LogicException;
-
-use Illuminate\Cache\TaggedCache;
 use Illuminate\Support\Collection;
+use LogicException;
 
 abstract class CachedModel extends Model
 {
@@ -50,6 +50,13 @@ abstract class CachedModel extends Model
         }
 
         return $cache;
+    }
+
+    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    {
+        $query->disableCache();
+
+        return $query;
     }
 
     public function flushCache(array $tags = [])

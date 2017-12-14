@@ -24,7 +24,7 @@ class CachedModelTest extends TestCase
         cache()->flush();
         $publishers = factory(Publisher::class, 10)->create();
         factory(Author::class, 10)->create()
-            ->each(function($author) use ($publishers) {
+            ->each(function ($author) use ($publishers) {
                 factory(Book::class, random_int(2, 10))->make()
                     ->each(function ($book) use ($author, $publishers) {
                         $book->author()->associate($author);
@@ -58,5 +58,22 @@ class CachedModelTest extends TestCase
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
+
+    public function testScopeDisablesCaching()
+    {
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new Author)
+            ->where("name", "Bruno")
+            ->disableCache()
+            ->get();
+
+        $cachedResults = cache()
+            ->tags($tags)
+            ->get($key);
+
+        $this->assertNull($cachedResults);
+        $this->assertNotEquals($authors, $cachedResults);
     }
 }
