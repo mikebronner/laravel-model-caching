@@ -52,7 +52,7 @@ abstract class BaseModel extends CachedModel
 
 ### Disabling Caching of Queries
 **Recommendation: add this to all your seeder queries to avoid pulling in
-cacched information when reseeding multiple times.**
+cached information when reseeding multiple times.**
 You can disable a given query by using `disableCache()` in the query chain, and
 it needs to be placed (anywhere) prior to the query command (`get()`, `all()`,
 `find()`, etc). For example:
