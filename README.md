@@ -50,6 +50,12 @@ abstract class BaseModel extends CachedModel
 }
 ```
 
+### Exception: User Model
+I would not recommend caching the user model, as it is a special case, since it
+extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.
+Not only that, but it probably isn't a good idea to cache the user model anyway,
+since you always want to pull the most up-to-date info on it.
+
 ### Disabling Caching of Queries
 **Recommendation: add this to all your seeder queries to avoid pulling in
 cached information when reseeding multiple times.**
