@@ -13,7 +13,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CachedModelTest extends TestCase
+class CachableTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -44,38 +44,29 @@ class CachedModelTest extends TestCase
         cache()->flush();
     }
 
-    public function testAllModelResultsCreatesCache()
+    public function testSpecifyingAlternateCacheDriver()
     {
-        $authors = (new Author)->all();
+        $configCacheStores = config('cache.stores');
+        $configCacheStores['customCache'] = ['driver' => 'array'];
+        config(['cache.stores' => $configCacheStores]);
+        config(['laravel-model-caching.store' => 'customCache']);
         $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
-        $tags = [
-            'genealabslaravelmodelcachingtestsfixturesauthor',
-        ];
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
-        $cachedResults = cache()
+        $authors = (new Author)
+            ->all();
+        $defaultcacheResults = cache()
+            ->tags($tags)
+            ->get($key);
+        $customCacheResults = cache()
+            ->store('customCache')
             ->tags($tags)
             ->get($key);
         $liveResults = (new UncachedAuthor)
             ->all();
 
-        $this->assertEquals($authors, $cachedResults);
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
-    }
-
-    public function testScopeDisablesCaching()
-    {
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
-        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
-        $authors = (new Author)
-            ->where("name", "Bruno")
-            ->disableCache()
-            ->get();
-
-        $cachedResults = cache()
-            ->tags($tags)
-            ->get($key);
-
-        $this->assertNull($cachedResults);
-        $this->assertNotEquals($authors, $cachedResults);
+        $this->assertEquals($customCacheResults, $authors);
+        $this->assertNull($defaultcacheResults);
+        $this->assertEmpty($liveResults->diffAssoc($customCacheResults));
     }
 }

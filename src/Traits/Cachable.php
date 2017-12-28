@@ -13,6 +13,10 @@ trait Cachable
     {
         $cache = cache();
 
+        if (config('laravel-model-caching.store')) {
+            $cache = $cache->store(config('laravel-model-caching.store'));
+        }
+
         if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
             if (is_a($this, CachedModel::class)) {
                 array_push($tags, str_slug(get_called_class()));

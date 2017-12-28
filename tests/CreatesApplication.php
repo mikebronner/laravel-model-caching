@@ -1,5 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
+use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Factory;
 
@@ -13,6 +14,7 @@ trait CreatesApplication
         $app->afterResolving('migrator', function ($migrator) {
             $migrator->path(__DIR__ . '/database/migrations');
         });
+        $app->register(LaravelModelCachingService::class);
 
         return $app;
     }
