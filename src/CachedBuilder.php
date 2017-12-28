@@ -10,8 +10,6 @@ class CachedBuilder extends EloquentBuilder
 {
     use Cachable;
 
-    protected $isCachable = true;
-
     public function avg($column)
     {
         if (! $this->isCachable) {
@@ -54,13 +52,6 @@ class CachedBuilder extends EloquentBuilder
             ->flush();
 
         return parent::delete();
-    }
-
-    public function disableCache()
-    {
-        $this->isCachable = false;
-
-        return $this;
     }
 
     /**
@@ -154,17 +145,5 @@ class CachedBuilder extends EloquentBuilder
             ->rememberForever($this->makeCacheKey() . "-sum_{$column}", function () use ($column) {
                 return parent::sum($column);
             });
-    }
-
-    protected function makeCacheKey(array $columns = ['*'], $idColumn = null) : string
-    {
-        return (new CacheKey($this->eagerLoad, $this->model, $this->query))
-            ->make($columns, $idColumn);
-    }
-
-    protected function makeCacheTags() : array
-    {
-        return (new CacheTags($this->eagerLoad, $this->model))
-            ->make();
     }
 }
