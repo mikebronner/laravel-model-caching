@@ -26,6 +26,22 @@ relationships. This package is the attempt to address those requirements.
 -   PHP >= 7.0.0
 -   Laravel 5.5
 
+## Installation
+```
+composer require genealabs/laravel-model-caching
+```
+
+## Configuration
+### Optional Custom Cache Store
+If you would like to use a different cache store than the default one used by
+your Laravel application, you may do so by setting the `MODEL_CACHE_STORE`
+environment variable in your `.env` file to the name of a cache store configured
+in `config/cache.php` (you can define any custom cache store base on your
+specific needs there). For example:
+```
+MODEL_CACHE_STORE=redis
+```
+
 ## Usage
 For best performance a taggable cache provider is recommended (redis,
 memcached). While this is optional, using a non-taggable cache provider will
@@ -49,7 +65,7 @@ abstract class BaseModel extends CachedModel
 }
 ```
 
-### Disabling Caching of Queries
+### Optional Disabling Caching of Queries
 **Recommendation: add this to all your seeder queries to avoid pulling in
 cacched information when reseeding multiple times.**
 You can disable a given query by using `disableCache()` in the query chain, and
