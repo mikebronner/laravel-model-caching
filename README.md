@@ -1,6 +1,7 @@
 ![pexels-photo-325229](https://user-images.githubusercontent.com/1791050/30768358-0df9d0f2-9fbb-11e7-9f10-ad40b83bbf59.jpg)
 
 # Model Caching for Laravel
+[![Gitter](https://badges.gitter.im/GeneaLabs/laravel-model-caching.svg)](https://gitter.im/GeneaLabs/laravel-model-caching?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 [![Travis](https://img.shields.io/travis/GeneaLabs/laravel-model-caching.svg)](https://travis-ci.org/GeneaLabs/laravel-model-caching)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/fde269ac-c382-4d17-a647-c69ad6b9dd85.svg)](https://insight.sensiolabs.com/projects/fde269ac-c382-4d17-a647-c69ad6b9dd85)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
@@ -65,9 +66,15 @@ abstract class BaseModel extends CachedModel
 }
 ```
 
+### Exception: User Model
+I would not recommend caching the user model, as it is a special case, since it
+extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.
+Not only that, but it probably isn't a good idea to cache the user model anyway,
+since you always want to pull the most up-to-date info on it.
+
 ### Optional Disabling Caching of Queries
 **Recommendation: add this to all your seeder queries to avoid pulling in
-cacched information when reseeding multiple times.**
+cached information when reseeding multiple times.**
 You can disable a given query by using `disableCache()` in the query chain, and
 it needs to be placed (anywhere) prior to the query command (`get()`, `all()`,
 `find()`, etc). For example:
