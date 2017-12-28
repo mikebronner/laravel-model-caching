@@ -14,6 +14,7 @@
         "illuminate/database": "5.5.*"
     },
     "require-dev": {
+        "codedungeon/phpunit-result-printer": "^0.4.4",
         "fzaninotto/faker": "~1.4",
         "laravel/laravel": "5.5.*",
         "mockery/mockery": "0.9.*",
