@@ -29,6 +29,7 @@ abstract class CachedModel extends Model
     public static function boot()
     {
         parent::boot();
+
         $class = get_called_class();
         $instance = new $class;
 
