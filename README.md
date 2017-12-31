@@ -82,12 +82,22 @@ it needs to be placed (anywhere) prior to the query command (`get()`, `all()`,
 $results = $myModel->disableCache()->all();
 ```
 
+### Manual Flushing of Specific Model
+You can flush the cache of a specific model using the following artisan command:
+```sh
+php artisan modelCaching:flush --model=App\Model
+```
+
+This comes in handy when manually making updates to the database. You could also
+trigger this after making updates to the database from sources outside your
+Laravel app.
+
+## Summary
 **That's all you need to do. All model queries and relationships are now
 cached!**
 
 In testing this has optimized performance on some pages up to 900%! Most often
-you should see somewhere around 100% performance increase. (I will show some
-concrete examples here soon, still working on optimizing things first.)
+you should see somewhere around 100% performance increase.
 
 ## Commitment to Quality
 During package development I try as best as possible to embrace good design and
