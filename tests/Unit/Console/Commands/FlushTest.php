@@ -1,4 +1,4 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Unit;
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Unit\Console\Commands;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -48,13 +48,14 @@ class FlushTest extends TestCase
         $cachedResults = cache()
             ->tags($tags)
             ->get($key);
-        $this->artisan('modelCache:flush', ['--model' => Author::class]);
+        $result = $this->artisan('modelCache:flush', ['--model' => Author::class]);
         $flushedResults = cache()
             ->tags($tags)
             ->get($key);
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
+        $this->assertEquals($result, 0);
     }
 
     public function testGivenModelWithRelationshipIsFlushed()
@@ -69,12 +70,16 @@ class FlushTest extends TestCase
         $cachedResults = cache()
             ->tags($tags)
             ->get($key);
-        $this->artisan('modelCache:flush', ['--model' => Author::class]);
+        $result = $this->artisan(
+            'modelCache:flush',
+            ['--model' => Author::class]
+        );
         $flushedResults = cache()
             ->tags($tags)
             ->get($key);
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
+        $this->assertEquals($result, 0);
     }
 }

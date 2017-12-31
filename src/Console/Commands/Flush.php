@@ -12,5 +12,6 @@ class Flush extends Command
         $option = $this->option('model');
         $model = new $option;
         $model->flushCache();
+        $this->info("Cache for model '{$option}' flushed.");
     }
 }
