@@ -169,6 +169,7 @@ class DisabledCachedBuilderTest extends TestCase
     public function testFindModelResultsIsNotCached()
     {
         $author = (new Author)
+            ->with('books')
             ->disableCache()
             ->find(1);
         $key = 'genealabslaravelmodelcachingtestsfixturesauthor_1';
