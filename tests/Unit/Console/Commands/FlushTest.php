@@ -5,6 +5,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -81,5 +82,22 @@ class FlushTest extends TestCase
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
         $this->assertEquals($result, 0);
+    }
+
+    public function testNonCachedModelsCannotBeFlushed()
+    {
+        $result = $this->artisan(
+            'modelCache:flush',
+            ['--model' => UncachedAuthor::class]
+        );
+
+        $this->assertEquals($result, 1);
+    }
+
+    public function testModelOptionIsSpecified()
+    {
+        $result = $this->artisan('modelCache:flush', []);
+
+        $this->assertEquals($result, 1);
     }
 }
