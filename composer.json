@@ -21,7 +21,8 @@
         "phpmd/phpmd": "^2.6",
         "phpunit/phpunit": "5.7.*",
         "php-coveralls/php-coveralls" : "*",
-        "sebastian/phpcpd": "*"
+        "sebastian/phpcpd": "*",
+        "symfony/thanks": "^1.0"
     },
     "autoload": {
         "psr-4": {
