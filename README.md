@@ -123,7 +123,7 @@ information included to be actionable.
 Please review the Contribution Guidelines <https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md>.
 Only PRs that meet all criterium will be accepted.
 
-## Support Open-Source Software - Give Thanks!
+## ❤️ Open-Source Software - Give ⭐️
 We have included the awesome `symfony/thanks` composer package as a dev
 dependency. Let your OS package maintainers know you appreciate them by starring
 the packages you use. Simply run composer thanks after installing this package.
