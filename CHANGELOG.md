@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.16] - 5 Jan 2018
+### Added
+- `thanks` package.
+
+### Updated
+- readme explaining `thanks` package.
+
 ## [0.2.15] - 30 Dec 2017
 ### Added
 - sanity checks for artisan command with feedback as to what needs to be fixed.
