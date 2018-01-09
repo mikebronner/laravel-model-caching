@@ -410,9 +410,6 @@ class CachedBuilderTest extends TestCase
         $this->assertEquals($liveResult, $cachedResult);
     }
 
-    /**
-     * @group test
-     */
     public function testValueModelResultsCreatesCache()
     {
         $authorName = (new Author)->with('books', 'profile')
