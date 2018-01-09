@@ -410,26 +410,27 @@ class CachedBuilderTest extends TestCase
         $this->assertEquals($liveResult, $cachedResult);
     }
 
+    /**
+     * @group test
+     */
     public function testValueModelResultsCreatesCache()
     {
-        $authors = (new Author)->with('books', 'profile')
+        $authorName = (new Author)->with('books', 'profile')
             ->value('name');
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-first';
+        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books-profile-value_name';
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
             'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
-        $cachedResults = cache()->tags($tags)
-            ->get($key)
-            ->name;
-
-        $liveResults = (new UncachedAuthor)->with('books', 'profile')
+        $cachedResult = cache()->tags($tags)
+            ->get($key);
+        $liveResult = (new UncachedAuthor)->with('books', 'profile')
             ->value('name');
 
-        $this->assertEquals($authors, $cachedResults);
-        $this->assertEquals($liveResults, $cachedResults);
+        $this->assertEquals($authorName, $cachedResult);
+        $this->assertEquals($authorName, $liveResult);
     }
 
     public function testNestedRelationshipEagerLoading()
