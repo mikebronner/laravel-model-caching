@@ -17,8 +17,11 @@ class CacheKey
         $this->query = $query;
     }
 
-    public function make(array $columns = ['*'], $idColumn = null) : string
-    {
+    public function make(
+        array $columns = ['*'],
+        $idColumn = null,
+        string $suffix = ''
+    ) : string {
         $key = $this->getModelSlug();
         $key .= $this->getIdColumn($idColumn ?: '');
         $key .= $this->getQueryColumns($columns);
@@ -27,6 +30,8 @@ class CacheKey
         $key .= $this->getOrderByClauses();
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
+        $key .= $suffix;
+        $key = sha1($key);
 
         return $key;
     }

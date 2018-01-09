@@ -43,7 +43,7 @@ class FlushTest extends TestCase
     public function testGivenModelIsFlushed()
     {
         $authors = (new Author)->all();
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = cache()
@@ -62,7 +62,7 @@ class FlushTest extends TestCase
     public function testGivenModelWithRelationshipIsFlushed()
     {
         $authors = (new Author)->with('books')->get();
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor-books';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',

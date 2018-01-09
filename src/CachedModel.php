@@ -55,7 +55,7 @@ abstract class CachedModel extends Model
         $class = get_called_class();
         $instance = new $class;
         $tags = [str_slug(get_called_class())];
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
 
         return $instance->cache($tags)
             ->rememberForever($key, function () use ($columns) {

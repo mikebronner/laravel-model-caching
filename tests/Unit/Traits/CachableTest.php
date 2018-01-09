@@ -50,7 +50,7 @@ class CachableTest extends TestCase
         $configCacheStores['customCache'] = ['driver' => 'array'];
         config(['cache.stores' => $configCacheStores]);
         config(['laravel-model-caching.store' => 'customCache']);
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $authors = (new Author)
