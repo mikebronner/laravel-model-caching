@@ -16,11 +16,14 @@
     "require-dev": {
         "codedungeon/phpunit-result-printer": "^0.4.4",
         "fzaninotto/faker": "~1.4",
-        "laravel/laravel": "5.5.*",
         "mockery/mockery": "0.9.*",
-        "phpmd/phpmd": "^2.6",
-        "phpunit/phpunit": "5.7.*",
+        "orchestra/database": "^3.5",
+        "orchestra/testbench-browser-kit": "^3.5",
+        "orchestra/testbench-dusk": "3.5.x-dev@dev",
+        "orchestra/testbench": "^3.5",
         "php-coveralls/php-coveralls" : "*",
+        "phpmd/phpmd": "*",
+        "phpunit/phpunit": "*",
         "sebastian/phpcpd": "*",
         "symfony/thanks": "^1.0"
     },
