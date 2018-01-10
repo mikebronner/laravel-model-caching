@@ -1,21 +1,26 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
-use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Database\Eloquent\Factory;
+use Orchestra\Database\ConsoleServiceProvider;
 
 trait CreatesApplication
 {
-    public function createApplication()
+    public function setUp()
     {
-        $app = require __DIR__ . '/../vendor/laravel/laravel/bootstrap/app.php';
-        $app->make(Kernel::class)->bootstrap();
-        $app->make(Factory::class)->load(__DIR__ . '/database/factories');
-        $app->afterResolving('migrator', function ($migrator) {
-            $migrator->path(__DIR__ . '/database/migrations');
-        });
-        $app->register(LaravelModelCachingService::class);
+        parent::setUp();
 
-        return $app;
+        $this->withFactories(__DIR__ . '/database/factories');
+        $this->loadMigrationsFrom(realpath(__DIR__ . '/database/migrations'));
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            LaravelModelCachingService::class,
+            ConsoleServiceProvider::class,
+        ];
     }
 }

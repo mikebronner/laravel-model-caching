@@ -11,14 +11,14 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
-use GeneaLabs\LaravelModelCaching\Tests\TestCase;
+use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
 * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class CachedBuilderTest extends TestCase
+class CachedBuilderTest extends UnitTestCase
 {
     use RefreshDatabase;
 
