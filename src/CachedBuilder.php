@@ -147,11 +147,8 @@ class CachedBuilder extends EloquentBuilder
             return parent::pluck($column, $key);
         }
 
-        $cacheKey = $this->makeCacheKey([$column], null, "-pluck_{$column}");
-
-        if ($key) {
-            $cacheKey .= "_{$key}";
-        }
+        $keyDifferentiator = "-pluck_{$column}" . ($key ? "_{$key}" : "");
+        $cacheKey = $this->makeCacheKey([$column], null, $keyDifferentiator);
 
         return $this->cache($this->makeCacheTags())
             ->rememberForever($cacheKey, function () use ($column, $key) {
