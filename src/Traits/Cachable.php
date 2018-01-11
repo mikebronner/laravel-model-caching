@@ -44,10 +44,10 @@ trait Cachable
     protected function makeCacheKey(
         array $columns = ['*'],
         $idColumn = null,
-        string $suffix = ''
+        string $keyDifferentiator = ''
     ) : string {
         return (new CacheKey($this->eagerLoad, $this->model, $this->query))
-            ->make($columns, $idColumn, $suffix);
+            ->make($columns, $idColumn, $keyDifferentiator);
     }
 
     protected function makeCacheTags() : array

@@ -20,7 +20,7 @@ class CacheKey
     public function make(
         array $columns = ['*'],
         $idColumn = null,
-        string $suffix = ''
+        string $keyDifferentiator = ''
     ) : string {
         $key = $this->getModelSlug();
         $key .= $this->getIdColumn($idColumn ?: '');
@@ -30,7 +30,7 @@ class CacheKey
         $key .= $this->getOrderByClauses();
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
-        $key .= $suffix;
+        $key .= $keyDifferentiator;
         $key = sha1($key);
 
         return $key;
