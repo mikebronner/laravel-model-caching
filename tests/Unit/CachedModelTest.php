@@ -10,10 +10,10 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\TestCase;
+use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CachedModelTest extends TestCase
+class CachedModelTest extends UnitTestCase
 {
     use RefreshDatabase;
 

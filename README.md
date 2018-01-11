@@ -3,7 +3,6 @@
 # Model Caching for Laravel
 [![Gitter](https://badges.gitter.im/GeneaLabs/laravel-model-caching.svg)](https://gitter.im/GeneaLabs/laravel-model-caching?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 [![Travis](https://img.shields.io/travis/GeneaLabs/laravel-model-caching.svg)](https://travis-ci.org/GeneaLabs/laravel-model-caching)
-[![SensioLabs Insight](https://img.shields.io/sensiolabs/i/fde269ac-c382-4d17-a647-c69ad6b9dd85.svg)](https://insight.sensiolabs.com/projects/fde269ac-c382-4d17-a647-c69ad6b9dd85)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
 [![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
 [![GitHub (pre-)release](https://img.shields.io/github/release/GeneaLabs/laravel-model-caching/all.svg)](https://github.com/GeneaLabs/laravel-model-caching)
@@ -124,7 +123,7 @@ information included to be actionable.
 Please review the Contribution Guidelines <https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md>.
 Only PRs that meet all criterium will be accepted.
 
-## Support Open-Source Software - Give Thanks!
+## ❤️ Open-Source Software - Give ⭐️
 We have included the awesome `symfony/thanks` composer package as a dev
 dependency. Let your OS package maintainers know you appreciate them by starring
 the packages you use. Simply run composer thanks after installing this package.

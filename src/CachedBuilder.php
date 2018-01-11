@@ -146,4 +146,16 @@ class CachedBuilder extends EloquentBuilder
                 return parent::sum($column);
             });
     }
+
+    public function value($column)
+    {
+        if (! $this->isCachable) {
+            return parent::value($column);
+        }
+
+        return $this->cache($this->makeCacheTags())
+            ->rememberForever($this->makeCacheKey() . "-value_{$column}", function () use ($column) {
+                return parent::value($column);
+            });
+    }
 }

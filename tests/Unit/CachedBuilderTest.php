@@ -11,14 +11,14 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
-use GeneaLabs\LaravelModelCaching\Tests\TestCase;
+use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
 * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class CachedBuilderTest extends TestCase
+class CachedBuilderTest extends UnitTestCase
 {
     use RefreshDatabase;
 
@@ -83,10 +83,10 @@ class CachedBuilderTest extends TestCase
                 'genealabslaravelmodelcachingtestsfixturesauthor',
                 'genealabslaravelmodelcachingtestsfixturesbook'
             ])
-            ->get(
+            ->get(sha1(
                 'genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_' .
                 '7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'
-            );
+            ));
 
         $this->assertNull($results);
     }
@@ -101,10 +101,10 @@ class CachedBuilderTest extends TestCase
                 'genealabslaravelmodelcachingtestsfixturesauthor',
                 'genealabslaravelmodelcachingtestsfixturesbook'
             ])
-            ->get(
+            ->get(sha1(
                 'genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_' .
                 '7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'
-            );
+            ));
 
         $this->assertNull($results);
     }
@@ -118,10 +118,10 @@ class CachedBuilderTest extends TestCase
                 'genealabslaravelmodelcachingtestsfixturesauthor',
                 'genealabslaravelmodelcachingtestsfixturesbook'
             ])
-            ->get(
+            ->get(sha1(
                 'genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_' .
                 '7_8_9_10-genealabslaravelmodelcachingtestsfixturesbooks'
-            );
+            ));
 
         $this->assertNull($results);
     }
@@ -424,24 +424,22 @@ class CachedBuilderTest extends TestCase
 
     public function testValueModelResultsCreatesCache()
     {
-        $authors = (new Author)->with('books', 'profile')
+        $authorName = (new Author)->with('books', 'profile')
             ->value('name');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-first');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-value_name');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
             'genealabslaravelmodelcachingtestsfixturesprofile',
         ];
 
-        $cachedResults = cache()->tags($tags)
-            ->get($key)
-            ->name;
-
-        $liveResults = (new UncachedAuthor)->with('books', 'profile')
+        $cachedResult = cache()->tags($tags)
+            ->get($key);
+        $liveResult = (new UncachedAuthor)->with('books', 'profile')
             ->value('name');
 
-        $this->assertEquals($authors, $cachedResults);
-        $this->assertEquals($liveResults, $cachedResults);
+        $this->assertEquals($authorName, $cachedResult);
+        $this->assertEquals($authorName, $liveResult);
     }
 
     public function testNestedRelationshipEagerLoading()

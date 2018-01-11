@@ -6,10 +6,10 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\TestCase;
+use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class FlushTest extends TestCase
+class FlushTest extends UnitTestCase
 {
     use RefreshDatabase;
 
