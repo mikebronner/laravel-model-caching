@@ -41,13 +41,13 @@ trait Cachable
         $this->cache($tags)->flush();
     }
 
-    protected function makeCacheKey(array $columns = ['*'], $idColumn = null) : string
-    {
-        $cacheKey = (new CacheKey($this->eagerLoad, $this->model, $this->query));
-        if ($suffix) {
-            $cacheKey->setSuffix($suffix);
-        }
-        return $cacheKey->make($columns, $idColumn, $suffix);
+    protected function makeCacheKey(
+        array $columns = ['*'],
+        $idColumn = null,
+        string $suffix = ''
+    ) : string {
+        return (new CacheKey($this->eagerLoad, $this->model, $this->query))
+            ->make($columns, $idColumn, $suffix);
     }
 
     protected function makeCacheTags() : array
