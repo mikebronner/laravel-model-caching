@@ -47,7 +47,7 @@ class CachedModelTest extends UnitTestCase
     public function testAllModelResultsCreatesCache()
     {
         $authors = (new Author)->all();
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
         ];
@@ -64,7 +64,7 @@ class CachedModelTest extends UnitTestCase
 
     public function testScopeDisablesCaching()
     {
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->where("name", "Bruno")
