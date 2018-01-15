@@ -14,7 +14,7 @@
         "php": ">=7.0.0"
     },
     "require-dev": {
-        "codedungeon/phpunit-result-printer": "^0.4.4",
+        "codedungeon/phpunit-result-printer": "*",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "orchestra/database": "^3.5",
