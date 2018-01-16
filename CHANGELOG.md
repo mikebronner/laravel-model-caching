@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.16] - 16 Jan 2018
+### Added
+- hashing of cache keys to prevent key length over-run issues.
+
+### Updated
+- dependency version constraint for "pretty test printer".
+
+## [0.2.17] - 10 Jan 2018
+###Added
+- caching for value() querybuilder method.
+
+### Updated
+- tests to use Orchestral Testbench.
+
 ## [0.2.16] - 5 Jan 2018
 ### Added
 - `thanks` package.
