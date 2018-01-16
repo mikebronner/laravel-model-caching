@@ -10,7 +10,7 @@ trait CreatesApplication
         parent::setUp();
 
         $this->withFactories(__DIR__ . '/database/factories');
-        $this->loadMigrationsFrom(realpath(__DIR__ . '/database/migrations'));
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
     }
 
     /**

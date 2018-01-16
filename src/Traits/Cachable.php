@@ -4,6 +4,7 @@ use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use GeneaLabs\LaravelModelCaching\CachedModel;
 use Illuminate\Cache\TaggableStore;
+use Illuminate\Database\Query\Builder;
 
 trait Cachable
 {
@@ -41,10 +42,17 @@ trait Cachable
         $this->cache($tags)->flush();
     }
 
-    protected function makeCacheKey(array $columns = ['*'], $idColumn = null) : string
-    {
-        return (new CacheKey($this->eagerLoad, $this->model, $this->query))
-            ->make($columns, $idColumn);
+    protected function makeCacheKey(
+        array $columns = ['*'],
+        $idColumn = null,
+        string $keyDifferentiator = ''
+    ) : string {
+        $eagerLoad = $this->eagerLoad ?? [];
+        $model = $this->model ?? $this;
+        $query = $this->query ?? app(Builder::class);
+
+        return (new CacheKey($eagerLoad, $model, $query))
+            ->make($columns, $idColumn, $keyDifferentiator);
     }
 
     protected function makeCacheTags() : array

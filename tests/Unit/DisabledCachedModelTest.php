@@ -46,7 +46,7 @@ class DisabledCachedModelTest extends UnitTestCase
 
     public function testAllModelResultsIsNotCached()
     {
-        $key = 'genealabslaravelmodelcachingtestsfixturesauthor';
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->disableCache()

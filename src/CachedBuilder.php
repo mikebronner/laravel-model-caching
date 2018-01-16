@@ -17,9 +17,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-avg_{$column}", function () use ($column) {
-                return parent::avg($column);
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-avg_{$column}"),
+                function () use ($column) {
+                    return parent::avg($column);
+                }
+            );
     }
 
     public function count($columns = ['*'])
@@ -29,9 +32,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-count", function () use ($columns) {
-                return parent::count($columns);
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-count"),
+                function () use ($columns) {
+                    return parent::count($columns);
+                }
+            );
     }
 
     public function cursor()
@@ -41,9 +47,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-cursor", function () {
-                return collect(parent::cursor());
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-cursor"),
+                function () {
+                    return collect(parent::cursor());
+                }
+            );
     }
 
     public function delete()
@@ -64,9 +73,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey($columns, $id), function () use ($id, $columns) {
-                return parent::find($id, $columns);
-            });
+            ->rememberForever(
+                $this->makeCacheKey($columns, $id),
+                function () use ($id, $columns) {
+                    return parent::find($id, $columns);
+                }
+            );
     }
 
     public function first($columns = ['*'])
@@ -76,9 +88,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey($columns) . '-first', function () use ($columns) {
-                return parent::first($columns);
-            });
+            ->rememberForever(
+                $this->makeCacheKey($columns, null, '-first'),
+                function () use ($columns) {
+                    return parent::first($columns);
+                }
+            );
     }
 
     public function get($columns = ['*'])
@@ -88,9 +103,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey($columns), function () use ($columns) {
-                return parent::get($columns);
-            });
+            ->rememberForever(
+                $this->makeCacheKey($columns),
+                function () use ($columns) {
+                    return parent::get($columns);
+                }
+            );
     }
 
     public function max($column)
@@ -100,9 +118,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-max_{$column}", function () use ($column) {
-                return parent::max($column);
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-max_{$column}"),
+                function () use ($column) {
+                    return parent::max($column);
+                }
+            );
     }
 
     public function min($column)
@@ -112,9 +133,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-min_{$column}", function () use ($column) {
-                return parent::min($column);
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-min_{$column}"),
+                function () use ($column) {
+                    return parent::min($column);
+                }
+            );
     }
 
     public function pluck($column, $key = null)
@@ -123,11 +147,8 @@ class CachedBuilder extends EloquentBuilder
             return parent::pluck($column, $key);
         }
 
-        $cacheKey = $this->makeCacheKey([$column]) . "-pluck_{$column}";
-
-        if ($key) {
-            $cacheKey .= "_{$key}";
-        }
+        $keyDifferentiator = "-pluck_{$column}" . ($key ? "_{$key}" : "");
+        $cacheKey = $this->makeCacheKey([$column], null, $keyDifferentiator);
 
         return $this->cache($this->makeCacheTags())
             ->rememberForever($cacheKey, function () use ($column, $key) {
@@ -142,9 +163,12 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-sum_{$column}", function () use ($column) {
-                return parent::sum($column);
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-sum_{$column}"),
+                function () use ($column) {
+                    return parent::sum($column);
+                }
+            );
     }
 
     public function value($column)
@@ -154,8 +178,11 @@ class CachedBuilder extends EloquentBuilder
         }
 
         return $this->cache($this->makeCacheTags())
-            ->rememberForever($this->makeCacheKey() . "-value_{$column}", function () use ($column) {
-                return parent::value($column);
-            });
+            ->rememberForever(
+                $this->makeCacheKey(['*'], null, "-value_{$column}"),
+                function () use ($column) {
+                    return parent::value($column);
+                }
+            );
     }
 }
