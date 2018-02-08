@@ -466,7 +466,7 @@ class CachedBuilderTest extends UnitTestCase
     public function testLazyLoadedRelationshipResolvesThroughCachedBuilder()
     {
         $books = (new Author)->first()->books;
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull_');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -481,7 +481,7 @@ class CachedBuilderTest extends UnitTestCase
     public function testLazyLoadingOnResourceIsCached()
     {
         $books = (new AuthorResource((new Author)->first()))->books;
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull_');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -575,7 +575,7 @@ class CachedBuilderTest extends UnitTestCase
         $authors = (new Author)
             ->where('name', '=', $author->name)
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_' .
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
             $author->name);
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
@@ -616,7 +616,7 @@ class CachedBuilderTest extends UnitTestCase
         $authors = (new Author)
             ->startsWithA()
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_A%');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_like_A%');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = cache()->tags($tags)->get($key);
@@ -635,7 +635,7 @@ class CachedBuilderTest extends UnitTestCase
             ->first()
             ->books()
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull_');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook'
         ];
