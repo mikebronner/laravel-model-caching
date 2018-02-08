@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.2.16] - 16 Jan 2018
+## [0.2.19] - 7 Feb 2018
+### Fixed
+- parsing of where clause operators.
+
+## [0.2.18] - 16 Jan 2018
 ### Added
 - hashing of cache keys to prevent key length over-run issues.
 
