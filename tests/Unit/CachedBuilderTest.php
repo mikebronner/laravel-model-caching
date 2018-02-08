@@ -693,4 +693,42 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertNull($cachedResult);
         $this->assertNull($deletedAuthor);
     }
+
+    private function processWhereClauseTestWithOperator(string $operator)
+    {
+        $author = (new Author)->first();
+        $authors = (new Author)
+            ->where('name', $operator, $author->name)
+            ->get();
+        $keyParts = [
+            'genealabslaravelmodelcachingtestsfixturesauthor-name',
+            '_',
+            str_replace(' ', '_', strtolower($operator)),
+            '_',
+            $author->name,
+        ];
+        $key = sha1(implode('', $keyParts));
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = cache()
+            ->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->where('name', $operator, $author->name)
+            ->get();
+
+        $this->assertEmpty($authors->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+    }
+
+    public function testWhereClauseParsingOfOperators()
+    {
+        $this->processWhereClauseTestWithOperator('=');
+        $this->processWhereClauseTestWithOperator('!=');
+        $this->processWhereClauseTestWithOperator('<>');
+        $this->processWhereClauseTestWithOperator('>');
+        $this->processWhereClauseTestWithOperator('<');
+        $this->processWhereClauseTestWithOperator('LIKE');
+        $this->processWhereClauseTestWithOperator('NOT LIKE');
+    }
 }

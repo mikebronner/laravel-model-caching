@@ -31,6 +31,7 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
+dump($key);
         $key = sha1($key);
 
         return $key;
@@ -90,9 +91,11 @@ class CacheKey
 
     protected function getTypeClause($where) : string
     {
-        return in_array($where['type'], ['In', 'Null', 'NotNull'])
+        $type =in_array($where['type'], ['In', 'Null', 'NotNull'])
             ? strtolower($where['type'])
-            : '';
+            : strtolower($where['operator']);
+
+        return str_replace(' ', '_', $type);
     }
 
     protected function getValuesClause(array $where = null) : string
@@ -149,8 +152,8 @@ class CacheKey
             return '';
         }
 
-        $value = array_get($where, 'value');
-        $value .= $this->getTypeClause($where);
+        $value = $this->getTypeClause($where);
+        $value .= "_" . array_get($where, 'value');
         $value .= $this->getValuesClause($where);
 
         return "{$carry}-{$where['column']}_{$value}";
