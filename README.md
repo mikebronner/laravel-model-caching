@@ -23,8 +23,8 @@ relationships. This package is the attempt to address those requirements.
     flush entire cache for providers that don't).
 
 ## Requirements
--   PHP >= 7.0.25
--   Laravel 5.5+
+-   PHP >= 7.1.3
+-   Laravel >=5.5.0
 
 ## Installation
 ```
