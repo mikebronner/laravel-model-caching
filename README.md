@@ -48,7 +48,7 @@ memcached). While this is optional, using a non-taggable cache provider will
 mean that the entire cache is cleared each time a model is created, saved,
 updated, or deleted.
 
-For the ease of maintenance, I would recommend adding a `BaseModel` model that
+For ease of maintenance, I would recommend adding a `BaseModel` model that
 extends `CachedModel`, from which all your other models are extended. If you
 don't want to do that, simply extend your models directly from `CachedModel`.
 
@@ -66,7 +66,7 @@ abstract class BaseModel extends CachedModel
 ```
 
 ### Exception: User Model
-I would not recommend caching the user model, as it is a special case since it
+I would not recommend caching the user model, as it is a special case, since it
 extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.
 Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
@@ -99,8 +99,7 @@ In testing this has optimized performance on some pages up to 900%! Most often
 you should see somewhere around 100% performance increase.
 
 ## Commitment to Quality
-During package development I try as best as possible to embrace good design and
-development practices trying to ensure that this package is as good as it can
+During package development I try as best as possible to embrace good design and development practices, to help ensure that this package is as good as it can
 be. My checklist for package development includes:
 
 -   ✅ Achieve as close to 100% code coverage as possible using unit tests.
