@@ -10,11 +10,11 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
 
 ## Impetus
-I created this package in response to a client project that had complex, nested
+I created this package in response to a client project that had complex and nested
 forms with many `<select>`'s that resulted in over 700 database queries on one
 page. I needed a package that abstracted the caching process out of the model
 for me, and one that would let me cache custom queries, as well as cache model
-relationships. This package is the attempt to address those requirements.
+relationships. This package is an attempt to address those requirements.
 
 ## Features
 -   automatic, self-invalidating relationship (both eager- and lazy-loaded) caching.
@@ -36,7 +36,7 @@ composer require genealabs/laravel-model-caching
 If you would like to use a different cache store than the default one used by
 your Laravel application, you may do so by setting the `MODEL_CACHE_STORE`
 environment variable in your `.env` file to the name of a cache store configured
-in `config/cache.php` (you can define any custom cache store base on your
+in `config/cache.php` (you can define any custom cache store based on your
 specific needs there). For example:
 ```
 MODEL_CACHE_STORE=redis
@@ -48,7 +48,7 @@ memcached). While this is optional, using a non-taggable cache provider will
 mean that the entire cache is cleared each time a model is created, saved,
 updated, or deleted.
 
-For ease of maintenance, I would recommend adding a `BaseModel` model that
+For the ease of maintenance, I would recommend adding a `BaseModel` model that
 extends `CachedModel`, from which all your other models are extended. If you
 don't want to do that, simply extend your models directly from `CachedModel`.
 
@@ -66,7 +66,7 @@ abstract class BaseModel extends CachedModel
 ```
 
 ### Exception: User Model
-I would not recommend caching the user model, as it is a special case, since it
+I would not recommend caching the user model, as it is a special case since it
 extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.
 Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
@@ -100,7 +100,7 @@ you should see somewhere around 100% performance increase.
 
 ## Commitment to Quality
 During package development I try as best as possible to embrace good design and
-development practices to try to ensure that this package is as good as it can
+development practices trying to ensure that this package is as good as it can
 be. My checklist for package development includes:
 
 -   ✅ Achieve as close to 100% code coverage as possible using unit tests.
