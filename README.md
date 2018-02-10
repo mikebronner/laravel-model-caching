@@ -24,7 +24,7 @@ relationships. This package is the attempt to address those requirements.
 
 ## Requirements
 -   PHP >= 7.1.3
--   Laravel >=5.5.0
+-   Laravel >= 5.5
 
 ## Installation
 ```
