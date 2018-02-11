@@ -5,6 +5,8 @@ use GeneaLabs\LaravelModelCaching\CacheTags;
 use GeneaLabs\LaravelModelCaching\CachedModel;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 
 trait Cachable
 {
@@ -79,5 +81,16 @@ trait Cachable
             ->rememberForever($key, function () use ($columns) {
                 return parent::all($columns);
             });
+    }
+
+    public function newEloquentBuilder($query)
+    {
+        if (session('genealabs-laravel-model-caching-is-disabled')) {
+            session()->forget('genealabs-laravel-model-caching-is-disabled');
+
+            return new EloquentBuilder($query);
+        }
+
+        return new CachedBuilder($query);
     }
 }
