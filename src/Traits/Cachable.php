@@ -67,4 +67,17 @@ trait Cachable
             $instance->flushCache();
         });
     }
+
+    public static function all($columns = ['*'])
+    {
+        $class = get_called_class();
+        $instance = new $class;
+        $tags = [str_slug(get_called_class())];
+        $key = $instance->makeCacheKey();
+
+        return $instance->cache($tags)
+            ->rememberForever($key, function () use ($columns) {
+                return parent::all($columns);
+            });
+    }
 }
