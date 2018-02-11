@@ -26,15 +26,6 @@ abstract class CachedModel extends Model
         return new Builder($query);
     }
 
-    public static function boot()
-    {
-        parent::boot();
-
-        static::saved(function ($instance) {
-            $instance->flushCache();
-        });
-    }
-
     public static function all($columns = ['*'])
     {
         $class = get_called_class();

@@ -60,4 +60,11 @@ trait Cachable
         return (new CacheTags($this->eagerLoad, $this->model))
             ->make();
     }
+
+    public static function bootCachable()
+    {
+        static::saved(function ($instance) {
+            $instance->flushCache();
+        });
+    }
 }
