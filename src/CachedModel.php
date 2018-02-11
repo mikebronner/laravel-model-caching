@@ -30,22 +30,19 @@ abstract class CachedModel extends Model
     {
         parent::boot();
 
-        $class = get_called_class();
-        $instance = new $class;
-
-        static::created(function () use ($instance) {
+        static::created(function ($instance) {
             $instance->flushCache();
         });
 
-        static::deleted(function () use ($instance) {
+        static::deleted(function ($instance) {
             $instance->flushCache();
         });
 
-        static::saved(function () use ($instance) {
+        static::saved(function ($instance) {
             $instance->flushCache();
         });
 
-        static::updated(function () use ($instance) {
+        static::updated(function ($instance) {
             $instance->flushCache();
         });
     }
