@@ -773,4 +773,24 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
+
+    public function testWhereDatesResults()
+    {
+        $books = (new Book)
+            ->whereDate('created_at', '>=', '2018-01-01')
+            ->get();
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-created_at_>=_2018-01-01');
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->whereBetween('price', [5, 10])
+            ->get();
+
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
+    }
 }
