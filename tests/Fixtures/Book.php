@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Book extends CachedModel
 {
+    protected $casts = [
+        'price' => 'float',
+    ];
     protected $dates = [
         'published_at',
     ];
@@ -13,6 +16,7 @@ class Book extends CachedModel
         'description',
         'published_at',
         'title',
+        'price',
     ];
 
     public function author() : BelongsTo
