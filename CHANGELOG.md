@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.23] - 13 Feb 2018
+### Fixed
+- whereBetween and value bindings parsing.
+
+## [0.2.22] - 10 Feb 2018
+### Fixed
+- Laravel 5.5 dependencies.
+
+## [0.2.21] - 9 Feb 2018
+### Added
+- Laravel 5.6 compatibility.
+
+## [0.2.20] - 7 Feb 2018
+### Fixed
+- previously existing unit tests to properly consider changes made in 0.2.19.
+
+## [0.2.19] - 7 Feb 2018
+### Fixed
+- parsing of where clause operators.
+
+## [0.2.18] - 16 Jan 2018
+### Added
+- hashing of cache keys to prevent key length over-run issues.
+
+### Updated
+- dependency version constraint for "pretty test printer".
+
+## [0.2.17] - 10 Jan 2018
+###Added
+- caching for value() querybuilder method.
+
+### Updated
+- tests to use Orchestral Testbench.
+
 ## [0.2.16] - 5 Jan 2018
 ### Added
 - `thanks` package.

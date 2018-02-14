@@ -16,6 +16,7 @@ class CreateBooks extends Migration
             $table->text('description');
             $table->dateTime('published_at');
             $table->string('title');
+            $table->decimal('price')->default(0);
 
             $table->foreign('author_id')
                 ->references('id')

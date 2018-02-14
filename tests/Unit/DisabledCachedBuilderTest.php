@@ -165,7 +165,7 @@ class DisabledCachedBuilderTest extends UnitTestCase
                 ->cursor()
         );
 
-        $this->assertEmpty($liveResults->diffAssoc($authors));
+        $this->assertEmpty($liveResults->diffKeys($authors));
         $this->assertNull($cachedResults);
     }
 
@@ -210,7 +210,7 @@ class DisabledCachedBuilderTest extends UnitTestCase
             ->with('books', 'profile')
             ->get();
 
-        $this->assertEmpty($liveResults->diffAssoc($authors));
+        $this->assertEmpty($liveResults->diffKeys($authors));
         $this->assertNull($cachedResults);
     }
 
@@ -282,7 +282,7 @@ class DisabledCachedBuilderTest extends UnitTestCase
             ->with('books', 'profile')
             ->pluck('name', 'id');
 
-        $this->assertEmpty($liveResults->diffAssoc($authors));
+        $this->assertEmpty($liveResults->diffKeys($authors));
         $this->assertNull($cachedResults);
     }
 

@@ -2,9 +2,9 @@
 
 # Model Caching for Laravel
 [![Gitter](https://badges.gitter.im/GeneaLabs/laravel-model-caching.svg)](https://gitter.im/GeneaLabs/laravel-model-caching?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
-[![Travis](https://img.shields.io/travis/GeneaLabs/laravel-model-caching.svg)](https://travis-ci.org/GeneaLabs/laravel-model-caching)
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
-[![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
+[![Travis](https://img.shields.io/travis/GeneaLabs/laravel-model-caching/master.svg)](https://travis-ci.org/GeneaLabs/laravel-model-caching)
+[![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching/master.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
+[![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching/master.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
 [![GitHub (pre-)release](https://img.shields.io/github/release/GeneaLabs/laravel-model-caching/all.svg)](https://github.com/GeneaLabs/laravel-model-caching)
 [![Packagist](https://img.shields.io/packagist/dt/GeneaLabs/laravel-model-caching.svg)](https://packagist.org/packages/genealabs/laravel-model-caching)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
@@ -23,8 +23,8 @@ relationships. This package is the attempt to address those requirements.
     flush entire cache for providers that don't).
 
 ## Requirements
--   PHP >= 7.0.0
--   Laravel 5.5
+-   PHP >= 7.1.3
+-   Laravel >= 5.5
 
 ## Installation
 ```

@@ -137,7 +137,7 @@ class CachedBuilderTest extends UnitTestCase
             ->get(sha1("genealabslaravelmodelcachingtestsfixturesauthor-books")));
 
         $this->assertNotNull($results);
-        $this->assertEmpty($authors->diffAssoc($results));
+        $this->assertEmpty($authors->diffKeys($results));
         $this->assertNotEmpty($authors);
         $this->assertNotEmpty($results);
         $this->assertEquals($authors->count(), $results->count());
@@ -154,7 +154,7 @@ class CachedBuilderTest extends UnitTestCase
             ->get(sha1("genealabslaravelmodelcachingtestsfixturesbook-author")));
 
         $this->assertNotNull($results);
-        $this->assertEmpty($books->diffAssoc($results));
+        $this->assertEmpty($books->diffKeys($results));
         $this->assertNotEmpty($books);
         $this->assertNotEmpty($results);
         $this->assertEquals($books->count(), $results->count());
@@ -171,7 +171,7 @@ class CachedBuilderTest extends UnitTestCase
             ->get(sha1("genealabslaravelmodelcachingtestsfixturesbook-stores")));
 
         $this->assertNotNull($results);
-        $this->assertEmpty($books->diffAssoc($results));
+        $this->assertEmpty($books->diffKeys($results));
         $this->assertNotEmpty($books);
         $this->assertNotEmpty($results);
         $this->assertEquals($books->count(), $results->count());
@@ -189,7 +189,7 @@ class CachedBuilderTest extends UnitTestCase
             ->get(sha1("genealabslaravelmodelcachingtestsfixturesauthor-profile")));
 
         $this->assertNotNull($results);
-        $this->assertEmpty($authors->diffAssoc($results));
+        $this->assertEmpty($authors->diffKeys($results));
         $this->assertNotEmpty($authors);
         $this->assertNotEmpty($results);
         $this->assertEquals($authors->count(), $results->count());
@@ -240,8 +240,7 @@ class CachedBuilderTest extends UnitTestCase
 
                 $cachedChunks['authors']->push($chunk);
                 $cachedChunks['keys']->push(sha1(
-                    "genealabslaravelmodelcachingtestsfixturesauthor-books-pr" .
-                    "ofile_orderBy_authors.id_asc{$offset}-limit_3"
+                    "genealabslaravelmodelcachingtestsfixturesauthor-books-profile_orderBy_authors.id_asc{$offset}-limit_3"
                 ));
             });
 
@@ -255,8 +254,11 @@ class CachedBuilderTest extends UnitTestCase
             $cachedResults = cache()->tags($tags)
                 ->get($key);
 
-            $this->assertEmpty($cachedChunks['authors'][$index]->diffAssoc($cachedResults));
-            $this->assertEmpty($uncachedChunks[$index]->diffAssoc($cachedResults));
+            // $this->assertTrue($cachedChunks['authors'][$index]->diffKeys($cachedResults)->isEmpty());
+            // $this->assertTrue($uncachedChunks[$index]->diffKeys($cachedResults)->isEmpty());
+
+            $this->assertEmpty($cachedChunks['authors'][$index]->diffKeys($cachedResults));
+            $this->assertEmpty($uncachedChunks[$index]->diffKeys($cachedResults));
         }
     }
 
@@ -302,8 +304,8 @@ class CachedBuilderTest extends UnitTestCase
                 ->cursor()
         );
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testFindModelResultsCreatesCache()
@@ -318,8 +320,8 @@ class CachedBuilderTest extends UnitTestCase
             ->get($key));
         $liveResults = collect()->push((new UncachedAuthor)->find(1));
 
-        $this->assertEmpty($author->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($author->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testGetModelResultsCreatesCache()
@@ -339,7 +341,7 @@ class CachedBuilderTest extends UnitTestCase
             ->get();
 
         $this->assertEquals($authors, $cachedResults);
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testMaxModelResultsCreatesCache()
@@ -398,8 +400,8 @@ class CachedBuilderTest extends UnitTestCase
         $liveResults = (new UncachedAuthor)->with('books', 'profile')
             ->pluck('name', 'id');
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testSumModelResultsCreatesCache()
@@ -459,14 +461,14 @@ class CachedBuilderTest extends UnitTestCase
         $liveResults = collect([(new UncachedAuthor)->with('books.publisher')
                 ->first()]);
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testLazyLoadedRelationshipResolvesThroughCachedBuilder()
     {
         $books = (new Author)->first()->books;
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -474,14 +476,14 @@ class CachedBuilderTest extends UnitTestCase
         $cachedResults = cache()->tags($tags)->get($key);
         $liveResults = (new UncachedAuthor)->first()->books;
 
-        $this->assertEmpty($books->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($books->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testLazyLoadingOnResourceIsCached()
     {
         $books = (new AuthorResource((new Author)->first()))->books;
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -489,8 +491,8 @@ class CachedBuilderTest extends UnitTestCase
         $cachedResults = cache()->tags($tags)->get($key);
         $liveResults = (new UncachedAuthor)->first()->books;
 
-        $this->assertEmpty($books->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($books->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testOrderByClauseParsing()
@@ -505,8 +507,8 @@ class CachedBuilderTest extends UnitTestCase
         $cachedResults = cache()->tags($tags)->get($key);
         $liveResults = (new UncachedAuthor)->orderBy('name')->get();
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testNestedRelationshipWhereClauseParsing()
@@ -527,8 +529,8 @@ class CachedBuilderTest extends UnitTestCase
         $liveResults = (new UncachedAuthor)->with('books.publisher')
             ->get();
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testExistsRelationshipWhereClauseParsing()
@@ -543,8 +545,8 @@ class CachedBuilderTest extends UnitTestCase
         $liveResults = (new UncachedAuthor)->whereHas('books')
             ->get();
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testDoesntHaveWhereClauseParsing()
@@ -563,8 +565,8 @@ class CachedBuilderTest extends UnitTestCase
             ->doesntHave('books')
             ->get();
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testColumnsRelationshipWhereClauseParsing()
@@ -575,7 +577,7 @@ class CachedBuilderTest extends UnitTestCase
         $authors = (new Author)
             ->where('name', '=', $author->name)
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_' .
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
             $author->name);
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
@@ -586,8 +588,8 @@ class CachedBuilderTest extends UnitTestCase
             ->where('name', '=', $author->name)
             ->get();
 
-        $this->assertEmpty($authors->diffAssoc($cachedResults));
-        $this->assertEmpty($liveResults->diffAssoc($cachedResults));
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
     public function testRawWhereClauseParsing()
@@ -604,8 +606,8 @@ class CachedBuilderTest extends UnitTestCase
         $liveResults = collect([(new UncachedAuthor)
             ->whereRaw('name <> \'\'')->first()]);
 
-        $this->assertTrue($authors->diffAssoc($cachedResults)->isEmpty());
-        $this->assertTrue($liveResults->diffAssoc($cachedResults)->isEmpty());
+        $this->assertTrue($authors->diffKeys($cachedResults)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
     }
 
     public function testScopeClauseParsing()
@@ -616,7 +618,7 @@ class CachedBuilderTest extends UnitTestCase
         $authors = (new Author)
             ->startsWithA()
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_A%');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-name_like_A%');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = cache()->tags($tags)->get($key);
@@ -635,7 +637,7 @@ class CachedBuilderTest extends UnitTestCase
             ->first()
             ->books()
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_1-books.author_id_notnull');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook'
         ];
@@ -646,8 +648,8 @@ class CachedBuilderTest extends UnitTestCase
             ->books()
             ->get();
 
-        $this->assertTrue($cachedResults->diffAssoc($books)->isEmpty());
-        $this->assertTrue($liveResults->diffAssoc($books)->isEmpty());
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
 
     public function testRawOrderByWithoutColumnReference()
@@ -667,8 +669,8 @@ class CachedBuilderTest extends UnitTestCase
             ->orderByRaw('DATE()')
             ->get();
 
-        $this->assertTrue($cachedResults->diffAssoc($authors)->isEmpty());
-        $this->assertTrue($liveResults->diffAssoc($authors)->isEmpty());
+        $this->assertTrue($cachedResults->diffKeys($authors)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($authors)->isEmpty());
     }
 
     public function testDelete()
@@ -692,5 +694,103 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertEquals($liveResultId, $authorId);
         $this->assertNull($cachedResult);
         $this->assertNull($deletedAuthor);
+    }
+
+    private function processWhereClauseTestWithOperator(string $operator)
+    {
+        $author = (new Author)->first();
+        $authors = (new Author)
+            ->where('name', $operator, $author->name)
+            ->get();
+        $keyParts = [
+            'genealabslaravelmodelcachingtestsfixturesauthor-name',
+            '_',
+            str_replace(' ', '_', strtolower($operator)),
+            '_',
+            $author->name,
+        ];
+        $key = sha1(implode('', $keyParts));
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $cachedResults = cache()
+            ->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->where('name', $operator, $author->name)
+            ->get();
+
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
+    }
+
+    public function testWhereClauseParsingOfOperators()
+    {
+        $this->processWhereClauseTestWithOperator('=');
+        $this->processWhereClauseTestWithOperator('!=');
+        $this->processWhereClauseTestWithOperator('<>');
+        $this->processWhereClauseTestWithOperator('>');
+        $this->processWhereClauseTestWithOperator('<');
+        $this->processWhereClauseTestWithOperator('LIKE');
+        $this->processWhereClauseTestWithOperator('NOT LIKE');
+    }
+
+    public function testWhereBetweenIdsResults()
+    {
+        $books = (new Book)
+            ->whereBetween('price', [5, 10])
+            ->get();
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-price_between_5_10');
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->whereBetween('price', [5, 10])
+            ->get();
+
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
+    }
+
+    public function testWhereBetweenDatesResults()
+    {
+        $books = (new Book)
+            ->whereBetween('created_at', ['2018-01-01', '2018-12-31'])
+            ->get();
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-created_at_between_2018-01-01_2018-12-31');
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->whereBetween('price', [5, 10])
+            ->get();
+
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
+    }
+
+    public function testWhereDatesResults()
+    {
+        $books = (new Book)
+            ->whereDate('created_at', '>=', '2018-01-01')
+            ->get();
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-created_at_>=_2018-01-01');
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->whereBetween('price', [5, 10])
+            ->get();
+
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
 }
