@@ -18,7 +18,7 @@
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "orchestra/database": "3.6.x-dev@dev",
-        "orchestra/testbench-browser-kit": "3.6.x-dev@dev",
+        "orchestra/testbench-browser-kit": "^3.6",
         "orchestra/testbench-dusk": "3.6.x-dev@dev",
         "orchestra/testbench": "^3.6",
         "php-coveralls/php-coveralls" : "*",
