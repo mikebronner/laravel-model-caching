@@ -734,12 +734,32 @@ class CachedBuilderTest extends UnitTestCase
         $this->processWhereClauseTestWithOperator('NOT LIKE');
     }
 
-    public function testWhereBetweenResults()
+    public function testWhereBetweenIdsResults()
     {
         $books = (new Book)
             ->whereBetween('price', [5, 10])
             ->get();
         $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-price_between_5_10');
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->whereBetween('price', [5, 10])
+            ->get();
+
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
+    }
+
+    public function testWhereBetweenDatesResults()
+    {
+        $books = (new Book)
+            ->whereBetween('created_at', ['2018-01-01', '2018-12-31'])
+            ->get();
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-created_at_between_2018-01-01_2018-12-31');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
