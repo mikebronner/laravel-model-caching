@@ -799,7 +799,7 @@ class CachedBuilderTest extends UnitTestCase
         $books = (new Book)
             ->whereNotIn('id', [1, 2])
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-id_in_1_2');
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesbook',
         ];
