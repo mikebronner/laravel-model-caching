@@ -32,7 +32,7 @@ composer require genealabs/laravel-model-caching
 ```
 
 ## Configuration
-### Optional Custom Cache Store
+### Recommended (Optional) Custom Cache Store
 If you would like to use a different cache store than the default one used by
 your Laravel application, you may do so by setting the `MODEL_CACHE_STORE`
 environment variable in your `.env` file to the name of a cache store configured
