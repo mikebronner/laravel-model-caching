@@ -793,4 +793,24 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
+
+    public function testWhereNotInResults()
+    {
+        $books = (new Book)
+            ->whereNotIn('id', [1, 2])
+            ->get();
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
+        $tags = [
+            'genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $cachedResults = cache()->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->whereNotIn('id', [1, 2])
+            ->get();
+
+        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
+    }
 }
