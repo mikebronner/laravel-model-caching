@@ -10,7 +10,7 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
 
 ## Impetus
-I created this package in response to a client project that had complex and nested
+I created this package in response to a client project that had complex, nested
 forms with many `<select>`'s that resulted in over 700 database queries on one
 page. I needed a package that abstracted the caching process out of the model
 for me, and one that would let me cache custom queries, as well as cache model
