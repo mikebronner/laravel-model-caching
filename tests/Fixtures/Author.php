@@ -1,12 +1,15 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
-use GeneaLabs\LaravelModelCaching\CachedModel;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Author extends CachedModel
+class Author extends Model
 {
+    use Cachable;
+
     protected $fillable = [
         'name',
         'email',

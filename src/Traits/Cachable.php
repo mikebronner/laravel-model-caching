@@ -41,6 +41,10 @@ trait Cachable
 
     public function flushCache(array $tags = [])
     {
+        if (emptyArray($tags)) {
+            $tags = $this->makeCacheTags();
+        }
+
         $this->cache($tags)->flush();
     }
 
@@ -59,8 +63,10 @@ trait Cachable
 
     protected function makeCacheTags() : array
     {
-        return (new CacheTags($this->eagerLoad, $this->model))
+        $tags = (new CacheTags($this->eagerLoad ?? [], $this->model ?? $this))
             ->make();
+
+        return $tags;
     }
 
     public static function bootCachable()
@@ -72,6 +78,10 @@ trait Cachable
 
     public static function all($columns = ['*'])
     {
+        if (session('genealabs-laravel-model-caching-is-disabled')) {
+            return parent::all($columns);
+        }
+
         $class = get_called_class();
         $instance = new $class;
         $tags = [str_slug(get_called_class())];

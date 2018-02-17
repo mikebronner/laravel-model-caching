@@ -1,7 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Console\Commands;
 
 use Illuminate\Console\Command;
-use GeneaLabs\LaravelModelCaching\CachedModel;
 
 class Flush extends Command
 {
@@ -21,7 +20,7 @@ class Flush extends Command
 
         $model = new $option;
 
-        if (! $model instanceof CachedModel) {
+        if (! method_exists($model, 'flushCache')) {
             $this->error("'{$option}' is not an instance of CachedModel.");
             $this->line("Only CachedModel instances can be flushed.");
 
