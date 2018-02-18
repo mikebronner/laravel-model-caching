@@ -21,6 +21,7 @@ relationships. This package is an attempt to address those requirements.
 -   automatic, self-invalidating model query caching.
 -   automatic use of cache tags for cache providers that support them (will
     flush entire cache for providers that don't).
+-   support for multitenant implementations by implementing getCachePrefix method in the Model class 
 
 ## Requirements
 -   PHP >= 7.1.3
@@ -73,6 +74,18 @@ I would not recommend caching the user model, as it is a special case, since it
 extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.
 Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
+
+### Multitenant support for cached models
+If you need multitenant support the same model context (key and tags) needs to be cached for each tenant with it's specific values. This requires a separations of cache that is supported by implementing the getCachePrefix method in the model class.
+
+I would recommend to implement in your application a TenantCachable trait for your models containing the getCachePrefix method that for example returns a unique value corresponding to each tenant. 
+An example in the context of using the hyn/multi-tenant package can be:
+```php
+public function getCachePrefix()
+{
+    return $this->getConnectionName() . '-' . $this->getConnection()->getDatabaseName();
+}
+```
 
 ### Optional Disabling Caching of Queries
 **Recommendation: add this to all your seeder queries to avoid pulling in
