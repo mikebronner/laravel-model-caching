@@ -32,7 +32,7 @@ composer require genealabs/laravel-model-caching
 ```
 
 ## Configuration
-### Optional Custom Cache Store
+### Recommended (Optional) Custom Cache Store
 If you would like to use a different cache store than the default one used by
 your Laravel application, you may do so by setting the `MODEL_CACHE_STORE`
 environment variable in your `.env` file to the name of a cache store configured
@@ -49,7 +49,7 @@ mean that the entire cache is cleared each time a model is created, saved,
 updated, or deleted.
 
 For ease of maintenance, I would recommend adding a `BaseModel` model that
-extends `CachedModel`, from which all your other models are extended. If you
+uses `Cachable`, from which all your other models are extended. If you
 don't want to do that, simply extend your models directly from `CachedModel`.
 
 Here's an example `BaseModel` class:
@@ -57,10 +57,11 @@ Here's an example `BaseModel` class:
 ```php
 <?php namespace App;
 
-use GeneaLabs\LaravelModelCaching\CachedModel;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 
-abstract class BaseModel extends CachedModel
+abstract class BaseModel
 {
+    use Cachable;
     //
 }
 ```
