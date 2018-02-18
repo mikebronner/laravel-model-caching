@@ -48,11 +48,11 @@ class FlushTest extends UnitTestCase
 
         $cachedResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
         $result = $this->artisan('modelCache:flush', ['--model' => Author::class]);
         $flushedResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
@@ -70,14 +70,14 @@ class FlushTest extends UnitTestCase
 
         $cachedResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
         $result = $this->artisan(
             'modelCache:flush',
             ['--model' => Author::class]
         );
         $flushedResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);

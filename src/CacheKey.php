@@ -31,7 +31,6 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
-        $key = sha1($key);
 
         return $key;
     }

@@ -57,11 +57,11 @@ class CachableTest extends UnitTestCase
             ->all();
         $defaultcacheResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
         $customCacheResults = cache()
             ->store('customCache')
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
             ->all();
 
