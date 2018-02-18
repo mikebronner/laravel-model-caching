@@ -151,7 +151,7 @@ trait Cachable
 
         $class = get_called_class();
         $instance = new $class;
-        $tags = [str_slug(get_called_class())];
+        $tags = $this->makeCachePrefix([str_slug(get_called_class())]);
         $key = $instance->makeCacheKey();
 
         return $instance->cache($tags)
