@@ -76,9 +76,9 @@ Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
 
 ### Multitenant support for cached models
-If you need multitenancy support the same model context (key and tags) needs to be cached for each denant with it's specific values. This requires a separations of cache that is supported by implementing the getCachePrefix method in the model class.
+If you need multitenant support the same model context (key and tags) needs to be cached for each tenant with it's specific values. This requires a separations of cache that is supported by implementing the getCachePrefix method in the model class.
 
-I would recommend to implement in your application a TenantCachable trait containing the getCachePrefix method that for example returns a unique value corresponding to each tenant. 
+I would recommend to implement in your application a TenantCachable trait for your models containing the getCachePrefix method that for example returns a unique value corresponding to each tenant. 
 An example in the context of using the hyn/multi-tenant package can be:
 ```php
 public function getCachePrefix()
