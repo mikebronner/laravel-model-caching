@@ -41,7 +41,7 @@ trait Cachable
 
     public function flushCache(array $tags = [])
     {
-        if (emptyArray($tags)) {
+        if (count($tags) === 0) {
             $tags = $this->makeCacheTags();
         }
 
