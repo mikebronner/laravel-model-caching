@@ -26,6 +26,8 @@ relationships. This package is an attempt to address those requirements.
 -   PHP >= 7.1.3
 -   Laravel >= 5.5
 
+[![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
+
 ## Installation
 ```
 composer require genealabs/laravel-model-caching
