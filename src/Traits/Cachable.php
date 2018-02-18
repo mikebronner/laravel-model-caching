@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use GeneaLabs\LaravelModelCaching\CachedModel;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -11,6 +12,7 @@ use GeneaLabs\LaravelModelCaching\CachedBuilder;
 trait Cachable
 {
     protected $isCachable = true;
+    protected static $isCachableKey = 'genealabs:model-caching:is-disabled';
 
     protected function cache(array $tags = [])
     {
@@ -33,7 +35,8 @@ trait Cachable
 
     public function disableCache()
     {
-        session(['genealabs-laravel-model-caching-is-disabled' => true]);
+        cache()->forever(self::$isCachableKey, true);
+
         $this->isCachable = false;
 
         return $this;
@@ -78,7 +81,7 @@ trait Cachable
 
     public static function all($columns = ['*'])
     {
-        if (session('genealabs-laravel-model-caching-is-disabled')) {
+        if (cache()->get(self::$isCachableKey)) {
             return parent::all($columns);
         }
 
@@ -95,8 +98,8 @@ trait Cachable
 
     public function newEloquentBuilder($query)
     {
-        if (session('genealabs-laravel-model-caching-is-disabled')) {
-            session()->forget('genealabs-laravel-model-caching-is-disabled');
+        if (cache()->get(self::$isCachableKey)) {
+            cache()->forget(self::$isCachableKey);
 
             return new EloquentBuilder($query);
         }
