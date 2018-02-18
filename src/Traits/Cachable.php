@@ -12,8 +12,7 @@ use GeneaLabs\LaravelModelCaching\CachedBuilder;
 trait Cachable
 {
     protected $isCachable = true;
-
-    protected static $isCachableKey = 'genealabs:model-caching:is-disabled';    
+    protected static $isCachableKey = 'genealabs:model-caching:is-disabled';
 
     protected function cache(array $tags = [])
     {
@@ -36,7 +35,7 @@ trait Cachable
 
     public function disableCache()
     {
-        Cache::forever(static::$isCachableKey, true);
+        cache()->forever(self::$isCachableKey, true);
 
         $this->isCachable = false;
 
@@ -82,9 +81,9 @@ trait Cachable
 
     public static function all($columns = ['*'])
     {
-        if (Cache::get(static::$isCachableKey)) {
+        if (cache()->get(self::$isCachableKey)) {
             return parent::all($columns);
-        }        
+        }
 
         $class = get_called_class();
         $instance = new $class;
@@ -99,8 +98,8 @@ trait Cachable
 
     public function newEloquentBuilder($query)
     {
-        if (Cache::get(static::$isCachableKey)) {
-            Cache::forget(static::$isCachableKey);
+        if (cache()->get(self::$isCachableKey)) {
+            cache()->forget(self::$isCachableKey);
 
             return new EloquentBuilder($query);
         }
