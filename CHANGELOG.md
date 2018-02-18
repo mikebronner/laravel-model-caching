@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.2.27] - 16 Feb 2018
+## [0.2.28] - 18 Feb 2018
+### Changed
+- disabling of cache from using session to use cache-key instead.
+
+## [0.2.27] - 17 Feb 2018
 ### Fixed
 - the erroneous use of `arrayEmpty()` function, changed to simple `count()`.
 
