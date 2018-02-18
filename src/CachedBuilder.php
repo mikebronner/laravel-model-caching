@@ -16,13 +16,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::avg($column);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-avg_{$column}"),
-                function () use ($column) {
-                    return parent::avg($column);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-avg_{$column}");
+        $method = 'avg';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function count($columns = ['*'])
@@ -31,13 +29,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::count($columns);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-count"),
-                function () use ($columns) {
-                    return parent::count($columns);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-count");
+        $method = 'count';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function cursor()
@@ -46,13 +42,11 @@ class CachedBuilder extends EloquentBuilder
             return collect(parent::cursor());
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-cursor"),
-                function () {
-                    return collect(parent::cursor());
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-cursor");
+        $method = 'cursor';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function delete()
@@ -72,13 +66,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::find($id, $columns);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey($columns, $id),
-                function () use ($id, $columns) {
-                    return parent::find($id, $columns);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey($columns);
+        $method = 'find';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function first($columns = ['*'])
@@ -87,13 +79,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::first($columns);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey($columns, null, '-first'),
-                function () use ($columns) {
-                    return parent::first($columns);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey($columns);
+        $method = 'first';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function get($columns = ['*'])
@@ -102,13 +92,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::get($columns);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey($columns),
-                function () use ($columns) {
-                    return parent::get($columns);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey($columns);
+        $method = 'get';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function max($column)
@@ -117,13 +105,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::max($column);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-max_{$column}"),
-                function () use ($column) {
-                    return parent::max($column);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-max_{$column}");
+        $method = 'max';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function min($column)
@@ -132,13 +118,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::min($column);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-min_{$column}"),
-                function () use ($column) {
-                    return parent::min($column);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-min_{$column}");
+        $method = 'min';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function pluck($column, $key = null)
@@ -148,12 +132,11 @@ class CachedBuilder extends EloquentBuilder
         }
 
         $keyDifferentiator = "-pluck_{$column}" . ($key ? "_{$key}" : "");
+        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey([$column], null, $keyDifferentiator);
+        $method = 'pluck';
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever($cacheKey, function () use ($column, $key) {
-                return parent::pluck($column, $key);
-            });
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function sum($column)
@@ -162,13 +145,11 @@ class CachedBuilder extends EloquentBuilder
             return parent::sum($column);
         }
 
-        return $this->cache($this->makeCacheTags())
-            ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-sum_{$column}"),
-                function () use ($column) {
-                    return parent::sum($column);
-                }
-            );
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-sum_{$column}");
+        $method = 'sum';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
     }
 
     public function value($column)
@@ -177,11 +158,56 @@ class CachedBuilder extends EloquentBuilder
             return parent::value($column);
         }
 
-        return $this->cache($this->makeCacheTags())
+        $arguments = func_get_args();
+        $cacheKey = $this->makeCacheKey(['*'], null, "-value_{$column}");
+        $method = 'value';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
+    }
+
+    public function cachedValue(array $arguments, string $cacheKey, string $method)
+    {
+        $cacheTags = $this->makeCacheTags();
+        $hashedCacheKey = sha1($cacheKey);
+
+        $result = $this->retrieveCachedValue(
+            $arguments,
+            $cacheKey,
+            $cacheTags,
+            $hashedCacheKey,
+            $method
+        );
+
+        if ($result['key'] !== $cacheKey) {
+            cache()->tags($cacheTags)->forget($hashedCacheKey);
+        }
+
+        $result = $this->retrieveCachedValue(
+            $arguments,
+            $cacheKey,
+            $cacheTags,
+            $hashedCacheKey,
+            $method
+        );
+
+        return $result['value'];
+    }
+
+    protected function retrieveCachedValue(
+        array $arguments,
+        string $cacheKey,
+        array $cacheTags,
+        string $hashedCacheKey,
+        string $method
+    ) {
+        return $this->cache($cacheTags)
             ->rememberForever(
-                $this->makeCacheKey(['*'], null, "-value_{$column}"),
-                function () use ($column) {
-                    return parent::value($column);
+                $hashedCacheKey,
+                function () use ($arguments, $cacheKey, $method) {
+                    return [
+                        'key' => $cacheKey,
+                        'value' => parent::{$method}(...$arguments),
+                    ];
                 }
             );
     }

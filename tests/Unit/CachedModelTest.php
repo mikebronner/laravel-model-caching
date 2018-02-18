@@ -54,7 +54,7 @@ class CachedModelTest extends UnitTestCase
 
         $cachedResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
             ->all();
 
@@ -73,7 +73,7 @@ class CachedModelTest extends UnitTestCase
 
         $cachedResults = cache()
             ->tags($tags)
-            ->get($key);
+            ->get($key)['value'];
 
         $this->assertNull($cachedResults);
         $this->assertNotEquals($authors, $cachedResults);
