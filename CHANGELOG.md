@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.32] - 19 Feb 2018
+### Fixed
+- hash collision logic to not run query twice if not needed.
+
 ## [0.2.31] - 18 Feb 2018
 ### Added
 - optional cache key prefixing.
