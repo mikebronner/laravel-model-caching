@@ -178,17 +178,35 @@ class CachedBuilder extends EloquentBuilder
             $method
         );
 
-        if ($result['key'] !== $cacheKey) {
-            cache()->tags($cacheTags)->forget($hashedCacheKey);
-        }
-
-        $result = $this->retrieveCachedValue(
+        return $this->preventHashCollision(
+            $result,
             $arguments,
             $cacheKey,
             $cacheTags,
             $hashedCacheKey,
             $method
         );
+    }
+
+    protected function preventHashCollision(
+        array $result,
+        array $arguments,
+        string $cacheKey,
+        array $cacheTags,
+        string $hashedCacheKey,
+        string $method
+    ) {
+        if ($result['key'] !== $cacheKey) {
+            cache()->tags($cacheTags)->forget($hashedCacheKey);
+
+            $result = $this->retrieveCachedValue(
+                $arguments,
+                $cacheKey,
+                $cacheTags,
+                $hashedCacheKey,
+                $method
+            );
+        }
 
         return $result['value'];
     }
