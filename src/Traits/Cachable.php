@@ -22,14 +22,23 @@ trait Cachable
         }
 
         if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
-            if (is_a($this, CachedModel::class)) {
-                array_push($tags, str_slug(get_called_class()));
-            }
-
+            $tags = $this->addTagsWhenCalledFromCachedBuilder($tags);
             $cache = $cache->tags($tags);
         }
 
         return $cache;
+    }
+
+    protected function addTagsWhenCalledFromCachedBuilder(array $tags) : array
+    {
+        $usesCachableTrait = collect(class_uses($this))
+            ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
+
+        if (! $usesCachableTrait) {
+            array_push($tags, str_slug(get_called_class()));
+        }
+
+        return $tags;
     }
 
     public function disableCache()
