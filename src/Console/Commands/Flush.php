@@ -19,8 +19,10 @@ class Flush extends Command
         }
 
         $model = new $option;
+        $usesCachableTrait = collect(class_uses($model))
+            ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
 
-        if (! method_exists($model, 'flushCache')) {
+        if (! $usesCachableTrait) {
             $this->error("'{$option}' is not an instance of CachedModel.");
             $this->line("Only CachedModel instances can be flushed.");
 
