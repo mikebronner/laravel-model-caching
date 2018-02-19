@@ -22,9 +22,7 @@ trait Cachable
         }
 
         if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
-            if (is_a($this, CachedModel::class)) {
-                array_push($tags, str_slug(get_called_class()));
-            }
+            array_push($tags, str_slug(get_called_class()));
 
             $cache = $cache->tags($tags);
         }
