@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.30] - 18 Feb 2018
+### Changed
+- detection of Cachable trait to use `class_uses()` instead of looking for
+  method.
+
 ## [0.2.29] - 18 Feb 2018
 ### Added
 - hash collision detection and prevetion.
