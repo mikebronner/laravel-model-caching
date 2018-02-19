@@ -15,9 +15,17 @@ class CacheTags
         $this->model = $model;
     }
 
+    protected function getCachePrefix() : string
+    {
+        return "genealabs:laravel-model-caching:"
+            . (config('genealabs:laravel-model-caching', '')
+                ? config('genealabs:laravel-model-caching', '') . ":"
+                : "");
+    }
+
     public function make() : array
     {
-        return collect($this->eagerLoad)
+        $tags = collect($this->eagerLoad)
             ->keys()
             ->map(function ($relationName) {
                 $relation = collect(explode('.', $relationName))
@@ -33,10 +41,16 @@ class CacheTags
                         return $carry->{$name}();
                     });
 
-                return str_slug(get_class($relation->getQuery()->getModel()));
+                return $this->getCachePrefix()
+                    . str_slug(get_class($relation->getQuery()->getModel()));
             })
-            ->prepend(str_slug(get_class($this->model)))
+            ->prepend(
+                $this->getCachePrefix()
+                    . str_slug(get_class($this->model))
+            )
             ->values()
             ->toArray();
+
+        return $tags;
     }
 }

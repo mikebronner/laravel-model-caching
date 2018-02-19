@@ -2,6 +2,7 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
@@ -50,8 +51,8 @@ class CachableTest extends UnitTestCase
         $configCacheStores['customCache'] = ['driver' => 'array'];
         config(['cache.stores' => $configCacheStores]);
         config(['laravel-model-caching.store' => 'customCache']);
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $authors = (new Author)
             ->all();
@@ -68,5 +69,18 @@ class CachableTest extends UnitTestCase
         $this->assertEquals($customCacheResults, $authors);
         $this->assertNull($defaultcacheResults);
         $this->assertEmpty($liveResults->diffAssoc($customCacheResults));
+    }
+
+    public function testSetCachePrefixAttribute()
+    {
+        (new PrefixedAuthor)->get();
+
+        $results = cache()
+            ->tags([
+                'genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor',
+            ])
+            ->get(sha1('genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor'))['value'];
+
+        $this->assertNotNull($results);
     }
 }
