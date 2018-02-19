@@ -68,6 +68,37 @@ abstract class BaseModel
 }
 ```
 
+### Optional Cache Key Prefix
+Thanks to @lucian-dragomir for suggesting this feature! You can use cache key
+prefixing to keep cache entries separate for multi-tenant applications. For this
+it is recommended to add the Cachable trait to a base model, then set the cache
+key prefix config value there.
+
+**Note that the config setting is included before the parent method is called,
+so that the setting is available in the parent as well.**
+
+Here's is an example:
+```php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class BaseModel extends Model
+{
+    use Cachable;
+
+    public function __construct($attributes = [])
+    {
+        config(['genealabs:laravel-model-caching' => 'test-prefix']);
+
+        parent::__construct($attributes);
+    }
+}
+```
+
 ### Exception: User Model
 I would not recommend caching the user model, as it is a special case, since it
 extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.

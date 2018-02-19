@@ -2,4 +2,6 @@
 
 return [
     'store' => env('MODEL_CACHE_STORE'),
+
+    'cache-prefix' => '',
 ];

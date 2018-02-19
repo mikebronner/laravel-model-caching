@@ -43,8 +43,8 @@ class FlushTest extends UnitTestCase
     public function testGivenModelIsFlushed()
     {
         $authors = (new Author)->all();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = cache()
             ->tags($tags)
@@ -62,10 +62,10 @@ class FlushTest extends UnitTestCase
     public function testGivenModelWithRelationshipIsFlushed()
     {
         $authors = (new Author)->with('books')->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books');
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor-books');
         $tags = [
-            'genealabslaravelmodelcachingtestsfixturesauthor',
-            'genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook',
         ];
 
         $cachedResults = cache()

@@ -10,8 +10,19 @@ class CacheKey
     protected $model;
     protected $query;
 
-    public function __construct(array $eagerLoad, Model $model, Builder $query)
+    protected function getCachePrefix() : string
     {
+        return "genealabs:laravel-model-caching:"
+            . (config('genealabs:laravel-model-caching', '')
+                ? config('genealabs:laravel-model-caching', '') . ":"
+                : "");
+    }
+
+    public function __construct(
+        array $eagerLoad,
+        Model $model,
+        Builder $query
+    ) {
         $this->eagerLoad = $eagerLoad;
         $this->model = $model;
         $this->query = $query;
@@ -22,7 +33,8 @@ class CacheKey
         $idColumn = null,
         string $keyDifferentiator = ''
     ) : string {
-        $key = $this->getModelSlug();
+        $key = $this->getCachePrefix();
+        $key .= $this->getModelSlug();
         $key .= $this->getIdColumn($idColumn ?: '');
         $key .= $this->getQueryColumns($columns);
         $key .= $this->getWhereClauses();
