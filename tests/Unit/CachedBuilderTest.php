@@ -59,7 +59,7 @@ class CachedBuilderTest extends UnitTestCase
 
         $this->assertNull($results);
     }
-/** @group test */
+
     public function testCacheIsNotEmptyAfterLoadingModels()
     {
         (new Author)->with('books')->get();

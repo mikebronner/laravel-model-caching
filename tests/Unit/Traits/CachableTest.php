@@ -13,6 +13,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\Eloquent\Collection;
 
 class CachableTest extends UnitTestCase
 {
@@ -82,5 +83,23 @@ class CachableTest extends UnitTestCase
             ->get(sha1('genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor'))['value'];
 
         $this->assertNotNull($results);
+    }
+
+    public function testAllReturnsCollection()
+    {
+        (new Author)->truncate();
+        factory(Author::class, 1)->create();
+        $authors = (new Author)->all();
+
+        $cachedResults = cache()
+            ->tags([
+                'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+            ])
+            ->get(sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'))['value'];
+        $liveResults = (new UncachedAuthor)->all();
+
+        $this->assertInstanceOf(Collection::class, $authors);
+        $this->assertInstanceOf(Collection::class, $cachedResults);
+        $this->assertInstanceOf(Collection::class, $liveResults);
     }
 }
