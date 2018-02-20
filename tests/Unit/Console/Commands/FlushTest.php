@@ -13,11 +13,15 @@ class FlushTest extends UnitTestCase
 {
     use RefreshDatabase;
 
+    protected $cache;
+
     public function setUp()
     {
         parent::setUp();
 
-        cache()->flush();
+        $this->cache = cache()->store(config('laravel-model-caching:store'));
+
+        $this->cache->flush();
         $publishers = factory(Publisher::class, 10)->create();
         factory(Author::class, 10)->create()
             ->each(function ($author) use ($publishers) {
@@ -37,7 +41,7 @@ class FlushTest extends UnitTestCase
             ->each(function ($store) use ($bookIds) {
                 $store->books()->sync(rand($bookIds->min(), $bookIds->max()));
             });
-        cache()->flush();
+        $this->cache->flush();
     }
 
     public function testGivenModelIsFlushed()
@@ -46,11 +50,11 @@ class FlushTest extends UnitTestCase
         $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
 
-        $cachedResults = cache()
+        $cachedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
         $result = $this->artisan('modelCache:flush', ['--model' => Author::class]);
-        $flushedResults = cache()
+        $flushedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
 
@@ -68,14 +72,14 @@ class FlushTest extends UnitTestCase
             'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook',
         ];
 
-        $cachedResults = cache()
+        $cachedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
         $result = $this->artisan(
             'modelCache:flush',
             ['--model' => Author::class]
         );
-        $flushedResults = cache()
+        $flushedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
 
@@ -94,10 +98,52 @@ class FlushTest extends UnitTestCase
         $this->assertEquals($result, 1);
     }
 
-    public function testModelOptionIsSpecified()
+    public function testAllModelsAreFlushed()
     {
-        $result = $this->artisan('modelCache:flush', []);
+        (new Author)->all();
+        (new Book)->all();
+        (new Store)->all();
 
-        $this->assertEquals($result, 1);
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $cachedAuthors = $this->cache
+            ->tags($tags)
+            ->get($key)['value'];
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook'];
+        $cachedBooks = $this->cache
+            ->tags($tags)
+            ->get($key)['value'];
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesstore');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesstore'];
+        $cachedStores = $this->cache
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertNotEmpty($cachedAuthors);
+        $this->assertNotEmpty($cachedBooks);
+        $this->assertNotEmpty($cachedStores);
+
+        $this->artisan('modelCache:flush', []);
+
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $cachedAuthors = $this->cache
+            ->tags($tags)
+            ->get($key)['value'];
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook'];
+        $cachedBooks = $this->cache
+            ->tags($tags)
+            ->get($key)['value'];
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesstore');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesstore'];
+        $cachedStores = $this->cache
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEmpty($cachedAuthors);
+        $this->assertEmpty($cachedBooks);
+        $this->assertEmpty($cachedStores);
     }
 }
