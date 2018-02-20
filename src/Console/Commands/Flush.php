@@ -5,17 +5,18 @@ use Illuminate\Console\Command;
 class Flush extends Command
 {
     protected $signature = 'modelCache:flush {--model=}';
-    protected $description = 'Flush cache for a given model.';
+    protected $description = 'Flush cache for a given model. If no model is given, entire model-cache is flushed.';
 
     public function handle()
     {
         $option = $this->option('model');
 
         if (! $option) {
-            $this->error("You must specify a model to flush a model's cache:");
-            $this->line("modelCache:flush --model=App\\Model");
+            cache()
+                ->store(config('laravel-model-caching:store'))
+                ->flush();
 
-            return 1;
+            return 0;
         }
 
         $model = new $option;
