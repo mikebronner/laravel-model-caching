@@ -9,7 +9,7 @@
     convertWarningsToExceptions="true"
     printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
     processIsolation="false"
-    stopOnFailure="true"
+    stopOnFailure="false"
     syntaxCheck="false"
 >
 <testsuites>

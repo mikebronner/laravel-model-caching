@@ -197,7 +197,9 @@ class CachedBuilder extends EloquentBuilder
         string $method
     ) {
         if ($result['key'] !== $cacheKey) {
-            cache()->tags($cacheTags)->forget($hashedCacheKey);
+            $this->cache()
+                ->tags($cacheTags)
+                ->forget($hashedCacheKey);
 
             $result = $this->retrieveCachedValue(
                 $arguments,
