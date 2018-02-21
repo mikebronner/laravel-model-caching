@@ -865,7 +865,8 @@ class CachedBuilderTest extends UnitTestCase
             ->get();
         $key2 = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
 
-        cache()->tags($tags1)
+        cache()
+            ->tags($tags1)
             ->rememberForever(
                 $key1,
                 function () use ($key2, $authors) {
@@ -885,5 +886,23 @@ class CachedBuilderTest extends UnitTestCase
 
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($cachedResults->diffKeys($authors)->isNotEmpty());
+    }
+
+    public function testSubsequentDisabledCacheQueriesDoNotCache()
+    {
+        (new Author)->disableCache()->get();
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $cachedAuthors1 = cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        (new Author)->disableCache()->get();
+        $cachedAuthors2 = cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEmpty($cachedAuthors1);
+        $this->assertEmpty($cachedAuthors2);
     }
 }
