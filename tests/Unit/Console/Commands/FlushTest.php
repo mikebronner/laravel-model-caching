@@ -13,13 +13,9 @@ class FlushTest extends UnitTestCase
 {
     use RefreshDatabase;
 
-    protected $cache;
-
     public function setUp()
     {
         parent::setUp();
-
-        $this->cache = cache()->store(config('laravel-model-caching:store'));
 
         $this->cache->flush();
         $publishers = factory(Publisher::class, 10)->create();
@@ -97,7 +93,7 @@ class FlushTest extends UnitTestCase
 
         $this->assertEquals($result, 1);
     }
-
+/** @group test */
     public function testAllModelsAreFlushed()
     {
         (new Author)->all();
@@ -124,7 +120,7 @@ class FlushTest extends UnitTestCase
         $this->assertNotEmpty($cachedBooks);
         $this->assertNotEmpty($cachedStores);
 
-        $this->artisan('modelCache:flush', []);
+        $this->artisan('modelCache:flush');
 
         $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];

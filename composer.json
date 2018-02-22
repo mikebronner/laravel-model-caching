@@ -25,7 +25,8 @@
         "phpmd/phpmd": "*",
         "phpunit/phpunit": "*",
         "sebastian/phpcpd": "*",
-        "symfony/thanks": "^1.0"
+        "symfony/thanks": "^1.0",
+        "predis/predis": "^1.1"
     },
     "autoload": {
         "psr-4": {
