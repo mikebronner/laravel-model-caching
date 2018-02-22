@@ -93,7 +93,7 @@ class FlushTest extends UnitTestCase
 
         $this->assertEquals($result, 1);
     }
-/** @group test */
+
     public function testAllModelsAreFlushed()
     {
         (new Author)->all();

@@ -50,9 +50,7 @@ class CachableTest extends UnitTestCase
         (new PrefixedAuthor)->get();
 
         $results = $this->cache()
-            ->tags([
-                'genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor',
-            ])
+            ->tags(['genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor'])
             ->get(sha1('genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor'))['value'];
 
         $this->assertNotNull($results);

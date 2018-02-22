@@ -800,7 +800,7 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
-/** @group test */
+
     public function testHashCollision()
     {
         $this->cache()->flush();
