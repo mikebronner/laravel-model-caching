@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - cache key generation for `find()` and `findOrFail()`.
 
+### Added
+- caching for `paginate()`;
+
 ## [0.2.33] - 19 Feb 2018
 ### Added
 - unit test to make sure `Model::all()` returns a collection when only only
