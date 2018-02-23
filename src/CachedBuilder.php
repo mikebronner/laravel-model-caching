@@ -67,7 +67,7 @@ class CachedBuilder extends EloquentBuilder
         }
 
         $arguments = func_get_args();
-        $cacheKey = $this->makeCacheKey($columns);
+        $cacheKey = $this->makeCacheKey(['*'], null, "-find_{$id}");
         $method = 'find';
 
         return $this->cachedValue($arguments, $cacheKey, $method);

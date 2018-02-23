@@ -853,4 +853,14 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertEmpty($cachedAuthors1);
         $this->assertEmpty($cachedAuthors2);
     }
+
+    public function testSubsequentFindsReturnDifferentModels()
+    {
+        $author1 = (new Author)->find(1);
+        $author2 = (new Author)->find(2);
+
+        $this->assertNotEquals($author1, $author2);
+        $this->assertEquals($author1->id, 1);
+        $this->assertEquals($author2->id, 2);
+    }
 }
