@@ -863,4 +863,24 @@ class CachedBuilderTest extends UnitTestCase
         $this->assertEquals($author1->id, 1);
         $this->assertEquals($author2->id, 2);
     }
+
+    public function testFindOrFailCachesModels()
+    {
+        $author = (new Author)
+            ->findOrFail(1);
+
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor-find_1');
+        $tags = [
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->findOrFail(1);
+
+        $this->assertEquals($cachedResults->toArray(), $author->toArray());
+        $this->assertEquals($liveResults->toArray(), $author->toArray());
+    }
 }

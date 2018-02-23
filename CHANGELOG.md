@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.35] - 21 Feb 2018
+### Fixed
+- cache key generation for `find()` and `findOrFail()`.
+
 ## [0.2.33] - 19 Feb 2018
 ### Added
 - unit test to make sure `Model::all()` returns a collection when only only
