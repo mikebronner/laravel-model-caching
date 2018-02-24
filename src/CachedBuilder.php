@@ -67,7 +67,7 @@ class CachedBuilder extends EloquentBuilder
         }
 
         $arguments = func_get_args();
-        $cacheKey = $this->makeCacheKey($columns);
+        $cacheKey = $this->makeCacheKey(['*'], null, "-find_{$id}");
         $method = 'find';
 
         return $this->cachedValue($arguments, $cacheKey, $method);
@@ -121,6 +121,24 @@ class CachedBuilder extends EloquentBuilder
         $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey(['*'], null, "-min_{$column}");
         $method = 'min';
+
+        return $this->cachedValue($arguments, $cacheKey, $method);
+    }
+
+    public function paginate(
+        $perPage = null,
+        $columns = ['*'],
+        $pageName = 'page',
+        $page = null
+    ) {
+        if (! $this->isCachable) {
+            return parent::paginate($perPage, $columns, $pageName, $page);
+        }
+
+        $arguments = func_get_args();
+        $page = $page ?: 1;
+        $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
+        $method = 'paginate';
 
         return $this->cachedValue($arguments, $cacheKey, $method);
     }
@@ -197,7 +215,9 @@ class CachedBuilder extends EloquentBuilder
         string $method
     ) {
         if ($result['key'] !== $cacheKey) {
-            cache()->tags($cacheTags)->forget($hashedCacheKey);
+            $this->cache()
+                ->tags($cacheTags)
+                ->forget($hashedCacheKey);
 
             $result = $this->retrieveCachedValue(
                 $arguments,

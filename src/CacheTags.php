@@ -18,8 +18,8 @@ class CacheTags
     protected function getCachePrefix() : string
     {
         return "genealabs:laravel-model-caching:"
-            . (config('genealabs:laravel-model-caching', '')
-                ? config('genealabs:laravel-model-caching', '') . ":"
+            . (config('laravel-model-caching.cache-prefix')
+                ? config('laravel-model-caching.cache-prefix', '') . ":"
                 : "");
     }
 
