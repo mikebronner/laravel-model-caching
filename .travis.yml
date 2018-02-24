@@ -1,12 +1,18 @@
 language: php
 
+env:
+    -REDIS_HOST=127.0.0.1
+
 php:
     - 7.1.3
     - 7.2
 
+services:
+    - redis-server
+
 before_script:
     - travis_retry composer self-update
-    - travis_retry composer install --no-interaction --prefer-source --dev
+    - travis_retry composer install --no-interaction --prefer-source
 
 script:
     - mkdir -p ./build/logs
