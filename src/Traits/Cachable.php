@@ -86,6 +86,10 @@ trait Cachable
 
     public static function all($columns = ['*'])
     {
+        if (config('laravel-model-caching.disabled')) {
+            return parent::all($columns);
+        }
+
         $class = get_called_class();
         $instance = new $class;
         $tags = [str_slug(get_called_class())];

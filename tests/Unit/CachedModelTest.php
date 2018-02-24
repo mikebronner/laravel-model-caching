@@ -25,7 +25,8 @@ class CachedModelTest extends UnitTestCase
             'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
-        $cachedResults = $this->cache()
+        $cachedResults = $this
+            ->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
@@ -50,5 +51,26 @@ class CachedModelTest extends UnitTestCase
 
         $this->assertNull($cachedResults);
         $this->assertNotEquals($authors, $cachedResults);
+    }
+
+    public function testAllMethodCachingCanBeDisabledViaConfig()
+    {
+       config(['laravel-model-caching.disabled' => true]);
+        $authors = (new Author)
+            ->all();
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = [
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+        config(['laravel-model-caching.disabled' => false]);
+
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEmpty($cachedResults);
+        $this->assertNotEmpty($authors);
+        $this->assertCount(10, $authors);
     }
 }
