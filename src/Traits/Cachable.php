@@ -1,12 +1,12 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use GeneaLabs\LaravelModelCaching\CachedModel;
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
-use GeneaLabs\LaravelModelCaching\CachedModel;
 use Illuminate\Cache\TaggableStore;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use Illuminate\Database\Query\Builder;
 
 trait Cachable
 {
