@@ -12,7 +12,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function avg($column)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::avg($column);
         }
 
@@ -25,7 +25,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function count($columns = ['*'])
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::count($columns);
         }
 
@@ -38,7 +38,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function cursor()
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return collect(parent::cursor());
         }
 
@@ -62,7 +62,7 @@ class CachedBuilder extends EloquentBuilder
      */
     public function find($id, $columns = ['*'])
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::find($id, $columns);
         }
 
@@ -75,7 +75,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function first($columns = ['*'])
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::first($columns);
         }
 
@@ -88,7 +88,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function get($columns = ['*'])
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::get($columns);
         }
 
@@ -101,7 +101,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function max($column)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::max($column);
         }
 
@@ -114,7 +114,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function min($column)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::min($column);
         }
 
@@ -131,7 +131,7 @@ class CachedBuilder extends EloquentBuilder
         $pageName = 'page',
         $page = null
     ) {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
@@ -145,7 +145,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function pluck($column, $key = null)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::pluck($column, $key);
         }
 
@@ -159,7 +159,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function sum($column)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::sum($column);
         }
 
@@ -172,7 +172,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function value($column)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             return parent::value($column);
         }
 

@@ -23,6 +23,7 @@ class CachableTest extends UnitTestCase
     {
         $configCacheStores = config('cache.stores');
         $configCacheStores['customCache'] = ['driver' => 'array'];
+        // TODO: make sure the alternate cache is actually loaded
         config(['cache.stores' => $configCacheStores]);
         config(['laravel-model-caching.store' => 'customCache']);
         $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
@@ -49,28 +50,51 @@ class CachableTest extends UnitTestCase
     {
         (new PrefixedAuthor)->get();
 
-        $results = $this->cache()
-            ->tags(['genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor'])
+        $results = $this->
+            cache()
+            ->tags([
+                'genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor',
+            ])
             ->get(sha1('genealabs:laravel-model-caching:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor'))['value'];
 
         $this->assertNotNull($results);
     }
 
-    public function testAllReturnsCollection()
-    {
-        (new Author)->truncate();
-        factory(Author::class, 1)->create();
-        $authors = (new Author)->all();
+    // public function testAllReturnsCollection()
+    // {
+    //     (new Author)->truncate();
+    //     factory(Author::class, 1)->create();
+    //     $authors = (new Author)->all();
+    //
+    //     $cachedResults = $this
+    //         ->cache()
+    //         ->tags([
+    //             'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+    //         ])
+    //         ->get(sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'))['value'];
+    //     $liveResults = (new UncachedAuthor)->all();
+    //
+    //     $this->assertInstanceOf(Collection::class, $authors);
+    //     $this->assertInstanceOf(Collection::class, $cachedResults);
+    //     $this->assertInstanceOf(Collection::class, $liveResults);
+    // }
 
-        $cachedResults = $this->cache()
+    public function testsCacheFlagDisablesCaching()
+    {
+        config(['laravel-model-caching.disabled' => true]);
+
+        $authors = (new Author)->get();
+        $cachedAuthors = $this
+            ->cache()
             ->tags([
                 'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
             ])
-            ->get(sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'))['value'];
-        $liveResults = (new UncachedAuthor)->all();
+            ->get(sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'));
 
-        $this->assertInstanceOf(Collection::class, $authors);
-        $this->assertInstanceOf(Collection::class, $cachedResults);
-        $this->assertInstanceOf(Collection::class, $liveResults);
+        config(['laravel-model-caching.disabled' => false]);
+
+        $this->assertNull($cachedAuthors);
+        $this->assertNotEmpty($authors);
+        $this->assertCount(10, $authors);
     }
 }
