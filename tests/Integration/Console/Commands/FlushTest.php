@@ -1,4 +1,4 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Unit\Console\Commands;
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Console\Commands;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -6,10 +6,10 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
+use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class FlushTest extends UnitTestCase
+class FlushTest extends IntegrationTestCase
 {
     use RefreshDatabase;
 

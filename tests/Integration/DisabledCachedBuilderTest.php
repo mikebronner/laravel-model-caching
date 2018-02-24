@@ -1,4 +1,4 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Unit;
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -11,14 +11,14 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
-use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
+use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
 * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class DisabledCachedBuilderTest extends UnitTestCase
+class DisabledCachedBuilderTest extends IntegrationTestCase
 {
     use RefreshDatabase;
 

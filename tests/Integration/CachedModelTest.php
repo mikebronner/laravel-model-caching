@@ -1,4 +1,4 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Unit;
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -10,10 +10,10 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
+use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CachedModelTest extends UnitTestCase
+class CachedModelTest extends IntegrationTestCase
 {
     use RefreshDatabase;
 
