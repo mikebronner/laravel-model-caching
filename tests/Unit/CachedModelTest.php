@@ -55,7 +55,7 @@ class CachedModelTest extends UnitTestCase
 
     public function testAllMethodCachingCanBeDisabledViaConfig()
     {
-       config(['laravel-model-caching.disabled' => true]);
+        config(['laravel-model-caching.disabled' => true]);
         $authors = (new Author)
             ->all();
         $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
