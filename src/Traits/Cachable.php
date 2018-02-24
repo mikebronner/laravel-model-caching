@@ -99,12 +99,18 @@ trait Cachable
 
     public function newEloquentBuilder($query)
     {
-        if (! $this->isCachable) {
+        if (! $this->isCachable()) {
             $this->isCachable = true;
 
             return new EloquentBuilder($query);
         }
 
         return new CachedBuilder($query);
+    }
+
+    public function isCachable() : bool
+    {
+        return $this->isCachable
+            && ! config('laravel-model-caching.disabled');
     }
 }
