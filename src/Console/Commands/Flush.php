@@ -13,8 +13,10 @@ class Flush extends Command
 
         if (! $option) {
             cache()
-                ->store(config('laravel-model-caching:store'))
+                ->store(config('laravel-model-caching.store'))
                 ->flush();
+
+            $this->info("✔︎ Entire model cache has been flushed.");
 
             return 0;
         }

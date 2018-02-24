@@ -11,7 +11,7 @@ class BaseModel extends Model
 
     public function __construct($attributes = [])
     {
-        config(['genealabs:laravel-model-caching' => 'test-prefix']);
+        config(['laravel-model-caching.cache-prefix' => 'test-prefix']);
 
         parent::__construct($attributes);
     }

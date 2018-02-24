@@ -106,13 +106,17 @@ Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
 
 ### Optional Disabling Caching of Queries
-**Recommendation: add this to all your seeder queries to avoid pulling in
+There are two methods by which model-caching can be disabled:
+1. Use `->disableCache()` in a query-by-query instance.
+2. Set `MODEL_CACHE_DISABLED=TRUE` in your `.env` file.
+
+**Recommendation: use option #1 in all your seeder queries to avoid pulling in
 cached information when reseeding multiple times.**
 You can disable a given query by using `disableCache()` in the query chain, and
 it needs to be placed (anywhere) prior to the query command (`get()`, `all()`,
 `find()`, etc). For example:
 ```php
-$results = $myModel->disableCache()->all();
+$results = $myModel->disableCache()->get();
 ```
 
 ### Manual Flushing of Specific Model

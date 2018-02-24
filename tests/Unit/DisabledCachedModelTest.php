@@ -17,33 +17,6 @@ class DisabledCachedModelTest extends UnitTestCase
 {
     use RefreshDatabase;
 
-    public function setUp()
-    {
-        parent::setUp();
-
-        cache()->flush();
-        $publishers = factory(Publisher::class, 10)->create();
-        factory(Author::class, 10)->create()
-            ->each(function ($author) use ($publishers) {
-                factory(Book::class, random_int(2, 10))->make()
-                    ->each(function ($book) use ($author, $publishers) {
-                        $book->author()->associate($author);
-                        $book->publisher()->associate($publishers[rand(0, 9)]);
-                        $book->save();
-                    });
-                factory(Profile::class)->make([
-                    'author_id' => $author->id,
-                ]);
-            });
-
-        $bookIds = (new Book)->all()->pluck('id');
-        factory(Store::class, 10)->create()
-            ->each(function ($store) use ($bookIds) {
-                $store->books()->sync(rand($bookIds->min(), $bookIds->max()));
-            });
-        cache()->flush();
-    }
-
     public function testAllModelResultsIsNotCached()
     {
         $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
@@ -52,7 +25,7 @@ class DisabledCachedModelTest extends UnitTestCase
             ->disableCache()
             ->all();
 
-        $cachedResults = cache()
+        $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key);
         $liveResults = (new UncachedAuthor)
