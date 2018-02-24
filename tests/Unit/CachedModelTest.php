@@ -73,4 +73,28 @@ class CachedModelTest extends UnitTestCase
         $this->assertNotEmpty($authors);
         $this->assertCount(10, $authors);
     }
+
+    public function testWhereHasIsBeingCached()
+    {
+        $books = (new Book)
+            ->with('author')
+            ->whereHas('author', function ($query) {
+                $query->whereId('1');
+            })
+            ->get();
+
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook_exists_and_books.author_id_=_authors.id-id_=_1-author');
+        $tags = [
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEquals(1, $books->first()->author->id);
+        $this->assertEquals(1, $cachedResults->first()->author->id);
+    }
 }
