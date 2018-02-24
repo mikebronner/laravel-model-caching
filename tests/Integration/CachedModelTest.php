@@ -1,4 +1,4 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Unit;
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -10,10 +10,10 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\UnitTestCase;
+use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CachedModelTest extends UnitTestCase
+class CachedModelTest extends IntegrationTestCase
 {
     use RefreshDatabase;
 
@@ -55,7 +55,7 @@ class CachedModelTest extends UnitTestCase
 
     public function testAllMethodCachingCanBeDisabledViaConfig()
     {
-       config(['laravel-model-caching.disabled' => true]);
+        config(['laravel-model-caching.disabled' => true]);
         $authors = (new Author)
             ->all();
         $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
@@ -72,5 +72,29 @@ class CachedModelTest extends UnitTestCase
         $this->assertEmpty($cachedResults);
         $this->assertNotEmpty($authors);
         $this->assertCount(10, $authors);
+    }
+
+    public function testWhereHasIsBeingCached()
+    {
+        $books = (new Book)
+            ->with('author')
+            ->whereHas('author', function ($query) {
+                $query->whereId('1');
+            })
+            ->get();
+
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook_exists_and_books.author_id_=_authors.id-id_=_1-author');
+        $tags = [
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEquals(1, $books->first()->author->id);
+        $this->assertEquals(1, $cachedResults->first()->author->id);
     }
 }

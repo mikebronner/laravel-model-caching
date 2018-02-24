@@ -2,7 +2,7 @@
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
-abstract class UnitTestCase extends BaseTestCase
+abstract class IntegrationTestCase extends BaseTestCase
 {
     use CreatesApplication;
 
