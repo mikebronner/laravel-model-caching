@@ -34,10 +34,6 @@ trait Cachable
         $usesCachableTrait = collect(class_uses($this))
             ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
 
-        if (! $usesCachableTrait) {
-            array_push($tags, str_slug(get_called_class()));
-        }
-
         return $tags;
     }
 
@@ -59,10 +55,7 @@ trait Cachable
         [$cacheCooldown] = $this->getModelCacheCooldown($this);
 
         if ($cacheCooldown) {
-            $cachePrefix = "genealabs:laravel-model-caching:"
-                . (config('laravel-model-caching.cache-prefix')
-                    ? config('laravel-model-caching.cache-prefix', '') . ":"
-                    : "");
+            $cachePrefix = $this->getCachePrefix();
             $modelClassName = get_class($this);
             $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
 
@@ -157,7 +150,7 @@ trait Cachable
 
     protected function checkCooldownAndFlushAfterPersiting(Model $instance)
     {
-        [$cacheCooldown, $invalidatedAt, $savedAt] = $instance->getModelCacheCooldown($instance);
+        [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown) {
             $instance->flushCache();
@@ -167,19 +160,14 @@ trait Cachable
 
         $this->setCacheCooldownSavedAtTimestamp($instance);
 
-        if ($savedAt > $invalidatedAt
-                && now()->diffInSeconds($invalidatedAt) >= $cacheCooldown
-        ) {
+        if (now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
             $instance->flushCache();
         }
     }
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
     {
-        $cachePrefix = "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
-                : "");
+        $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
         $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
 
@@ -235,10 +223,7 @@ trait Cachable
         EloquentBuilder $query,
         int $seconds
     ) : EloquentBuilder {
-        $cachePrefix = "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
-                : "");
+        $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($this);
         $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";
 

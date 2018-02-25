@@ -308,4 +308,25 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertEquals($author, $liveResult);
         $this->assertNull($cachedResult);
     }
+
+    public function testPaginationIsCached()
+    {
+        $authors = (new Author)
+            ->disableCache()
+            ->paginate(3);
+
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
+        $tags = [
+            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->paginate(3);
+
+        $this->assertNull($cachedResults);
+        $this->assertEquals($liveResults->toArray(), $authors->toArray());
+    }
 }

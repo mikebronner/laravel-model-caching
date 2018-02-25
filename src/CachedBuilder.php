@@ -32,17 +32,6 @@ class CachedBuilder extends EloquentBuilder
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function cursor()
-    {
-        if (! $this->isCachable()) {
-            return collect(parent::cursor());
-        }
-
-        $cacheKey = $this->makeCacheKey(["*"], null, "-cursor");
-
-        return $this->cachedValue(func_get_args(), $cacheKey);
-    }
-
     public function delete()
     {
         $this->cache($this->makeCacheTags())

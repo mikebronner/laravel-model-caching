@@ -786,7 +786,7 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
-/** @group test */
+
     public function testHashCollision()
     {
         $key1 = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');

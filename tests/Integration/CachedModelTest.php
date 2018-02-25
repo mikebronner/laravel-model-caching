@@ -97,7 +97,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertEquals(1, $books->first()->author->id);
         $this->assertEquals(1, $cachedResults->first()->author->id);
     }
-/** @group test */
+
     public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
     {
         $authors = (new Author)
