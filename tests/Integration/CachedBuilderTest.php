@@ -191,49 +191,34 @@ class CachedBuilderTest extends IntegrationTestCase
 
     public function testChunkModelResultsCreatesCache()
     {
-        $cachedChunks = collect([
-            'authors' => collect(),
-            'keys' => collect(),
-        ]);
-        $chunkSize = 3;
-        $tags = [
-            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
-            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook',
-            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesprofile',
-        ];
-        $uncachedChunks = collect();
+        $chunkedAuthors = [];
+        $chunkedKeys = [];
+        $tags = ["genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor"];
+        (new Author)
+            ->chunk(3, function ($authors) use (&$chunkedAuthors, &$chunkedKeys) {
+                $offset = "";
 
-        (new Author)->with('books', 'profile')
-            ->chunk($chunkSize, function ($chunk) use (&$cachedChunks, $chunkSize) {
-                $offset = '';
-
-                if ($cachedChunks['authors']->count()) {
-                    $offsetIncrement = $cachedChunks['authors']->count() * $chunkSize;
-                    $offset = "-offset_{$offsetIncrement}";
+                if (count($chunkedKeys)) {
+                    $offset = "-offset_" . (count($chunkedKeys) * 3);
                 }
 
-                $cachedChunks['authors']->push($chunk);
-                $cachedChunks['keys']->push(sha1(
-                    "genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor-books-profile_orderBy_authors.id_asc{$offset}-limit_3"
-                ));
+                $key = "genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor_orderBy_authors.id_asc{$offset}-limit_3";
+                array_push($chunkedAuthors, $authors);
+                array_push($chunkedKeys, $key);
             });
 
-        (new UncachedAuthor)->with('books', 'profile')
-            ->chunk($chunkSize, function ($chunk) use (&$uncachedChunks) {
-                $uncachedChunks->push($chunk);
-            });
 
-        for ($index = 0; $index < $cachedChunks['authors']->count(); $index++) {
-            $key = $cachedChunks['keys'][$index];
-            $cachedResults = $this->cache()->tags($tags)
-                ->get($key)['value'];
+        for ($index = 0; $index < count($chunkedAuthors); $index++) {
+            $cachedAuthors = $this
+                ->cache()
+                ->tags($tags)
+                ->get(sha1($chunkedKeys[$index]))['value'];
 
-            // $this->assertTrue($cachedChunks['authors'][$index]->diffKeys($cachedResults)->isEmpty());
-            // $this->assertTrue($uncachedChunks[$index]->diffKeys($cachedResults)->isEmpty());
-
-            $this->assertEmpty($cachedChunks['authors'][$index]->diffKeys($cachedResults));
-            $this->assertEmpty($uncachedChunks[$index]->diffKeys($cachedResults));
+            $this->assertEquals(count($chunkedAuthors[$index]), count($cachedAuthors));
+            $this->assertEquals($chunkedAuthors[$index], $cachedAuthors);
         }
+
+        $this->assertCount(4, $chunkedAuthors);
     }
 
     public function testCountModelResultsCreatesCache()
@@ -250,7 +235,8 @@ class CachedBuilderTest extends IntegrationTestCase
 
         $cachedResults = $this->cache()->tags($tags)
             ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)->with('books', 'profile')
+        $liveResults = (new UncachedAuthor)
+            ->with('books', 'profile')
             ->count();
 
         $this->assertEquals($authors, $cachedResults);
@@ -800,18 +786,20 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
-
+/** @group test */
     public function testHashCollision()
     {
-        $this->cache()->flush();
         $key1 = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
         $tags1 = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook'];
+        $books = (new Book)
+            ->whereNotIn('id', [1, 2])
+            ->get();
+        $this->cache()->tags($tags1)->flush();
 
         $authors = (new Author)
             ->disableCache()
             ->get();
         $key2 = 'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor';
-
         $this->cache()
             ->tags($tags1)
             ->rememberForever(
@@ -823,16 +811,14 @@ class CachedBuilderTest extends IntegrationTestCase
                     ];
                 }
             );
-
-        $books = (new Book)
+        $cachedBooks = (new Book)
             ->whereNotIn('id', [1, 2])
             ->get();
-
         $cachedResults = $this->cache()
             ->tags($tags1)
             ->get($key1)['value'];
 
-        $this->assertTrue($cachedResults->diff($books)->isEmpty());
+        $this->assertTrue($cachedResults->keyBy('id')->diffKeys($books->keyBy('id'))->isEmpty());
         $this->assertTrue($cachedResults->diff($authors)->isNotEmpty());
     }
 

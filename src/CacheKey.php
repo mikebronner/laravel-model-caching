@@ -13,8 +13,8 @@ class CacheKey
     protected function getCachePrefix() : string
     {
         return "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
+            . (config("laravel-model-caching.cache-prefix")
+                ? config("laravel-model-caching.cache-prefix", "") . ":"
                 : "");
     }
 
@@ -29,13 +29,13 @@ class CacheKey
     }
 
     public function make(
-        array $columns = ['*'],
+        array $columns = ["*"],
         $idColumn = null,
-        string $keyDifferentiator = ''
+        string $keyDifferentiator = ""
     ) : string {
         $key = $this->getCachePrefix();
         $key .= $this->getModelSlug();
-        $key .= $this->getIdColumn($idColumn ?: '');
+        $key .= $this->getIdColumn($idColumn ?: "");
         $key .= $this->getQueryColumns($columns);
         $key .= $this->getWhereClauses();
         $key .= $this->getWithModels();
@@ -49,13 +49,13 @@ class CacheKey
 
     protected function getIdColumn(string $idColumn) : string
     {
-        return $idColumn ? "_{$idColumn}" : '';
+        return $idColumn ? "_{$idColumn}" : "";
     }
 
     protected function getLimitClause() : string
     {
         if (! $this->query->limit) {
-            return '';
+            return "";
         }
 
         return "-limit_{$this->query->limit}";
@@ -69,7 +69,7 @@ class CacheKey
     protected function getOffsetClause() : string
     {
         if (! $this->query->offset) {
-            return '';
+            return "";
         }
 
         return "-offset_{$this->query->offset}";
@@ -81,48 +81,48 @@ class CacheKey
 
         return $orders
             ->reduce(function ($carry, $order) {
-                if (($order['type'] ?? '') === 'Raw') {
-                    return $carry . '_orderByRaw_' . str_slug($order['sql']);
+                if (($order["type"] ?? "") === "Raw") {
+                    return $carry . "_orderByRaw_" . str_slug($order["sql"]);
                 }
 
-                return $carry . '_orderBy_' . $order['column'] . '_' . $order['direction'];
+                return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
             })
-            ?: '';
+            ?: "";
     }
 
     protected function getQueryColumns(array $columns) : string
     {
-        if ($columns === ['*'] || $columns === []) {
-            return '';
+        if ($columns === ["*"] || $columns === []) {
+            return "";
         }
 
-        return '_' . implode('_', $columns);
+        return "_" . implode("_", $columns);
     }
 
     protected function getTypeClause($where) : string
     {
-        $type =in_array($where['type'], ['In', 'NotIn', 'Null', 'NotNull', 'between'])
-            ? strtolower($where['type'])
-            : strtolower($where['operator']);
+        $type =in_array($where["type"], ["In", "NotIn", "Null", "NotNull", "between"])
+            ? strtolower($where["type"])
+            : strtolower($where["operator"]);
 
-        return str_replace(' ', '_', $type);
+        return str_replace(" ", "_", $type);
     }
 
     protected function getValuesClause(array $where = null) : string
     {
-        if (in_array($where['type'], ['NotNull'])) {
-            return '';
+        if (in_array($where["type"], ["NotNull"])) {
+            return "";
         }
 
-        $values = is_array(array_get($where, 'values'))
-            ? implode('_', $where['values'])
-            : '';
+        $values = is_array(array_get($where, "values"))
+            ? implode("_", $where["values"])
+            : "";
 
-        if (! $values && $this->query->bindings['where'] ?? false) {
-            $values = implode('_', $this->query->bindings['where']);
+        if (! $values && $this->query->bindings["where"] ?? false) {
+            $values = implode("_", $this->query->bindings["where"]);
         }
 
-        return '_' . $values;
+        return "_" . $values;
     }
 
     protected function getWhereClauses(array $wheres = []) : string
@@ -136,46 +136,46 @@ class CacheKey
 
                 return $value;
             })
-            . '';
+            . "";
     }
 
     protected function getNestedClauses(array $where) : string
     {
-        if (! in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
-            return '';
+        if (! in_array($where["type"], ["Exists", "Nested", "NotExists"])) {
+            return "";
         }
 
-        return '_' . strtolower($where['type']) . $this->getWhereClauses($where['query']->wheres);
+        return "_" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
     }
 
     protected function getColumnClauses(array $where) : string
     {
-        if ($where['type'] !== 'Column') {
-            return '';
+        if ($where["type"] !== "Column") {
+            return "";
         }
 
-        return "_{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
+        return "_{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
     protected function getRawClauses(array $where) : string
     {
-        if ($where['type'] !== 'raw') {
-            return '';
+        if ($where["type"] !== "raw") {
+            return "";
         }
 
-        return "_{$where['boolean']}_" . str_slug($where['sql']);
+        return "_{$where["boolean"]}_" . str_slug($where["sql"]);
     }
 
     protected function getOtherClauses(array $where, string $carry = null) : string
     {
-        if (in_array($where['type'], ['Exists', 'Nested', 'NotExists', 'raw', 'Column'])) {
-            return '';
+        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "raw", "Column"])) {
+            return "";
         }
 
         $value = $this->getTypeClause($where);
         $value .= $this->getValuesClause($where);
 
-        return "{$carry}-{$where['column']}_{$value}";
+        return "{$carry}-{$where["column"]}_{$value}";
     }
 
     protected function getWheres(array $wheres) : Collection
@@ -194,9 +194,9 @@ class CacheKey
         $eagerLoads = collect($this->eagerLoad);
 
         if ($eagerLoads->isEmpty()) {
-            return '';
+            return "";
         }
 
-        return '-' . implode('-', $eagerLoads->keys()->toArray());
+        return "-" . implode("-", $eagerLoads->keys()->toArray());
     }
 }
