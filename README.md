@@ -41,7 +41,7 @@ environment variable in your `.env` file to the name of a cache store configured
 in `config/cache.php` (you can define any custom cache store based on your
 specific needs there). For example:
 ```
-MODEL_CACHE_STORE=redis
+MODEL_CACHE_STORE=redis2
 ```
 
 ## Usage
@@ -105,7 +105,20 @@ extends `Illuminate\Foundation\Auth\User`. Overriding that would break functiona
 Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
 
-### Optional Disabling Caching of Queries
+### Experimental: Cache Cool-down In Specific Models
+In some instances, you may want to add a cache invalidation cool-down period.
+For example you might have a busy site where comments are submitted at a high
+rate, and you don't want every comment submission to invalidate the cache. While
+I don't necessarily recommend this, you might experiment it's effectiveness.
+
+It can be implemented like so:
+```php
+(new Comment)
+    ->withCacheCooldownSeconds(30)
+    ->get();
+```
+
+### Disabling Caching of Queries
 There are two methods by which model-caching can be disabled:
 1. Use `->disableCache()` in a query-by-query instance.
 2. Set `MODEL_CACHE_DISABLED=TRUE` in your `.env` file.

@@ -97,4 +97,25 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertEquals(1, $books->first()->author->id);
         $this->assertEquals(1, $cachedResults->first()->author->id);
     }
+
+    public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
+    {
+        $authors = (new Author)
+            ->withCacheCooldownSeconds(1)
+            ->get();
+
+        factory(Author::class, 1)->create();
+        $authorsDuringCooldown = (new Author)
+            ->get();
+        $uncachedAuthors = (new UncachedAuthor)
+            ->get();
+        sleep(2);
+        $authorsAfterCooldown = (new Author)
+            ->get();
+
+        $this->assertCount(10, $authors);
+        $this->assertCount(10, $authorsDuringCooldown);
+        $this->assertCount(11, $uncachedAuthors);
+        $this->assertCount(11, $authorsAfterCooldown);
+    }
 }
