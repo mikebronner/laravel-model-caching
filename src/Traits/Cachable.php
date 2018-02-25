@@ -244,7 +244,7 @@ trait Cachable
 
         $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at";
         $this->cache()
-            ->rememberForever($cacheKey, function () use ($seconds) {
+            ->rememberForever($cacheKey, function () {
                 return now();
             });
 
