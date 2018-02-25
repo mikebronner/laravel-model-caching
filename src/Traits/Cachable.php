@@ -56,7 +56,7 @@ trait Cachable
 
         $this->cache($tags)->flush();
 
-        [$cacheCooldown, $invalidatedAt, $savedAt] = $this->getModelCacheCooldown($this);
+        [$cacheCooldown] = $this->getModelCacheCooldown($this);
 
         if ($cacheCooldown) {
             $cachePrefix = "genealabs:laravel-model-caching:"
@@ -71,6 +71,14 @@ trait Cachable
                     return now();
                 });
         }
+    }
+
+    protected function getCachePrefix() : string
+    {
+        return "genealabs:laravel-model-caching:"
+            . (config('laravel-model-caching.cache-prefix')
+                ? config('laravel-model-caching.cache-prefix', '') . ":"
+                : "");
     }
 
     protected function makeCacheKey(
@@ -96,10 +104,7 @@ trait Cachable
 
     protected function getModelCacheCooldown(Model $instance)
     {
-        $cachePrefix = "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
-                : "");
+        $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
 
         $cacheCooldown = $instance
@@ -135,10 +140,7 @@ trait Cachable
             return;
         }
 
-        $cachePrefix = "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
-                : "");
+        $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
 
         $instance
