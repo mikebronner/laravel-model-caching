@@ -129,28 +129,28 @@ trait Cachable
     {
         [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
-        if (! $cacheCooldown) {
+        if (! $cacheCooldown
+            || now()->diffInSeconds($invalidatedAt) < $cacheCooldown
+        ) {
             return;
         }
 
-        if (now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
-            $cachePrefix = "genealabs:laravel-model-caching:"
-                . (config('laravel-model-caching.cache-prefix')
-                    ? config('laravel-model-caching.cache-prefix', '') . ":"
-                    : "");
-            $modelClassName = get_class($instance);
+        $cachePrefix = "genealabs:laravel-model-caching:"
+            . (config('laravel-model-caching.cache-prefix')
+                ? config('laravel-model-caching.cache-prefix', '') . ":"
+                : "");
+        $modelClassName = get_class($instance);
 
-            $instance
-                ->cache()
-                ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
-            $instance
-                ->cache()
-                ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
-            $instance
-                ->cache()
-                ->forget("{$cachePrefix}:{$modelClassName}-cooldown:saved-at");
-            $instance->flushCache();
-        }
+        $instance
+            ->cache()
+            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
+        $instance
+            ->cache()
+            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
+        $instance
+            ->cache()
+            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:saved-at");
+        $instance->flushCache();
     }
 
     protected function checkCooldownAndFlushAfterPersiting(Model $instance)
@@ -163,25 +163,28 @@ trait Cachable
             return;
         }
 
-        if ($cacheCooldown) {
-            $cachePrefix = "genealabs:laravel-model-caching:"
-                . (config('laravel-model-caching.cache-prefix')
-                    ? config('laravel-model-caching.cache-prefix', '') . ":"
-                    : "");
-            $modelClassName = get_class($instance);
-            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
-
-            $instance->cache()
-                ->rememberForever($cacheKey, function () {
-                    return now();
-                });
-        }
+        $this->setCacheCooldownSavedAtTimestamp($instance);
 
         if ($savedAt > $invalidatedAt
                 && now()->diffInSeconds($invalidatedAt) >= $cacheCooldown
         ) {
             $instance->flushCache();
         }
+    }
+
+    protected function setCacheCooldownSavedAtTimestamp(Model $instance)
+    {
+        $cachePrefix = "genealabs:laravel-model-caching:"
+            . (config('laravel-model-caching.cache-prefix')
+                ? config('laravel-model-caching.cache-prefix', '') . ":"
+                : "");
+        $modelClassName = get_class($instance);
+        $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
+
+        $instance->cache()
+            ->rememberForever($cacheKey, function () {
+                return now();
+            });
     }
 
     public static function bootCachable()
