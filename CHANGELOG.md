@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.38] - 24 Feb 2018
+### Added
+- cache-invalidation-cool-down functionality.
+
+## [0.2.37] - 23 Feb 2018
+### Added
+- disabling of `->all()` method caching via config flag.
+
 ## [0.2.36] - 23 Feb 2018
 ### Added
 - config setting to allow disabling of model-caching.
@@ -14,6 +22,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - caching for `paginate()`;
+
+## [0.2.34] - 21 Feb 2018
+### Added
+- implementation tests using redis.
+- additional tests for some edge case scenarios.
+
+### Fixed
+- cache key prefix functionality.
+
+### Updated
+- tests through refactoring and cleaning up.
 
 ## [0.2.33] - 19 Feb 2018
 ### Added
