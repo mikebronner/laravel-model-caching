@@ -22,19 +22,10 @@ trait Cachable
         }
 
         if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
-            $tags = $this->addTagsWhenCalledFromCachedBuilder($tags);
             $cache = $cache->tags($tags);
         }
 
         return $cache;
-    }
-
-    protected function addTagsWhenCalledFromCachedBuilder(array $tags) : array
-    {
-        $usesCachableTrait = collect(class_uses($this))
-            ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
-
-        return $tags;
     }
 
     public function disableCache()
@@ -99,27 +90,35 @@ trait Cachable
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
-
-        $cacheCooldown = $instance
-            ->cache()
-            ->get("{$cachePrefix}:{$modelClassName}-cooldown:seconds");
+        [$cacheCooldown, $invalidatedAt, $savedAt] = $this
+            ->getCacheCooldownDetails($instance, $cachePrefix, $modelClassName);
 
         if (! $cacheCooldown) {
             return [null, null, null];
         }
 
-        $invalidatedAt = $instance
-            ->cache()
-            ->get("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
-
-        $savedAt = $instance
-            ->cache()
-            ->get("{$cachePrefix}:{$modelClassName}-cooldown:saved-at");
-
         return [
             $cacheCooldown,
             $invalidatedAt,
             $savedAt,
+        ];
+    }
+
+    protected function getCacheCooldownDetails(
+        Model $instance,
+        string $cachePrefix,
+        string $modelClassName
+    ) : array {
+        return [
+            $instance
+                ->cache()
+                ->get("{$cachePrefix}:{$modelClassName}-cooldown:seconds"),
+            $instance
+                ->cache()
+                ->get("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at"),
+            $instance
+                ->cache()
+                ->get("{$cachePrefix}:{$modelClassName}-cooldown:saved-at"),
         ];
     }
 
