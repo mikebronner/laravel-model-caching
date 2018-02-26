@@ -86,14 +86,14 @@ trait Cachable
         return $tags;
     }
 
-    protected function getModelCacheCooldown(Model $instance)
+    public function getModelCacheCooldown(Model $instance)
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
         [$cacheCooldown, $invalidatedAt, $savedAt] = $this
             ->getCacheCooldownDetails($instance, $cachePrefix, $modelClassName);
 
-        if (! $cacheCooldown) {
+        if (! $cacheCooldown || $cacheCooldown === 0) {
             return [null, null, null];
         }
 
@@ -178,7 +178,6 @@ trait Cachable
 
     public static function bootCachable()
     {
-        // TODO: add for deleted,updated,etc?
         static::saved(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });

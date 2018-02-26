@@ -76,6 +76,13 @@ class CachedBuilder extends EloquentBuilder
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
+    public function insert(array $values)
+    {
+        $this->checkCooldownAndFlushAfterPersiting($this->model);
+
+        return parent::insert($values);
+    }
+
     public function max($column)
     {
         if (! $this->isCachable()) {
