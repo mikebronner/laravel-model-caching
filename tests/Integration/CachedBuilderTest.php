@@ -909,4 +909,24 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertCount(11, $authorsAfterInsert);
         $this->assertCount(11, $uncachedAuthors);
     }
+
+    public function testUpdateInvalidatesCache()
+    {
+        $originalAuthor = (new Author)
+            ->first();
+        $author = (new Author)
+            ->first();
+
+        $author->update([
+            "name" => "Updated Name",
+        ]);
+        $authorAfterUpdate = (new Author)
+            ->find($author->id);
+        $uncachedAuthor = (new UncachedAuthor)
+            ->find($author->id);
+
+        $this->assertNotEquals($originalAuthor->name, $authorAfterUpdate->name);
+        $this->assertEquals("Updated Name", $authorAfterUpdate->name);
+        $this->assertEquals($authorAfterUpdate->name, $uncachedAuthor->name);
+    }
 }
