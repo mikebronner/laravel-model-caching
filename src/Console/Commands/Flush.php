@@ -10,17 +10,27 @@ class Flush extends Command
     public function handle()
     {
         $option = $this->option('model');
-
+        
         if (! $option) {
-            cache()
-                ->store(config('laravel-model-caching.store'))
-                ->flush();
-
-            $this->info("✔︎ Entire model cache has been flushed.");
-
-            return 0;
+            return $this->flushEntireCache();
         }
 
+        return $this->flushModelCache($option);
+    }
+
+    protected function flushEntireCache() : int
+    {
+        cache()
+            ->store(config('laravel-model-caching.store'))
+            ->flush();
+
+        $this->info("✔︎ Entire model cache has been flushed.");
+
+        return 0;
+    }
+
+    protected function flushModelCache(string $option) : int
+    {
         $model = new $option;
         $usesCachableTrait = collect(class_uses($model))
             ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
@@ -34,5 +44,7 @@ class Flush extends Command
 
         $model->flushCache();
         $this->info("✔︎ Cache for model '{$option}' has been flushed.");
+
+        return 0;
     }
 }

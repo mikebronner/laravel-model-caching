@@ -16,11 +16,9 @@ class CachedBuilder extends EloquentBuilder
             return parent::avg($column);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey(["*"], null, "-avg_{$column}");
-        $method = "avg";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function count($columns = ["*"])
@@ -29,24 +27,9 @@ class CachedBuilder extends EloquentBuilder
             return parent::count($columns);
         }
 
-        $arguments = func_get_args();
-        $cacheKey = $this->makeCacheKey(["*"], null, "-count");
-        $method = "count";
+        $cacheKey = $this->makeCacheKey($columns, null, "-count");
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
-    }
-
-    public function cursor()
-    {
-        if (! $this->isCachable()) {
-            return collect(parent::cursor());
-        }
-
-        $arguments = func_get_args();
-        $cacheKey = $this->makeCacheKey(["*"], null, "-cursor");
-        $method = "cursor";
-
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function delete()
@@ -66,11 +49,9 @@ class CachedBuilder extends EloquentBuilder
             return parent::find($id, $columns);
         }
 
-        $arguments = func_get_args();
-        $cacheKey = $this->makeCacheKey(["*"], null, "-find_{$id}");
-        $method = "find";
+        $cacheKey = $this->makeCacheKey($columns, null, "-find_{$id}");
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function first($columns = ["*"])
@@ -79,11 +60,9 @@ class CachedBuilder extends EloquentBuilder
             return parent::first($columns);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey($columns);
-        $method = "first";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function get($columns = ["*"])
@@ -92,11 +71,16 @@ class CachedBuilder extends EloquentBuilder
             return parent::get($columns);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey($columns);
-        $method = "get";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    public function insert(array $values)
+    {
+        $this->checkCooldownAndFlushAfterPersiting($this->model);
+
+        return parent::insert($values);
     }
 
     public function max($column)
@@ -105,11 +89,9 @@ class CachedBuilder extends EloquentBuilder
             return parent::max($column);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey(["*"], null, "-max_{$column}");
-        $method = "max";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function min($column)
@@ -118,11 +100,9 @@ class CachedBuilder extends EloquentBuilder
             return parent::min($column);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey(["*"], null, "-min_{$column}");
-        $method = "min";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function paginate(
@@ -135,12 +115,10 @@ class CachedBuilder extends EloquentBuilder
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $arguments = func_get_args();
         $page = $page ?: 1;
         $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
-        $method = "paginate";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function pluck($column, $key = null)
@@ -150,11 +128,9 @@ class CachedBuilder extends EloquentBuilder
         }
 
         $keyDifferentiator = "-pluck_{$column}" . ($key ? "_{$key}" : "");
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey([$column], null, $keyDifferentiator);
-        $method = "pluck";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function sum($column)
@@ -163,11 +139,16 @@ class CachedBuilder extends EloquentBuilder
             return parent::sum($column);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey(["*"], null, "-sum_{$column}");
-        $method = "sum";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    public function update(array $values)
+    {
+        $this->checkCooldownAndFlushAfterPersiting($this->model);
+
+        return parent::update($values);
     }
 
     public function value($column)
@@ -176,15 +157,14 @@ class CachedBuilder extends EloquentBuilder
             return parent::value($column);
         }
 
-        $arguments = func_get_args();
         $cacheKey = $this->makeCacheKey(["*"], null, "-value_{$column}");
-        $method = "value";
 
-        return $this->cachedValue($arguments, $cacheKey, $method);
+        return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function cachedValue(array $arguments, string $cacheKey, string $method)
+    public function cachedValue(array $arguments, string $cacheKey)
     {
+        $method = debug_backtrace()[1]['function'];
         $cacheTags = $this->makeCacheTags();
         $hashedCacheKey = sha1($cacheKey);
         $result = $this->retrieveCachedValue(

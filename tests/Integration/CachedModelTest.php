@@ -118,4 +118,20 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertCount(11, $uncachedAuthors);
         $this->assertCount(11, $authorsAfterCooldown);
     }
+
+    public function testModelCacheDoesInvalidateWhenNoCooldownPeriod()
+    {
+        $authors = (new Author)
+            ->get();
+
+        factory(Author::class, 1)->create();
+        $authorsAfterCreate = (new Author)
+            ->get();
+        $uncachedAuthors = (new UncachedAuthor)
+            ->get();
+
+        $this->assertCount(10, $authors);
+        $this->assertCount(11, $authorsAfterCreate);
+        $this->assertCount(11, $uncachedAuthors);
+    }
 }

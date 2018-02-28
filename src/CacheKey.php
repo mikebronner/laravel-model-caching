@@ -114,15 +114,26 @@ class CacheKey
             return "";
         }
 
-        $values = is_array(array_get($where, "values"))
+        $values = $this->getValuesFromWhere($where);
+        $values = $this->getValuesFromBindings($values);
+
+        return "_" . $values;
+    }
+
+    protected function getValuesFromWhere(array $where) : string
+    {
+        return is_array(array_get($where, "values"))
             ? implode("_", $where["values"])
             : "";
+    }
 
+    protected function getValuesFromBindings(string $values) : string
+    {
         if (! $values && $this->query->bindings["where"] ?? false) {
             $values = implode("_", $this->query->bindings["where"]);
         }
 
-        return "_" . $values;
+        return $values;
     }
 
     protected function getWhereClauses(array $wheres = []) : string

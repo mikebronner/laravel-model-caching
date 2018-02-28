@@ -28,29 +28,40 @@ class CacheTags
         $tags = collect($this->eagerLoad)
             ->keys()
             ->map(function ($relationName) {
-                $relation = collect(explode('.', $relationName))
-                    ->reduce(function ($carry, $name) {
-                        if (! $carry) {
-                            $carry = $this->model;
-                        }
-
-                        if ($carry instanceof Relation) {
-                            $carry = $carry->getQuery()->getModel();
-                        }
-
-                        return $carry->{$name}();
-                    });
+                $relation = $this->getRelation($relationName);
 
                 return $this->getCachePrefix()
                     . str_slug(get_class($relation->getQuery()->getModel()));
             })
-            ->prepend(
-                $this->getCachePrefix()
-                    . str_slug(get_class($this->model))
-            )
+            ->prepend($this->getTagName())
             ->values()
             ->toArray();
 
         return $tags;
+    }
+
+    protected function getRelatedModel($carry) : Model
+    {
+        if ($carry instanceof Relation) {
+            return $carry->getQuery()->getModel();
+        }
+
+        return $carry;
+    }
+
+    protected function getRelation(string $relationName) : Relation
+    {
+        return collect(explode('.', $relationName))
+            ->reduce(function ($carry, $name) {
+                $carry = $carry ?: $this->model;
+                $carry = $this->getRelatedModel($carry);
+
+                return $carry->{$name}();
+            });
+    }
+
+    protected function getTagName() : string
+    {
+        return $this->getCachePrefix() . str_slug(get_class($this->model));
     }
 }

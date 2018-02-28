@@ -786,7 +786,7 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
-/** @group test */
+
     public function testHashCollision()
     {
         $key1 = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
@@ -888,5 +888,45 @@ class CachedBuilderTest extends IntegrationTestCase
 
         $this->assertEquals($cachedResults->toArray(), $authors->toArray());
         $this->assertEquals($liveResults->toArray(), $authors->toArray());
+    }
+
+    public function testInsertInvalidatesCache()
+    {
+        $authors = (new Author)
+            ->get();
+
+        (new Author)
+            ->insert([
+                'name' => 'Test Insert',
+                'email' => 'none@noemail.com',
+            ]);
+        $authorsAfterInsert = (new Author)
+            ->get();
+        $uncachedAuthors = (new UncachedAuthor)
+            ->get();
+
+        $this->assertCount(10, $authors);
+        $this->assertCount(11, $authorsAfterInsert);
+        $this->assertCount(11, $uncachedAuthors);
+    }
+
+    public function testUpdateInvalidatesCache()
+    {
+        $originalAuthor = (new Author)
+            ->first();
+        $author = (new Author)
+            ->first();
+
+        $author->update([
+            "name" => "Updated Name",
+        ]);
+        $authorAfterUpdate = (new Author)
+            ->find($author->id);
+        $uncachedAuthor = (new UncachedAuthor)
+            ->find($author->id);
+
+        $this->assertNotEquals($originalAuthor->name, $authorAfterUpdate->name);
+        $this->assertEquals("Updated Name", $authorAfterUpdate->name);
+        $this->assertEquals($authorAfterUpdate->name, $uncachedAuthor->name);
     }
 }
