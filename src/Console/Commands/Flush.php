@@ -10,7 +10,7 @@ class Flush extends Command
     public function handle()
     {
         $option = $this->option('model');
-
+        
         if (! $option) {
             return $this->flushEntireCache();
         }
