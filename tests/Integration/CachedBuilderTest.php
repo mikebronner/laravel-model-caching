@@ -929,4 +929,21 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEquals("Updated Name", $authorAfterUpdate->name);
         $this->assertEquals($authorAfterUpdate->name, $uncachedAuthor->name);
     }
+
+    public function testAccessingGetResultsViaArrayIndexDoesNotError()
+    {
+        $author = (new Author)
+            ->where('id', 1)
+            ->get()[0];
+        $cachedAuthor = (new Author)
+            ->where('id', 1)
+            ->get()[0];
+        $uncachedAuthor = (new UncachedAuthor)
+            ->where('id', 1)
+            ->get()[0];
+
+        $this->assertEquals(1, $author->id);
+        $this->assertEquals($author, $cachedAuthor);
+        $this->assertEquals($author->toArray(), $uncachedAuthor->toArray());
+    }
 }
