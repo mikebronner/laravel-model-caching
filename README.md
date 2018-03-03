@@ -130,7 +130,7 @@ cache for that single query. Disabling cache via the config flag still works.
 
 **Recommendation: use option #1 in all your seeder queries to avoid pulling in
 cached information when reseeding multiple times.**
-You can disable a given query by using `disableCache()` in the query chain. It must be placed immediately behind the model, and not in the query chain. For example:
+You can disable a given query by using `disableCache()` anywhere in the query chain. For example:
 ```php
 $results = $myModel->disableCache()->where('field', $value)->get();
 ```

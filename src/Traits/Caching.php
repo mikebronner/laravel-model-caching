@@ -25,7 +25,7 @@ trait Caching
         return $cache;
     }
 
-    public function disableCache()
+    public function disableModelCaching()
     {
         $this->isCachable = false;
 
