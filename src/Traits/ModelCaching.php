@@ -52,6 +52,13 @@ trait ModelCaching
         return new CachedBuilder($query);
     }
 
+    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    {
+        $query = $query->disableModelCaching();
+
+        return $query;
+    }
+
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
         int $seconds

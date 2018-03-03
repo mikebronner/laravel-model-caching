@@ -17,21 +17,43 @@ class DisabledCachedModelTest extends IntegrationTestCase
 {
     use RefreshDatabase;
 
-    public function testAllModelResultsIsNotCached()
+    public function testCacheCanBeDisabledOnModel()
     {
         $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->disableCache()
-            ->all();
+            ->get();
 
         $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key);
         $liveResults = (new UncachedAuthor)
-            ->all();
+            ->get();
 
         $this->assertEmpty($liveResults->diffAssoc($authors));
         $this->assertNull($cachedResults);
+    }
+
+    public function testCacheCanBeDisabledOnQuery()
+    {
+        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new Author)
+            ->with('books')
+            ->disableCache()
+            ->get()
+            ->keyBy("id");
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key);
+        $liveResults = (new UncachedAuthor)
+            ->with('books')
+            ->get()
+            ->keyBy("id");
+
+        $this->assertNull($cachedResults);
+        $this->assertEmpty($liveResults->diffKeys($authors));
     }
 }
