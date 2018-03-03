@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.45] - 3 Mar 2018
+### Fixed
+- pagination cache key generation; fixes #85.
+
+## [0.2.44] - 3 Mar 2018
+### Fixed
+- disabling of caching using the query scope.
+
+## [0.2.43] - 2 Mar 2018
+### Fixed
+- actions on belongsToMany relationships not flushing cache when needed.
+
+## [0.2.42] - 28 Feb 2018
+### Added
+- additional integration tests for additional use cases.
+
+### Fixed
+- flushing a specific model from the command line that extended a base class and did not use the trait directly.
+
+## [0.2.41] - 26 Feb 2018
+### Fixes
+- cache invalidation when using ->insert() method.
+- cache invalidation when using ->update() method.
+
+## [0.2.40] - 24 Feb 2018
+### Updated
+- code with some home-cleaning and refactoring.
+
+## [0.2.39] - 24 Feb 2018
+### Updated
+- CachedBuilder class with some refactoring and cleanup.
+
 ## [0.2.38] - 24 Feb 2018
 ### Added
 - cache-invalidation-cool-down functionality.
