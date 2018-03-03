@@ -910,6 +910,19 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEquals($authorAfterUpdate->name, $uncachedAuthor->name);
     }
 
+    public function testAttachInvalidatesCache()
+    {
+        $book = (new Book)
+            ->find(1);
+
+        $book->stores()->attach(1);
+        $cachedBook = (new Book)
+            ->find(1);
+
+        $this->assertTrue($book->stores->keyBy('id')->has(1));
+    }
+
+
     public function testAccessingGetResultsViaArrayIndexDoesNotError()
     {
         $author = (new Author)
