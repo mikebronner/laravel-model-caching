@@ -12,12 +12,26 @@ trait CreatesApplication
 {
     protected $cache;
 
+    protected function cache()
+    {
+        $cache = cache();
+
+        if (config('laravel-model-caching.store')) {
+            $cache = $cache->store(config('laravel-model-caching.store'));
+        }
+
+        return $cache;
+    }
+
     public function setUp()
     {
         parent::setUp();
 
+        require(__DIR__ . '/routes/web.php');
+
         $this->withFactories(__DIR__ . '/database/factories');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
         $this->cache = cache()
             ->store(config('laravel-model-caching.store'));

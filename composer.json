@@ -23,6 +23,7 @@
         "mockery/mockery": "0.9.*",
         "orchestra/database": "3.6.x-dev@dev",
         "orchestra/testbench": "^3.6",
+        "orchestra/testbench-browser-kit": "^3.6",
         "php-coveralls/php-coveralls" : "*",
         "phpmd/phpmd": "*",
         "phpunit/phpunit": "*",
