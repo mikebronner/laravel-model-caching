@@ -98,6 +98,26 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertEquals(1, $cachedResults->first()->author->id);
     }
 
+    public function testWhereHasWithClosureIsBeingCached()
+    {
+        $books1 = (new Book)
+            ->with('author')
+            ->whereHas('author', function ($query) {
+                $query->whereId(1);
+            })
+            ->get()
+            ->keyBy('id');
+        $books2 = (new Book)
+            ->with('author')
+            ->whereHas('author', function ($query) {
+                $query->whereId(2);
+            })
+            ->get()
+            ->keyBy('id');
+
+        $this->assertNotEmpty($books1->diffKeys($books2));
+    }
+
     public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
     {
         $authors = (new Author)
