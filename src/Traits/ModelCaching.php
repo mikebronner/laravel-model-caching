@@ -54,7 +54,9 @@ trait ModelCaching
 
     public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
     {
-        $query = $query->disableModelCaching();
+        if ($this->isCachable()) {
+            $query = $query->disableModelCaching();
+        }
 
         return $query;
     }

@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
@@ -43,6 +44,23 @@ class CachedModelTest extends IntegrationTestCase
         $authors = (new Author)
             ->where("name", "Bruno")
             ->disableCache()
+            ->get();
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertNull($cachedResults);
+        $this->assertNotEquals($authors, $cachedResults);
+    }
+
+    public function testScopeDisablesCachingWhenCalledOnModel()
+    {
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new PrefixedAuthor)
+            ->disableCache()
+            ->where("name", "Bruno")
             ->get();
 
         $cachedResults = $this->cache()
