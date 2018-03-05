@@ -71,6 +71,24 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertNotEquals($authors, $cachedResults);
     }
 
+    public function testScopeDisableCacheDoesntCrashWhenCachingIsDisabledInConfig()
+    {
+        config(['laravel-model-caching.disabled' => true]);
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new PrefixedAuthor)
+            ->where("name", "Bruno")
+            ->disableCache()
+            ->get();
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertNull($cachedResults);
+        $this->assertNotEquals($authors, $cachedResults);
+    }
+
     public function testAllMethodCachingCanBeDisabledViaConfig()
     {
         config(['laravel-model-caching.disabled' => true]);
