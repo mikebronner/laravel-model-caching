@@ -7,12 +7,13 @@ trait ModelCaching
 {
     public static function all($columns = ['*'])
     {
-        if (config('laravel-model-caching.disabled')) {
+        $class = get_called_class();
+        $instance = new $class;
+
+        if (config('laravel-model-caching.disabled') || !$instance->isCachable) {
             return parent::all($columns);
         }
 
-        $class = get_called_class();
-        $instance = new $class;
         $tags = [str_slug(get_called_class())];
         $key = $instance->makeCacheKey();
 
