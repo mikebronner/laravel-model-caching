@@ -7,17 +7,22 @@ class PaginationTest extends FeatureTestCase
 {
     public function testPaginationProvidesDifferentLinksOnDifferentPages()
     {
+        $page1ActiveLink = starts_with(app()->version(), "5.5")
+            ? '<li class="active"><span>1</span></li>'
+            : '<li class="page-item active"><span class="page-link">1</span></li>';
+        $page2ActiveLink = starts_with(app()->version(), "5.5")
+            ? '<li class="active"><span>2</span></li>'
+            : '<li class="page-item active"><span class="page-link">2</span></li>';
+
         $book = (new Book)
             ->take(11)
             ->get()
             ->last();
         $page1 = $this->visit("pagination-test");
 
-        $this->assertTrue(str_contains($page1->response->getContent(), '<li class="page-item active"><span class="page-link">1</span></li>'));
-
+        $page1->see($page1ActiveLink);
         $page2 = $page1->click("2");
-
-        $this->assertTrue(str_contains($page2->response->getContent(), '<li class="page-item active"><span class="page-link">2</span></li>'));
+        $page2->see($page2ActiveLink);
         $page2->see($book->title);
     }
 }

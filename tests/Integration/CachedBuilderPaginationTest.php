@@ -44,6 +44,16 @@ class CachedBuilderPaginationTest extends IntegrationTestCase
 
     public function testPaginationReturnsCorrectLinks()
     {
+        $page1ActiveLink = starts_with(app()->version(), "5.5")
+            ? '<li class="active"><span>1</span></li>'
+            : '<li class="page-item active"><span class="page-link">1</span></li>';
+        $page2ActiveLink = starts_with(app()->version(), "5.5")
+            ? '<li class="active"><span>2</span></li>'
+            : '<li class="page-item active"><span class="page-link">2</span></li>';
+        $page24ActiveLink = starts_with(app()->version(), "5.5")
+            ? '<li class="active"><span>24</span></li>'
+            : '<li class="page-item active"><span class="page-link">24</span></li>';
+
         $booksPage1 = (new Book)
             ->paginate(2);
         $booksPage2 = (new Book)
@@ -54,17 +64,8 @@ class CachedBuilderPaginationTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertContains(
-            '<li class="page-item active"><span class="page-link">1</span></li>',
-            (string) $booksPage1->links()
-        );
-        $this->assertContains(
-            '<li class="page-item active"><span class="page-link">2</span></li>',
-            (string) $booksPage2->links()
-        );
-        $this->assertContains(
-            '<li class="page-item active"><span class="page-link">24</span></li>',
-            (string) $booksPage24->links()
-        );
+        $this->assertContains($page1ActiveLink, (string) $booksPage1->links());
+        $this->assertContains($page2ActiveLink, (string) $booksPage2->links());
+        $this->assertContains($page24ActiveLink, (string) $booksPage24->links());
     }
 }

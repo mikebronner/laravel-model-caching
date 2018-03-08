@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
@@ -41,6 +42,41 @@ class CachedModelTest extends IntegrationTestCase
         $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
+            ->where("name", "Bruno")
+            ->disableCache()
+            ->get();
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertNull($cachedResults);
+        $this->assertNotEquals($authors, $cachedResults);
+    }
+
+    public function testScopeDisablesCachingWhenCalledOnModel()
+    {
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new PrefixedAuthor)
+            ->disableCache()
+            ->where("name", "Bruno")
+            ->get();
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertNull($cachedResults);
+        $this->assertNotEquals($authors, $cachedResults);
+    }
+
+    public function testScopeDisableCacheDoesntCrashWhenCachingIsDisabledInConfig()
+    {
+        config(['laravel-model-caching.disabled' => true]);
+        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $authors = (new PrefixedAuthor)
             ->where("name", "Bruno")
             ->disableCache()
             ->get();
@@ -96,6 +132,26 @@ class CachedModelTest extends IntegrationTestCase
 
         $this->assertEquals(1, $books->first()->author->id);
         $this->assertEquals(1, $cachedResults->first()->author->id);
+    }
+
+    public function testWhereHasWithClosureIsBeingCached()
+    {
+        $books1 = (new Book)
+            ->with('author')
+            ->whereHas('author', function ($query) {
+                $query->whereId(1);
+            })
+            ->get()
+            ->keyBy('id');
+        $books2 = (new Book)
+            ->with('author')
+            ->whereHas('author', function ($query) {
+                $query->whereId(2);
+            })
+            ->get()
+            ->keyBy('id');
+
+        $this->assertNotEmpty($books1->diffKeys($books2));
     }
 
     public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
