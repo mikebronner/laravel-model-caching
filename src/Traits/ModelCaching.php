@@ -13,7 +13,7 @@ trait ModelCaching
 
         $class = get_called_class();
         $instance = new $class;
-        $tags = [str_slug(get_called_class())];
+        $tags = $instance->makeCacheTags();
         $key = $instance->makeCacheKey();
 
         return $instance->cache($tags)
@@ -24,6 +24,9 @@ trait ModelCaching
 
     public static function bootCachable()
     {
+        static::deleted(function ($instance) {
+            $instance->checkCooldownAndFlushAfterPersiting($instance);
+        });
         static::saved(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
@@ -39,6 +42,15 @@ trait ModelCaching
         static::pivotUpdated(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
+    }
+
+    public static function destroy($ids)
+    {
+        $class = get_called_class();
+        $instance = new $class;
+        $instance->flushCache();
+
+        return parent::destroy($ids);
     }
 
     public function newEloquentBuilder($query)
