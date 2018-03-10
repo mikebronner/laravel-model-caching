@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.49] - 9 Mar 2018
+### Fixed
+- caching of `->first()` queries.
+
 ## [0.2.48] - 9 Mar 2018
 ### Added
 - database connection name to cache prefix.
