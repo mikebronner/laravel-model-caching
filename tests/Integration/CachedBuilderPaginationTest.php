@@ -32,7 +32,8 @@ class CachedBuilderPaginationTest extends IntegrationTestCase
             'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
-        $cachedResults = $this->cache()
+        $cachedResults = $this
+            ->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
