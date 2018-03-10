@@ -1,18 +1,20 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use GeneaLabs\LaravelModelCaching\QueryOrModelCaller;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 trait ModelCaching
 {
     public static function all($columns = ['*'])
     {
-        if (config('laravel-model-caching.disabled')) {
+        $class = get_called_class();
+        $instance = new $class;
+
+        if (config('laravel-model-caching.disabled') || !$instance->isCachable) {
             return parent::all($columns);
         }
 
-        $class = get_called_class();
-        $instance = new $class;
         $tags = [str_slug(get_called_class())];
         $key = $instance->makeCacheKey();
 
@@ -52,13 +54,16 @@ trait ModelCaching
         return new CachedBuilder($query);
     }
 
-    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    public function scopeDisableCache(EloquentBuilder $query) : QueryOrModelCaller
     {
+        $disabledInConfig =  config('laravel-model-caching.disabled');
+
         if ($this->isCachable()) {
+            config()->set('laravel-model-caching.disabled', true);
             $query = $query->disableModelCaching();
         }
 
-        return $query;
+        return new QueryOrModelCaller($query, $this, $disabledInConfig);
     }
 
     public function scopeWithCacheCooldownSeconds(
