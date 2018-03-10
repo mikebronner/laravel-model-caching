@@ -1,5 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
+use GeneaLabs\LaravelModelCaching\Traits\BuilderCaching;
 use GeneaLabs\LaravelModelCaching\Traits\Caching;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
@@ -8,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
  */
 class CachedBuilder extends EloquentBuilder
 {
+    use BuilderCaching;
     use Caching;
 
     public function avg($column)
