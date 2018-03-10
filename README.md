@@ -131,11 +131,6 @@ There are two methods by which model-caching can be disabled:
 1. Use `->disableCache()` in a query-by-query instance.
 2. Set `MODEL_CACHE_DISABLED=TRUE` in your `.env` file.
 
-**EXCEPTION:** currently the `::all()` method cannot be disabled by doing something
-like this: `$model->disableCache()->all()`, because it is a static method. To
-work around this, use the `->get()` method if you really need to disable the
-cache for that single query. Disabling cache via the config flag still works.
-
 **Recommendation: use option #1 in all your seeder queries to avoid pulling in
 cached information when reseeding multiple times.**
 You can disable a given query by using `disableCache()` anywhere in the query chain. For example:
