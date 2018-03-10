@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use GeneaLabs\LaravelModelCaching\QueryOrModelCaller;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 trait ModelCaching
@@ -53,13 +54,16 @@ trait ModelCaching
         return new CachedBuilder($query);
     }
 
-    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    public function scopeDisableCache(EloquentBuilder $query) : QueryOrModelCaller
     {
+        $disabledInConfig =  config('laravel-model-caching.disabled');
+
         if ($this->isCachable()) {
+            config()->set('laravel-model-caching.disabled', true);
             $query = $query->disableModelCaching();
         }
 
-        return $query;
+        return new QueryOrModelCaller($query, $this, $disabledInConfig);
     }
 
     public function scopeWithCacheCooldownSeconds(
