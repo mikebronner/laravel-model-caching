@@ -1,26 +1,27 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder;
 
 class CacheTags
 {
+    use CachePrefixing;
+
     protected $eagerLoad;
     protected $model;
+    protected $query;
 
-    public function __construct(array $eagerLoad, Model $model)
-    {
+    public function __construct(
+        array $eagerLoad,
+        Model $model,
+        Builder $query
+    ) {
         $this->eagerLoad = $eagerLoad;
         $this->model = $model;
-    }
-
-    protected function getCachePrefix() : string
-    {
-        return "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
-                : "");
+        $this->query = $query;
     }
 
     public function make() : array
