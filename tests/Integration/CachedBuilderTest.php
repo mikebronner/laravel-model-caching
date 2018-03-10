@@ -263,7 +263,7 @@ class CachedBuilderTest extends IntegrationTestCase
     {
         $author = (new Author)
             ->first();
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
+        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-first');
         $tags = [
             'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
         ];
