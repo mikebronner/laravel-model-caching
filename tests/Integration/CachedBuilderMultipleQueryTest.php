@@ -38,4 +38,28 @@ class CachedBuilderMultipleQueryTest extends IntegrationTestCase
         $this->assertInstanceOf(Author::class, $firstAuthor);
         $this->assertInstanceOf(Collection::class, $allAuthors);
     }
+
+    public function testUsingDestroyInvalidatesCache()
+    {
+        $allAuthors = (new Author)->get();
+        $firstAuthor = $allAuthors->first();
+        (new Author)->destroy($firstAuthor->id);
+        $updatedAuthors = (new Author)->get()->keyBy("id");
+
+        $this->assertNotEquals($allAuthors, $updatedAuthors);
+        $this->assertTrue($allAuthors->contains($firstAuthor));
+        $this->assertFalse($updatedAuthors->contains($firstAuthor));
+    }
+
+    public function testAllMethodCacheGetsInvalidated()
+    {
+        $allAuthors = (new Author)->all();
+        $firstAuthor = $allAuthors->first();
+        $firstAuthor->delete();
+        $updatedAuthors = (new Author)->all();
+
+        $this->assertNotEquals($allAuthors, $updatedAuthors);
+        $this->assertTrue($allAuthors->contains($firstAuthor));
+        $this->assertFalse($updatedAuthors->contains($firstAuthor));
+    }
 }
