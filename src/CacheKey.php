@@ -1,22 +1,17 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
+use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
 class CacheKey
 {
+    use CachePrefixing;
+
     protected $eagerLoad;
     protected $model;
     protected $query;
-
-    protected function getCachePrefix() : string
-    {
-        return "genealabs:laravel-model-caching:"
-            . (config("laravel-model-caching.cache-prefix")
-                ? config("laravel-model-caching.cache-prefix", "") . ":"
-                : "");
-    }
 
     public function __construct(
         array $eagerLoad,

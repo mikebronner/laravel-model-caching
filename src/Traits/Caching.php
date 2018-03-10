@@ -77,7 +77,11 @@ trait Caching
 
     protected function makeCacheTags() : array
     {
-        $tags = (new CacheTags($this->eagerLoad ?? [], $this->model ?? $this))
+        $eagerLoad = $this->eagerLoad ?? [];
+        $model = $this->model ?? $this;
+        $query = $this->query ?? app(Builder::class);
+
+        $tags = (new CacheTags($eagerLoad, $model, $query))
             ->make();
 
         return $tags;

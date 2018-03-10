@@ -67,6 +67,13 @@ abstract class BaseModel
     //
 }
 ```
+### Multiple Database Connections
+__Thanks to @dtvmedia for suggestion this feature. This is actually a more robust
+solution than cache-prefixes.__
+
+Keeping keys separate for multiple database connections is automatically handled.
+This is especially important for multi-tenant applications, and of course any
+application using multiple database connections.
 
 ### Optional Cache Key Prefix
 Thanks to @lucian-dragomir for suggesting this feature! You can use cache key
@@ -75,7 +82,8 @@ it is recommended to add the Cachable trait to a base model, then set the cache
 key prefix config value there.
 
 **Note that the config setting is included before the parent method is called,
-so that the setting is available in the parent as well.**
+so that the setting is available in the parent as well. If you are developing a
+multi-tenant application, see the note above.**
 
 Here's is an example:
 ```php
@@ -92,7 +100,7 @@ class BaseModel extends Model
 
     public function __construct($attributes = [])
     {
-        config(['genealabs:laravel-model-caching' => 'test-prefix']);
+        config(['laravel-model-caching.cache-prefix' => 'test-prefix']);
 
         parent::__construct($attributes);
     }

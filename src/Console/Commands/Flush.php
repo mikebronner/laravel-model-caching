@@ -49,8 +49,10 @@ class Flush extends Command
         return 0;
     }
 
-    protected function getAllTraitsUsedByClass(string $classname, bool $autoload = true) : Collection
-    {
+    protected function getAllTraitsUsedByClass(
+        string $classname,
+        bool $autoload = true
+    ) : Collection {
         $traits = collect();
 
         if (class_exists($classname, $autoload)) {
@@ -60,7 +62,8 @@ class Flush extends Command
         $parentClass = get_parent_class($classname);
 
         if ($parentClass) {
-            $traits = $traits->merge($this->getAllTraitsUsedByClass($parentClass, $autoload));
+            $traits = $traits
+                ->merge($this->getAllTraitsUsedByClass($parentClass, $autoload));
         }
 
         return $traits;

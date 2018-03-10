@@ -27,9 +27,9 @@ class CachedBuilderPaginationTest extends IntegrationTestCase
         $authors = (new Author)
             ->paginate(3);
 
-        $key = sha1('genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
+        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
         $tags = [
-            'genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
         $cachedResults = $this->cache()
