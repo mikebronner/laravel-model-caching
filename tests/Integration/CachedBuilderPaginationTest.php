@@ -39,8 +39,9 @@ class CachedBuilderPaginationTest extends IntegrationTestCase
         $liveResults = (new UncachedAuthor)
             ->paginate(3);
 
-        $this->assertEquals($cachedResults->toArray(), $authors->toArray());
-        $this->assertEquals($liveResults->toArray(), $authors->toArray());
+        $this->assertEquals($cachedResults, $authors);
+        $this->assertEquals($liveResults->pluck("email"), $authors->pluck("email"));
+        $this->assertEquals($liveResults->pluck("name"), $authors->pluck("name"));
     }
 
     public function testPaginationReturnsCorrectLinks()
