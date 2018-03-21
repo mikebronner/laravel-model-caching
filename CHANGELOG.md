@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.2.51] - 51 Mar 2018
+## [0.2.52] - 21 Mar 2018
+### Changed
+- `flush` console command to be called `clear`, to match other laravel commands.
+
+### Fixed
+- implementation of `count()` method.
+
+## [0.2.51] - 10 Mar 2018
 ### Added
 - disabling of `all()` query.
 
