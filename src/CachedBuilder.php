@@ -23,13 +23,13 @@ class CachedBuilder extends EloquentBuilder
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function count($columns = ["*"])
+    public function count($columns = "*")
     {
         if (! $this->isCachable()) {
             return parent::count($columns);
         }
 
-        $cacheKey = $this->makeCacheKey($columns, null, "-count");
+        $cacheKey = $this->makeCacheKey([$columns], null, "-count");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }

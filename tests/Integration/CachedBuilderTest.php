@@ -243,6 +243,28 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
+    public function testCountWithStringCreatesCache()
+    {
+        $authors = (new Author)
+            ->with('books', 'profile')
+            ->count("id");
+        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor_id-books-profile-count');
+        $tags = [
+            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesprofile',
+        ];
+
+        $cachedResults = $this->cache()->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->with('books', 'profile')
+            ->count("id");
+
+        $this->assertEquals($authors, $cachedResults);
+        $this->assertEquals($liveResults, $cachedResults);
+    }
+
     public function testFindModelResultsCreatesCache()
     {
         $author = collect()->push((new Author)->find(1));
