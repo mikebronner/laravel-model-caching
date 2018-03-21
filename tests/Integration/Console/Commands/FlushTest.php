@@ -23,7 +23,7 @@ class FlushTest extends IntegrationTestCase
         $cachedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
-        $result = $this->artisan('modelCache:flush', ['--model' => Author::class]);
+        $result = $this->artisan('modelCache:clear', ['--model' => Author::class]);
         $flushedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
@@ -45,7 +45,7 @@ class FlushTest extends IntegrationTestCase
             ->cache
             ->tags($tags)
             ->get($key)['value'];
-        $result = $this->artisan('modelCache:flush', ['--model' => PrefixedAuthor::class]);
+        $result = $this->artisan('modelCache:clear', ['--model' => PrefixedAuthor::class]);
         $flushedResults = $this
             ->cache
             ->tags($tags)
@@ -69,7 +69,7 @@ class FlushTest extends IntegrationTestCase
             ->tags($tags)
             ->get($key)['value'];
         $result = $this->artisan(
-            'modelCache:flush',
+            'modelCache:clear',
             ['--model' => Author::class]
         );
         $flushedResults = $this->cache
@@ -84,7 +84,7 @@ class FlushTest extends IntegrationTestCase
     public function testNonCachedModelsCannotBeFlushed()
     {
         $result = $this->artisan(
-            'modelCache:flush',
+            'modelCache:clear',
             ['--model' => UncachedAuthor::class]
         );
 
@@ -117,7 +117,7 @@ class FlushTest extends IntegrationTestCase
         $this->assertNotEmpty($cachedBooks);
         $this->assertNotEmpty($cachedStores);
 
-        $this->artisan('modelCache:flush');
+        $this->artisan('modelCache:clear');
 
         $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
