@@ -30,15 +30,12 @@ trait ModelCaching
         static::saved(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
-
         static::pivotAttached(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
-
         static::pivotDetached(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
-
         static::pivotUpdated(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
