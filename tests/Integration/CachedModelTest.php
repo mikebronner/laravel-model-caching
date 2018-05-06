@@ -119,7 +119,7 @@ class CachedModelTest extends IntegrationTestCase
             })
             ->get();
 
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesbook_exists_and_books.author_id_=_authors.id-id_=_1-author');
+        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesbook-exists-and_books.author_id_=_authors.id-id_=_1-author');
         $tags = [
             'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesbook',
             'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',

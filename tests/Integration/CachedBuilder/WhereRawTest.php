@@ -37,7 +37,6 @@ class WhereRawTest extends IntegrationTestCase
         $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
     }
 
-    /** @group test */
     public function testWhereRawWithQueryParameters()
     {
         $authorName = (new Author)->first()->name;
@@ -60,7 +59,6 @@ class WhereRawTest extends IntegrationTestCase
         $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
     }
 
-    /** @group test */
     public function testMultipleWhereRawCacheUniquely()
     {
         $book1 = (new UncachedBook)->first();

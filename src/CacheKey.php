@@ -111,30 +111,40 @@ class CacheKey
         }
 
         $values = $this->getValuesFromWhere($where);
-        $values = $this->getValuesFromBindings($values);
+        $values = $this->getValuesFromBindings($where, $values);
+
+
 
         return "_" . $values;
     }
 
     protected function getValuesFromWhere(array $where) : string
     {
-        return is_array(array_get($where, "values"))
-            ? implode("_", $where["values"])
-            : "";
-    }
-
-    protected function getValuesFromBindings(string $values) : string
-    {
-        if (! $values && $this->query->bindings["where"] ?? false) {
-            $values = $this->query->bindings["where"][$this->currentBinding];
+        if (is_array(array_get($where, "values"))) {
+            return implode("_", $where["values"]);
         }
 
-        return $values;
+        return array_get($where, "value", "");
+    }
+
+    protected function getValuesFromBindings(array $where, string $values) : string
+    {
+        if (! $values && ($this->query->bindings["where"] ?? false)) {
+            $values = $this->query->bindings["where"][$this->currentBinding];
+            $this->currentBinding++;
+
+            if ($where["type"] === "between") {
+                $values .= "_" . $this->query->bindings["where"][$this->currentBinding];
+                $this->currentBinding++;
+            }
+        }
+
+        return $values ?: "";
     }
 
     protected function getWhereClauses(array $wheres = []) : string
     {
-        $whereClause = $this->getWheres($wheres)
+        return "" . $this->getWheres($wheres)
             ->reduce(function ($carry, $where) {
                 $value = $carry;
                 $value .= $this->getNestedClauses($where);
@@ -143,10 +153,7 @@ class CacheKey
                 $value .= $this->getOtherClauses($where, $carry);
 
                 return $value;
-            })
-            . "";
-
-        return $whereClause;
+            });
     }
 
     protected function getNestedClauses(array $where) : string
@@ -157,7 +164,7 @@ class CacheKey
 
         $this->currentBinding++;
 
-        return "_" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
+        return "-" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
     }
 
     protected function getColumnClauses(array $where) : string
@@ -168,7 +175,7 @@ class CacheKey
 
         $this->currentBinding++;
 
-        return "_{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
+        return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
     protected function getRawClauses(array $where) : string
@@ -192,7 +199,7 @@ class CacheKey
             $clause .= "_" . $lastPart;
         }
 
-        return str_replace(" ", "_", $clause);
+        return "-" . str_replace(" ", "_", $clause);
     }
 
     protected function getOtherClauses(array $where, string $carry = null) : string
@@ -203,9 +210,8 @@ class CacheKey
 
         $value = $this->getTypeClause($where);
         $value .= $this->getValuesClause($where);
-        $this->currentBinding++;
 
-        return "{$where["column"]}_{$value}";
+        return "-{$where["column"]}_{$value}";
     }
 
     protected function getWheres(array $wheres) : Collection
