@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.55] - 6 May 2018
+### Fixed
+- caching of `between` where clauses.
+- test cache keys and brought them back to green.
+
 ## [0.2.54] - 6 May 2018
 ### Fixed
 - caching of query parameter bindings.
