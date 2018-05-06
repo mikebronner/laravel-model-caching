@@ -141,7 +141,7 @@ $results = $myModel->disableCache()->where('field', $value)->get();
 ### Manual Flushing of Specific Model
 You can flush the cache of a specific model using the following artisan command:
 ```sh
-php artisan modelCaching:clear --model=App\Model
+php artisan modelCache:clear --model=App\Model
 ```
 
 This comes in handy when manually making updates to the database. You could also
