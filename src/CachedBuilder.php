@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\Traits\BuilderCaching;
 use GeneaLabs\LaravelModelCaching\Traits\Caching;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Support\Collection;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -76,6 +77,13 @@ class CachedBuilder extends EloquentBuilder
         $cacheKey = $this->makeCacheKey($columns);
 
         return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    public function inRandomOrder($seed = '')
+    {
+        $this->isCachable = false;
+
+        return parent::inRandomOrder($seed);
     }
 
     public function insert(array $values)

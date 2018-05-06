@@ -19,17 +19,17 @@
     },
     "require-dev": {
         "codedungeon/phpunit-result-printer": "*",
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "orchestra/database": "3.6.x-dev@dev",
+        "fzaninotto/faker": "*",
+        "mockery/mockery": "*",
+        "orchestra/database": "^3.6",
         "orchestra/testbench": "^3.6",
         "orchestra/testbench-browser-kit": "^3.6",
         "php-coveralls/php-coveralls" : "*",
         "phpmd/phpmd": "*",
         "phpunit/phpunit": "*",
         "sebastian/phpcpd": "*",
-        "symfony/thanks": "^1.0",
-        "predis/predis": "^1.1"
+        "symfony/thanks": "*",
+        "predis/predis": "*"
     },
     "autoload": {
         "psr-4": {
