@@ -27,6 +27,7 @@ trait ModelCaching
         static::deleted(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
+
         static::saved(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
