@@ -1,4 +1,4 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Browser;
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature;
 
 use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -9,10 +9,10 @@ class PaginationTest extends FeatureTestCase
     {
         $page1ActiveLink = starts_with(app()->version(), "5.5")
             ? '<li class="active"><span>1</span></li>'
-            : '<li class="page-item active"><span class="page-link">1</span></li>';
+            : '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
         $page2ActiveLink = starts_with(app()->version(), "5.5")
             ? '<li class="active"><span>2</span></li>'
-            : '<li class="page-item active"><span class="page-link">2</span></li>';
+            : '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
 
         $book = (new Book)
             ->take(11)
