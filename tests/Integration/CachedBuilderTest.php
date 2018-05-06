@@ -579,24 +579,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
-    public function testRawWhereClauseParsing()
-    {
-        $authors = collect([(new Author)
-            ->whereRaw('name <> \'\'')
-            ->first()]);
-
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor_and_name-first');
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
-
-        $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
-
-        $liveResults = collect([(new UncachedAuthor)
-            ->whereRaw('name <> \'\'')->first()]);
-
-        $this->assertTrue($authors->diffKeys($cachedResults)->isEmpty());
-        $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
-    }
-
     public function testScopeClauseParsing()
     {
         $author = factory(Author::class, 1)
