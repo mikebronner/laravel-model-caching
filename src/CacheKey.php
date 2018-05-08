@@ -52,6 +52,10 @@ class CacheKey
         if (! $this->query->limit) {
             return "";
         }
+        
+        if($this->query->limit) {
+            return "-first";
+        }
 
         return "-limit_{$this->query->limit}";
     }
