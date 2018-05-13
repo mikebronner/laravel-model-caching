@@ -69,4 +69,24 @@ class WhereRawTest extends IntegrationTestCase
         $this->assertEquals($cachedBook1->title, $book1->title);
         $this->assertEquals($cachedBook2->title, $book2->title);
     }
+
+    public function testNestedWhereRawClauses()
+    {
+        $expectedIds = [
+            1,
+            2,
+            3,
+            5,
+            6,
+        ];
+
+        $authors = (new Author)
+            ->where(function ($query) {
+                $query->orWhereRaw("id BETWEEN 1 AND 3")
+                    ->orWhereRaw("id BETWEEN 5 AND 6");
+            })
+            ->get();
+
+        $this->assertEquals($expectedIds, $authors->pluck("id")->toArray());
+    }
 }

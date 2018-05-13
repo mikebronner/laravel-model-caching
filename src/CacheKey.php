@@ -106,7 +106,7 @@ class CacheKey
 
     protected function getValuesClause(array $where = null) : string
     {
-        if (in_array($where["type"], ["NotNull"])) {
+        if (in_array($where["type"], ["NotNull", "Null"])) {
             return "";
         }
 

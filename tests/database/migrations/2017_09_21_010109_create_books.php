@@ -13,7 +13,7 @@ class CreateBooks extends Migration
             $table->unsignedInteger('publisher_id');
             $table->timestamps();
 
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->dateTime('published_at');
             $table->string('title');
             $table->decimal('price')->default(0);

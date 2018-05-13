@@ -556,29 +556,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
-    public function testColumnsRelationshipWhereClauseParsing()
-    {
-        $author = (new Author)
-            ->orderBy('name')
-            ->first();
-        $authors = (new Author)
-            ->where('name', '=', $author->name)
-            ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
-            $author->name);
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
-
-        $cachedResults = $this->cache()
-            ->tags($tags)
-            ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)
-            ->where('name', '=', $author->name)
-            ->get();
-
-        $this->assertEmpty($authors->diffKeys($cachedResults));
-        $this->assertEmpty($liveResults->diffKeys($cachedResults));
-    }
-
     public function testScopeClauseParsing()
     {
         $author = factory(Author::class, 1)
@@ -667,44 +644,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEquals($liveResultId, $authorId);
         $this->assertNull($cachedResult);
         $this->assertNull($deletedAuthor);
-    }
-
-    private function processWhereClauseTestWithOperator(string $operator)
-    {
-        $author = (new Author)->first();
-        $authors = (new Author)
-            ->where('name', $operator, $author->name)
-            ->get();
-        $keyParts = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-name',
-            '_',
-            str_replace(' ', '_', strtolower($operator)),
-            '_',
-            $author->name,
-        ];
-        $key = sha1(implode('', $keyParts));
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
-
-        $cachedResults = $this->cache()
-            ->tags($tags)
-            ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)
-            ->where('name', $operator, $author->name)
-            ->get();
-
-        $this->assertEmpty($authors->diffKeys($cachedResults));
-        $this->assertEmpty($liveResults->diffKeys($cachedResults));
-    }
-
-    public function testWhereClauseParsingOfOperators()
-    {
-        $this->processWhereClauseTestWithOperator('=');
-        $this->processWhereClauseTestWithOperator('!=');
-        $this->processWhereClauseTestWithOperator('<>');
-        $this->processWhereClauseTestWithOperator('>');
-        $this->processWhereClauseTestWithOperator('<');
-        $this->processWhereClauseTestWithOperator('LIKE');
-        $this->processWhereClauseTestWithOperator('NOT LIKE');
     }
 
     public function testWhereBetweenIdsResults()
@@ -925,7 +864,6 @@ class CachedBuilderTest extends IntegrationTestCase
 
         $this->assertTrue($book->stores->keyBy('id')->has(1));
     }
-
 
     public function testAccessingGetResultsViaArrayIndexDoesNotError()
     {
