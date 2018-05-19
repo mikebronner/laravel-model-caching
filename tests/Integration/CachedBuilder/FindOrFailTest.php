@@ -24,9 +24,9 @@ class FindOrFailTest extends IntegrationTestCase
         $author = (new Author)
             ->findOrFail(1);
 
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-find_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-find_1');
         $tags = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
         $cachedResults = $this->cache()

@@ -45,9 +45,9 @@ class WhereTest extends IntegrationTestCase
         $authors = (new Author)
             ->where('name', '=', $author->name)
             ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
             $author->name);
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = $this->cache()
             ->tags($tags)
@@ -67,14 +67,14 @@ class WhereTest extends IntegrationTestCase
             ->where('name', $operator, $author->name)
             ->get();
         $keyParts = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-name',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-name',
             '_',
             str_replace(' ', '_', strtolower($operator)),
             '_',
             $author->name,
         ];
         $key = sha1(implode('', $keyParts));
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = $this->cache()
             ->tags($tags)
