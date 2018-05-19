@@ -265,22 +265,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
-    public function testFindModelResultsCreatesCache()
-    {
-        $author = collect()->push((new Author)->find(1));
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor_1');
-        $tags = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
-        ];
-
-        $cachedResults = collect()->push($this->cache()->tags($tags)
-            ->get($key));
-        $liveResults = collect()->push((new UncachedAuthor)->find(1));
-
-        $this->assertEmpty($author->diffKeys($cachedResults));
-        $this->assertEmpty($liveResults->diffKeys($cachedResults));
-    }
-
     public function testFirstModelResultsCreatesCache()
     {
         $author = (new Author)
@@ -781,36 +765,6 @@ class CachedBuilderTest extends IntegrationTestCase
 
         $this->assertEmpty($cachedAuthors1);
         $this->assertEmpty($cachedAuthors2);
-    }
-
-    public function testSubsequentFindsReturnDifferentModels()
-    {
-        $author1 = (new Author)->find(1);
-        $author2 = (new Author)->find(2);
-
-        $this->assertNotEquals($author1, $author2);
-        $this->assertEquals($author1->id, 1);
-        $this->assertEquals($author2->id, 2);
-    }
-
-    public function testFindOrFailCachesModels()
-    {
-        $author = (new Author)
-            ->findOrFail(1);
-
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor-find_1');
-        $tags = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
-        ];
-
-        $cachedResults = $this->cache()
-            ->tags($tags)
-            ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)
-            ->findOrFail(1);
-
-        $this->assertEquals($cachedResults->toArray(), $author->toArray());
-        $this->assertEquals($liveResults->toArray(), $author->toArray());
     }
 
     public function testInsertInvalidatesCache()

@@ -52,7 +52,8 @@ class CachedBuilder extends EloquentBuilder
             return parent::find($id, $columns);
         }
 
-        $cacheKey = $this->makeCacheKey($columns, null, "-find_{$id}");
+        $idKey = collect($id)->implode('-');
+        $cacheKey = $this->makeCacheKey($columns, null, "-find_{$idKey}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }

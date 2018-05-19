@@ -40,4 +40,26 @@ class WithTest extends IntegrationTestCase
         $this->assertEquals($uncachedAuthor->books()->count(), $author->books()->count());
         $this->assertEquals($uncachedAuthor->id, $author->id);
     }
+
+    public function testMultiLevelWithQuery()
+    {
+        $author = (new Author)
+            ->where("id", 1)
+            ->with([
+                'books.publisher' => function ($query) {
+                    $query->where("id", "<", 100);
+                }
+            ])
+            ->first();
+        $uncachedAuthor = (new UncachedAuthor)->with([
+                'books.publisher' => function ($query) {
+                    $query->where("id", "<", 100);
+                },
+            ])
+            ->where("id", 1)
+            ->first();
+
+        $this->assertEquals($uncachedAuthor->books()->count(), $author->books()->count());
+        $this->assertEquals($uncachedAuthor->id, $author->id);
+    }
 }
