@@ -121,7 +121,13 @@ class CacheKey
     protected function getValuesFromWhere(array $where) : string
     {
         if (is_array(array_get($where, "values"))) {
-            return implode("_", $where["values"]);
+            return implode("_", array_map(function ($key, $value) {
+                if (is_array($value)) {
+                    return implode("_", $value + [$key]);
+                }
+
+                return sprintf("%s_%s", $value, $key);
+            }, array_keys($where["values"]), array_values($where["values"])));
         }
 
         return array_get($where, "value", "");
