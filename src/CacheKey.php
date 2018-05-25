@@ -150,6 +150,7 @@ class CacheKey
                 $value .= $this->getNestedClauses($where);
                 $value .= $this->getColumnClauses($where);
                 $value .= $this->getRawClauses($where);
+                $value .= $this->getInClauses($where);
                 $value .= $this->getOtherClauses($where, $carry);
 
                 return $value;
@@ -178,6 +179,35 @@ class CacheKey
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
+    protected function getInClauses(array $where) : string
+    {
+        if ($where["type"] !== "In") {
+            return "";
+        }
+
+        $this->currentBinding++;
+        $values = $this->recursiveImplode($where["values"], "_");
+
+        return "-{$where["column"]}_in{$values}";
+    }
+
+    protected function recursiveImplode(array $items, string $glue = ",") : string
+    {
+        $result = "";
+
+        foreach ($items as $key => $value) {
+            if (is_array($value)) {
+                $result .= $this->recursiveImplode($value, $glue);
+
+                continue;
+            }
+
+            $result .= $glue . $value;
+        }
+
+        return $result;
+    }
+
     protected function getRawClauses(array $where) : string
     {
         if ($where["type"] !== "raw") {
@@ -202,9 +232,9 @@ class CacheKey
         return "-" . str_replace(" ", "_", $clause);
     }
 
-    protected function getOtherClauses(array $where, string $carry = null) : string
+    protected function getOtherClauses(array $where) : string
     {
-        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "raw", "Column"])) {
+        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In"])) {
             return "";
         }
 

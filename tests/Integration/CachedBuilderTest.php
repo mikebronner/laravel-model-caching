@@ -285,26 +285,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertEquals($liveResult->id, $author->id);
     }
 
-    public function testGetModelResultsCreatesCache()
-    {
-        $authors = (new Author)->with('books', 'profile')
-            ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-books-profile');
-        $tags = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesprofile',
-        ];
-
-        $cachedResults = $this->cache()->tags($tags)
-            ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)->with('books', 'profile')
-            ->get();
-
-        $this->assertEquals($authors, $cachedResults);
-        $this->assertEmpty($liveResults->diffKeys($cachedResults));
-    }
-
     public function testMaxModelResultsCreatesCache()
     {
         $authorId = (new Author)->with('books', 'profile')
@@ -817,22 +797,5 @@ class CachedBuilderTest extends IntegrationTestCase
             ->find(1);
 
         $this->assertTrue($book->stores->keyBy('id')->has(1));
-    }
-
-    public function testAccessingGetResultsViaArrayIndexDoesNotError()
-    {
-        $author = (new Author)
-            ->where('id', 1)
-            ->get()[0];
-        $cachedAuthor = (new Author)
-            ->where('id', 1)
-            ->get()[0];
-        $uncachedAuthor = (new UncachedAuthor)
-            ->where('id', 1)
-            ->get()[0];
-
-        $this->assertEquals(1, $author->id);
-        $this->assertEquals($author, $cachedAuthor);
-        $this->assertEquals($author->toArray(), $uncachedAuthor->toArray());
     }
 }
