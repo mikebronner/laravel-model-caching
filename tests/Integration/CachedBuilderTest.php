@@ -673,30 +673,10 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
 
-    public function testWhereNotInResults()
-    {
-        $books = (new Book)
-            ->whereNotIn('id', [1, 2])
-            ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
-        $tags = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
-        ];
-
-        $cachedResults = $this->cache()
-            ->tags($tags)
-            ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)
-            ->whereNotIn('id', [1, 2])
-            ->get();
-
-        $this->assertTrue($cachedResults->diffKeys($books)->isEmpty());
-        $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
-    }
-
+    /** @group test */
     public function testHashCollision()
     {
-        $key1 = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
+        $key1 = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_not_in_1_2');
         $tags1 = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook'];
         $books = (new Book)
             ->whereNotIn('id', [1, 2])

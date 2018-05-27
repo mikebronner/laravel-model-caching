@@ -40,7 +40,7 @@ trait CreatesApplication
         $publishers = factory(Publisher::class, 10)->create();
         factory(Author::class, 10)->create()
             ->each(function ($author) use ($publishers) {
-                factory(Book::class, random_int(2, 10))->make()
+                factory(Book::class, random_int(5, 25))->make()
                     ->each(function ($book) use ($author, $publishers) {
                         $book->author()->associate($author);
                         $book->publisher()->associate($publishers[rand(0, 9)]);

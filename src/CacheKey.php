@@ -39,7 +39,7 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
-dump($key);
+
         return $key;
     }
 
@@ -151,6 +151,7 @@ dump($key);
                 $value .= $this->getColumnClauses($where);
                 $value .= $this->getRawClauses($where);
                 $value .= $this->getInClauses($where);
+                $value .= $this->getNotInClauses($where);
                 $value .= $this->getOtherClauses($where, $carry);
 
                 return $value;
@@ -181,7 +182,7 @@ dump($key);
 
     protected function getInClauses(array $where) : string
     {
-        if ($where["type"] !== "In") {
+        if (! in_array($where["type"], ["In"])) {
             return "";
         }
 
@@ -189,6 +190,18 @@ dump($key);
         $values = $this->recursiveImplode($where["values"], "_");
 
         return "-{$where["column"]}_in{$values}";
+    }
+
+    protected function getNotInClauses(array $where) : string
+    {
+        if (! in_array($where["type"], ["NotIn"])) {
+            return "";
+        }
+
+        $this->currentBinding++;
+        $values = $this->recursiveImplode($where["values"], "_");
+
+        return "-{$where["column"]}_not_in{$values}";
     }
 
     protected function recursiveImplode(array $items, string $glue = ",") : string
@@ -234,7 +247,7 @@ dump($key);
 
     protected function getOtherClauses(array $where) : string
     {
-        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In"])) {
+        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn"])) {
             return "";
         }
 

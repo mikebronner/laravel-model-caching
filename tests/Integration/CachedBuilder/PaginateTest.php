@@ -18,7 +18,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
 * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class CachedBuilderPaginationTest extends IntegrationTestCase
+class PaginateTest extends IntegrationTestCase
 {
     use RefreshDatabase;
 
@@ -123,5 +123,36 @@ class CachedBuilderPaginationTest extends IntegrationTestCase
         $this->assertContains($page1ActiveLink, (string) $booksPage1->links());
         $this->assertContains($page2ActiveLink, (string) $booksPage2->links());
         $this->assertContains($page24ActiveLink, (string) $booksPage24->links());
+    }
+
+    public function testCustomPageNamePagination()
+    {
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_custom-page_1');
+        $tags = [
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $authors = (new Author)
+            ->paginate(3, ["*"], "custom-page");
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->paginate(3, ["*"], "custom-page");
+
+        $this->assertEquals($cachedResults, $authors);
+        $this->assertEquals($liveResults->pluck("email"), $authors->pluck("email"));
+        $this->assertEquals($liveResults->pluck("name"), $authors->pluck("name"));
+    }
+
+    public function testCustomPageNamePaginationFetchesCorrectPages()
+    {
+        $authors1 = (new Author)
+            ->paginate(3, ["*"], "custom-page", 1);
+        $authors2 = (new Author)
+            ->paginate(3, ["*"], "custom-page", 2);
+
+        $this->assertNotEquals($authors1->pluck("id"), $authors2->pluck("id"));
     }
 }
