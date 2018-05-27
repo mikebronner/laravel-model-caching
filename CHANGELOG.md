@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.59] - 27 May 2018
+### Fixed
+- caching of queries with `whereNotIn` clauses.
+
+### Updated
+- readme to specify that lazy-loaded relationships are currently not cached.
+
 ## [0.2.58] - 24 May 2018
 ### Fixed
 - caching of queries with `whereIn` clauses.
