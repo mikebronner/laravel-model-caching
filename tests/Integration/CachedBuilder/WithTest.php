@@ -62,4 +62,30 @@ class WithTest extends IntegrationTestCase
         $this->assertEquals($uncachedAuthor->books()->count(), $author->books()->count());
         $this->assertEquals($uncachedAuthor->id, $author->id);
     }
+
+    public function testWithBelongsToManyRelationshipQuery()
+    {
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-books.id_=_3-stores-first');
+        $tags = [
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesstore',
+        ];
+
+        $stores = (new Book)
+            ->with("stores")
+            ->find(3)
+            ->stores;
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value']
+            ->stores;
+        $liveResults = (new UncachedBook)
+            ->with("stores")
+            ->find(3)
+            ->stores;
+
+        $this->assertEquals($liveResults->pluck("id"), $stores->pluck("id"));
+        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+    }
 }

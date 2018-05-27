@@ -39,7 +39,7 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
-
+dump($key);
         return $key;
     }
 

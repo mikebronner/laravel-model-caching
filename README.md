@@ -17,7 +17,7 @@ for me, and one that would let me cache custom queries, as well as cache model
 relationships. This package is an attempt to address those requirements.
 
 ## Features
--   automatic, self-invalidating relationship (both eager- and lazy-loaded) caching.
+-   automatic, self-invalidating relationship (only eager-loading) caching.
 -   automatic, self-invalidating model query caching.
 -   automatic use of cache tags for cache providers that support them (will
     flush entire cache for providers that don't).
@@ -147,6 +147,9 @@ php artisan modelCache:clear --model=App\Model
 This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
+
+## Planned Features
+- [ ] [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
 
 ## Summary
 **That's all you need to do. All model queries and relationships are now

@@ -28,6 +28,6 @@ class UncachedBook extends Model
 
     public function stores() : BelongsToMany
     {
-        return $this->belongsToMany(UncachedStore::class);
+        return $this->belongsToMany(UncachedStore::class, "book_store", "book_id", "store_id");
     }
 }
