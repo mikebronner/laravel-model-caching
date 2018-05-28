@@ -23,7 +23,7 @@ before_script:
     - travis_retry composer install --no-interaction --prefer-source
 
 script:
-    - phpunit-${PU_FILE}.sh
+    - ./phpunit-${PU_FILE}.sh
 
 after_success:
     - travis_retry php vendor/bin/php-coveralls -v
