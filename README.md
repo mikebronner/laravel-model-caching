@@ -148,8 +148,10 @@ This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
 
-## Planned Features
-- [ ] [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
+## Possible Future Improvements
+- [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
+- [caching of global scopes, see #106](https://github.com/GeneaLabs/laravel-model-caching/issues/106).
+- [support for multiple versions of Laravel, see #126](https://github.com/GeneaLabs/laravel-model-caching/issues/126).
 
 ## Summary
 **That's all you need to do. All model queries and relationships are now
