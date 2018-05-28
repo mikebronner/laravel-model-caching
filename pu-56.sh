@@ -1,3 +1,5 @@
+#!/bin/bash
+
 composer require codedungeon/phpunit-result-printer --no-update --dev
 composer require "orchestra/database:3.6.*" --no-update --dev
 composer require "orchestra/testbench:3.6.*" --no-update --dev

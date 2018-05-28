@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sed '/    printerClass="Codedungeon\\PHPUnitPrettyResultPrinter\\Printer"/d' phpunit.xml > phpunit-55.xml
 composer remove codedungeon/phpunit-result-printer --no-update --dev
 composer require "orchestra/database:3.5.*" --no-update --dev

@@ -21,6 +21,7 @@ services:
 before_script:
     - travis_retry composer self-update
     - travis_retry composer install --no-interaction --prefer-source
+    - chmod +x *.sh
 
 script:
     - ./phpunit-${PU_FILE}.sh
