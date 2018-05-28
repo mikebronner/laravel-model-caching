@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class FirstOrCreateTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testFirstOrCreateFlushesCacheForModel()
     {

@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BuilderCachingTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testDisablingAllQuery()
     {

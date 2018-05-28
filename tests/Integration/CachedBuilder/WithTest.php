@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class WithTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
-
     public function testWithQuery()
     {
         $author = (new Author)

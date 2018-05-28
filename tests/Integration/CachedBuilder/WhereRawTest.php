@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class WhereRawTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testRawWhereClauseParsing()
     {

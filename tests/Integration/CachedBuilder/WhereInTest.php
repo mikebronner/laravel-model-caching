@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class WhereInTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testWithInUsingCollectionQuery()
     {

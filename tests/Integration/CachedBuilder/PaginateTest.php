@@ -20,7 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 class PaginateTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testPaginationIsCached()
     {

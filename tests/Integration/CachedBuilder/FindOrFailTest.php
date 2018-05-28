@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class FindOrFailTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testFindOrFailCachesModels()
     {

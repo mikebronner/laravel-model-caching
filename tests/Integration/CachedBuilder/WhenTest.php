@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class WhenTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testWhenQuery()
     {

@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class GetTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testGetModelResultsCreatesCache()
     {

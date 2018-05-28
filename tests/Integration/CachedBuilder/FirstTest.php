@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class FirstTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testFirstReturnsAllAttributesForModel()
     {

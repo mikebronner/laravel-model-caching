@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class InRandomOrderQueryTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testInRandomOrderCachesResults()
     {

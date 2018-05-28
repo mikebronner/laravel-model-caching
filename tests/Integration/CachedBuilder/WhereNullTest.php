@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class WhereNullTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testWhereNullClause()
     {

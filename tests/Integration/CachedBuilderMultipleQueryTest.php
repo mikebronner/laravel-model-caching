@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class CachedBuilderMultipleQueryTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testCallingAllThenFirstQueriesReturnsDifferingResults()
     {

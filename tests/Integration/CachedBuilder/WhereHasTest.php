@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class WhereHasTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testWhereHasClause()
     {

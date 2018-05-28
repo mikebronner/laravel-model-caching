@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class UpdateExistingPivotTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testInRandomOrderCachesResults()
     {

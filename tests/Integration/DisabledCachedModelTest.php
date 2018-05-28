@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DisabledCachedModelTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testCacheCanBeDisabledOnModel()
     {

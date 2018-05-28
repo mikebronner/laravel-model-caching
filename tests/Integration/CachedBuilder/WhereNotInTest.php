@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class WhereNotInTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testWhereNotInQuery()
     {

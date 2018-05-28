@@ -20,7 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 class DisabledCachedBuilderTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testAvgModelResultsIsNotCached()
     {

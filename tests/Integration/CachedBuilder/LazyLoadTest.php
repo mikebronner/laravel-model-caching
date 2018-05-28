@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 abstract class LazyLoadTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
 //     public function testLazyLoadingRelationshipQuery()
 //     {

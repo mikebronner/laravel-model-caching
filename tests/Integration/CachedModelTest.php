@@ -16,7 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CachedModelTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testAllModelResultsCreatesCache()
     {

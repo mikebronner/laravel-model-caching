@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FlushTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testGivenModelIsFlushed()
     {

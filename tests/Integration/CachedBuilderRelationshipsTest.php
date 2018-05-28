@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class CachedBuilderRelationshipsTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testHasRelationshipResults()
     {

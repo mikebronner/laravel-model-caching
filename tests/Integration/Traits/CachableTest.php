@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CachableTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
+    
 
     public function testSpecifyingAlternateCacheDriver()
     {
