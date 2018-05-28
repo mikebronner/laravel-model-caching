@@ -39,7 +39,7 @@ script:
 before_install:
     - composer require "orchestra/database:${ORCHESTRA_VERSION}" --no-update
     - composer require "orchestra/testbench:${ORCHESTRA_VERSION}" --no-update
-    - composer require "orchestra/testbench:${ORCHESTRA_VERSION}- --no-update
+    - composer require "orchestra/testbench:${ORCHESTRA_VERSION}" --no-update
     - composer require "illuminate/cache:${ILLUMINATE_VERSION}" --no-update
     - composer require "illuminate/config:${ILLUMINATE_VERSION}" --no-update
     - composer require "illuminate/console:${ILLUMINATE_VERSION}" --no-update
