@@ -1,6 +1,6 @@
 language: php
 
-env: REDIS_HOST=127.0.0.1 ILLUMINATE_VERSION=5.6.* ORCHESTRA_VERSION=3.6.*
+env: ILLUMINATE_VERSION=5.6.* ORCHESTRA_VERSION=3.6.* REDIS_HOST=127.0.0.1
 
 php:
     - 7.1.3
@@ -9,21 +9,13 @@ php:
 matrix:
     include:
         - php: 7.1.3
-          env:
-            - ILLUMINATE_VERSION=5.5.*
-            - ORCHESTRA_VERSION=3.5.*
+          env: ILLUMINATE_VERSION=5.5.* ORCHESTRA_VERSION=3.5.* REDIS_HOST=127.0.0.1
         - php: 7.1.3
-          env:
-            - ILLUMINATE_VERSION=5.4.*
-            - ORCHESTRA_VERSION=3.4.*
+          env: ILLUMINATE_VERSION=5.4.* ORCHESTRA_VERSION=3.4.* REDIS_HOST=127.0.0.1
         - php: 7.2
-          env:
-            - ILLUMINATE_VERSION=5.5.*
-            - ORCHESTRA_VERSION=3.5.*
+          env: ILLUMINATE_VERSION=5.5.* ORCHESTRA_VERSION=3.5.* REDIS_HOST=127.0.0.1
         - php: 7.2
-          env:
-            - ILLUMINATE_VERSION=5.4.*
-            - ORCHESTRA_VERSION=3.4.*
+          env: ILLUMINATE_VERSION=5.4.* ORCHESTRA_VERSION=3.4.* REDIS_HOST=127.0.0.1
 
 services:
     - redis-server
