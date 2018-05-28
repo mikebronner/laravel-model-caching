@@ -49,6 +49,7 @@ class Clear extends Command
         return 0;
     }
 
+    /** @SuppressWarnings(PHPMD.BooleanArgumentFlag) */
     protected function getAllTraitsUsedByClass(
         string $classname,
         bool $autoload = true

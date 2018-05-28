@@ -208,7 +208,7 @@ class CacheKey
     {
         $result = "";
 
-        foreach ($items as $key => $value) {
+        foreach ($items as $value) {
             if (is_array($value)) {
                 $result .= $this->recursiveImplode($value, $glue);
 
