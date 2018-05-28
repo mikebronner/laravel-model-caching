@@ -425,6 +425,10 @@ class CachedBuilderTest extends IntegrationTestCase
 
     public function testLazyLoadingOnResourceIsCached()
     {
+        if (starts_with(app()->version(), "5.4")) {
+            $this->markTestIncomplete("Resources don't exist in Laravel 5.4.");
+        }
+
         $books = (new AuthorResource((new Author)->first()))->books;
         $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull');
         $tags = [

@@ -1,5 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use Carbon\Carbon;
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
@@ -49,7 +50,7 @@ trait Caching
 
             $this->cache()
                 ->rememberForever($cacheKey, function () {
-                    return now();
+                    return (new Carbon)->now();
                 });
         }
     }
@@ -128,7 +129,7 @@ trait Caching
         [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown
-            || now()->diffInSeconds($invalidatedAt) < $cacheCooldown
+            || (new Carbon)->now()->diffInSeconds($invalidatedAt) < $cacheCooldown
         ) {
             return;
         }
@@ -160,7 +161,7 @@ trait Caching
 
         $this->setCacheCooldownSavedAtTimestamp($instance);
 
-        if (now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
+        if ((new Carbon)->now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
             $instance->flushCache();
         }
     }
@@ -179,7 +180,7 @@ trait Caching
 
         $instance->cache()
             ->rememberForever($cacheKey, function () {
-                return now();
+                return (new Carbon)->now();
             });
     }
 }

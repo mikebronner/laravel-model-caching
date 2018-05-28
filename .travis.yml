@@ -3,17 +3,17 @@ language: php
 matrix:
     include:
         - php: 7.1.3
-          env: ILLUMINATE_VERSION=5.6.* ORCHESTRA_VERSION=3.6.* PHPUNIT_VERSION=^7.0 REDIS_HOST=127.0.0.1
+          env: PU_FILE=56 REDIS_HOST=127.0.0.1
         - php: 7.1.3
-          env: ILLUMINATE_VERSION=5.5.* ORCHESTRA_VERSION=3.5.* PHPUNIT_VERSION=~6.0 REDIS_HOST=127.0.0.1
+          env: PU_FILE=55 REDIS_HOST=127.0.0.1
         - php: 7.1.3
-          env: ILLUMINATE_VERSION=5.4.* ORCHESTRA_VERSION=3.4.* PHPUNIT_VERSION=~5.7 REDIS_HOST=127.0.0.1
+          env: PU_FILE=54 REDIS_HOST=127.0.0.1
         - php: 7.2
-          env: ILLUMINATE_VERSION=5.6.* ORCHESTRA_VERSION=3.6.* PHPUNIT_VERSION=^7.0 REDIS_HOST=127.0.0.1
+          env: PU_FILE=56 REDIS_HOST=127.0.0.1
         - php: 7.2
-          env: ILLUMINATE_VERSION=5.5.* ORCHESTRA_VERSION=3.5.* PHPUNIT_VERSION=~6.0 REDIS_HOST=127.0.0.1
+          env: PU_FILE=55 REDIS_HOST=127.0.0.1
         - php: 7.2
-          env: ILLUMINATE_VERSION=5.4.* ORCHESTRA_VERSION=3.4.* PHPUNIT_VERSION=~5.7 REDIS_HOST=127.0.0.1
+          env: PU_FILE=54 REDIS_HOST=127.0.0.1
 
 services:
     - redis-server
@@ -23,26 +23,7 @@ before_script:
     - travis_retry composer install --no-interaction --prefer-source
 
 script:
-    - mkdir -p ./build/logs
-    - ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
-
-before_install:
-    - sed '/    printerClass="Codedungeon\\PHPUnitPrettyResultPrinter\\Printer"/d' phpunit.xml > new-phpunit.xml
-    - rm phpunit.xml
-    - mv new-phpunit.xml phpunit.xml
-    - composer remove codedungeon/phpunit-result-printer --no-update
-    - composer require "orchestra/database:${ORCHESTRA_VERSION}" --no-update --dev
-    - composer require "orchestra/testbench:${ORCHESTRA_VERSION}" --no-update --dev
-    - composer require "orchestra/testbench-browser-kit:${ORCHESTRA_VERSION}" --no-update --dev
-    - composer require "illuminate/cache:${ILLUMINATE_VERSION}" --no-update
-    - composer require "illuminate/config:${ILLUMINATE_VERSION}" --no-update
-    - composer require "illuminate/console:${ILLUMINATE_VERSION}" --no-update
-    - composer require "illuminate/database:${ILLUMINATE_VERSION}" --no-update
-    - composer require "illuminate/support:${ILLUMINATE_VERSION}" --no-update
-    - composer require "phpunit/phpunit:${PHPUNIT_VERSION}" --no-update --dev
-
-install:
-    - composer update --prefer-source --no-interaction
+    - phpunit-${PU_FILE}.sh
 
 after_success:
     - travis_retry php vendor/bin/php-coveralls -v
