@@ -20,7 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 class CachedBuilderTest extends IntegrationTestCase
 {
-    
+
 
     public function testCacheIsEmptyBeforeLoadingModels()
     {
@@ -673,7 +673,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertTrue($liveResults->diffKeys($books)->isEmpty());
     }
 
-    /** @group test */
     public function testHashCollision()
     {
         $key1 = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_not_in_1_2');
