@@ -19,3 +19,4 @@ mv original-composer.json composer.json
 
 mkdir -p ./build/logs
 vendor/bin/phpunit --configuration phpunit.xml --coverage-text --coverage-clover ./build/logs/clover.xml
+rm phpunit-56.xml

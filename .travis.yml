@@ -21,10 +21,10 @@ services:
 before_script:
     - travis_retry composer self-update
     - travis_retry composer install --no-interaction --prefer-source
-    - travis_retry chmod +x *.sh
+    - chmod +x *.sh
 
 script:
-    - travis_retry ./pu-${PU_FILE}.sh
+    - ./pu-${PU_FILE}.sh
 
 after_success:
     - travis_retry php vendor/bin/php-coveralls -v
