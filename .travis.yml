@@ -27,7 +27,9 @@ script:
     - ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
 
 before_install:
-    - sed '{printerClass=\"Codedungeon\\PHPUnitPrettyResultPrinter\\Printer\"}d' phpunit.xml
+    - sed '/    printerClass="Codedungeon\\PHPUnitPrettyResultPrinter\\Printer"/d' phpunit.xml > new-phpunit.xml
+    - rm phpunit.xml
+    - mv new-phpunit.xml phpunit.xml
     - composer remove codedungeon/phpunit-result-printer --no-update
     - composer require "orchestra/database:${ORCHESTRA_VERSION}" --no-update --dev
     - composer require "orchestra/testbench:${ORCHESTRA_VERSION}" --no-update --dev
