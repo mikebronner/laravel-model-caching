@@ -19,5 +19,5 @@ rm composer.json
 mv original-composer.json composer.json
 
 mkdir -p ./build/logs
-vendor/bin/phpunit --configuration phpunit-55.xml --coverage-text --coverage-clover ./build/logs/clover.xml
+php -n vendor/bin/phpunit --configuration phpunit-55.xml --coverage-text --coverage-clover ./build/logs/clover.xml
 rm phpunit-55.xml

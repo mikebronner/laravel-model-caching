@@ -24,7 +24,7 @@ before_script:
     - chmod +x *.sh
 
 script:
-    - ./pu-${PU_FILE}.sh
+    - ./tests/pu-${PU_FILE}.sh
 
 after_success:
     - travis_retry php vendor/bin/php-coveralls -v
