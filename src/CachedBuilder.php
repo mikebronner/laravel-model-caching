@@ -127,9 +127,32 @@ class CachedBuilder extends EloquentBuilder
         }
 
         $page = request("page", $page ?: 1);
+
+        if (is_array($page)) {
+            $page = $this->recursiveImplodeWithKey($page);
+        }
+        dump($perPage, $columns, $pageName, $page);
+
         $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string
+    {
+        $result = "";
+
+        foreach ($items as $key => $value) {
+            if (is_array($value)) {
+                $result .= $key . $glue . $this->recursiveImplode($value, $glue);
+
+                continue;
+            }
+
+            $result .= $glue . $key . $glue . $value;
+        }
+
+        return $result;
     }
 
     public function pluck($column, $key = null)

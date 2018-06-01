@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.61] - 31 May 2018
+### Fixed
+- caching of paginated queries with page identifiers as arrays (`?page[size]=1`).
+
+## [0.2.60] - 27 May 2018
+### Added
+- unit tests for multiple versions of Laravel simultaneously.
+- backwards-compatibility to Laravel 5.4.
+
 ## [0.2.59] - 27 May 2018
 ### Fixed
 - caching of queries with `whereNotIn` clauses.
