@@ -143,7 +143,7 @@ class CachedBuilder extends EloquentBuilder
 
         foreach ($items as $key => $value) {
             if (is_array($value)) {
-                $result .= $key . $glue . $this->recursiveImplode($value, $glue);
+                $result .= $key . $glue . $this->recursiveImplodeWithKey($value, $glue);
 
                 continue;
             }
