@@ -131,7 +131,6 @@ class CachedBuilder extends EloquentBuilder
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
-        dump($perPage, $columns, $pageName, $page);
 
         $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
 
