@@ -25,11 +25,19 @@ trait ModelCaching
 
     public static function bootCachable()
     {
+        static::created(function ($instance) {
+            $instance->checkCooldownAndFlushAfterPersiting($instance);
+        });
+
         static::deleted(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
 
         static::saved(function ($instance) {
+            $instance->checkCooldownAndFlushAfterPersiting($instance);
+        });
+
+        static::restored(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersiting($instance);
         });
 

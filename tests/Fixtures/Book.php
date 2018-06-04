@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Book extends Model
@@ -25,6 +26,11 @@ class Book extends Model
     public function author() : BelongsTo
     {
         return $this->belongsTo(Author::class);
+    }
+
+    public function comments() : MorphMany
+    {
+        return $this->morphMany(Comment::class, "commentable");
     }
 
     public function publisher() : BelongsTo
