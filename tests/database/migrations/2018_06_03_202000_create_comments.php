@@ -11,8 +11,8 @@ class CreateComments extends Migration
             $table->increments('id');
             $table->timestamps();
 
-            $table->unsignedInteger("commentable_id");
-            $table->string("commentable_type");
+            $table->unsignedInteger("commentable_id")->nullable();
+            $table->string("commentable_type")->nullable();
             $table->text("description");
             $table->string("subject");
         });

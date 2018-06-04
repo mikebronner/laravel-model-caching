@@ -42,21 +42,16 @@ class WithCountTest extends IntegrationTestCase
         $this->assertEquals($author1->books_count + 1, $author2->books_count);
     }
 
-    /** @group test */
     public function testWithCountOnMorphManyRelationshipUpdatesAfterRecordIsAdded()
     {
         $book1 = (new Book)
             ->withCount("comments")
             ->first();
-        dump("start");
-        factory(Comment::class, 1)
-            ->make()
-            ->each(function ($comment) use ($book1) {
-                $comment->commentable_id = $book1->id;
-                $comment->commentable_type = $book1->getTable();
-                $comment->save();
-            });
-        dump("end");
+        $comment = factory(Comment::class, 1)
+            ->create()
+            ->first();
+
+        $book1->comments()->save($comment);
 
         $book2 = (new Book)
             ->withCount("comments")
