@@ -129,7 +129,7 @@ class CacheKey
 
     protected function getValuesFromBindings(array $where, string $values) : string
     {
-        if (! $values && ($this->query->bindings["where"] ?? false)) {
+        if (! $values && ($this->query->bindings["where"][$this->currentBinding] ?? false)) {
             $values = $this->query->bindings["where"][$this->currentBinding];
             $this->currentBinding++;
 
