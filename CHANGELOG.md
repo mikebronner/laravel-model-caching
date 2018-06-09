@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.63] - 9 Jun 2018
+### Fixed
+- where clause binding resolution issue.
+
+## [0.2.62] - 1 Jun 2018
+### Fixed
+- function name typo.
+
+### Removed
+- dump() used for debugging.
+
 ## [0.2.61] - 31 May 2018
 ### Fixed
 - caching of paginated queries with page identifiers as arrays (`?page[size]=1`).
