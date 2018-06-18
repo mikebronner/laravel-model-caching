@@ -97,4 +97,25 @@ class WhereTest extends IntegrationTestCase
         $this->processWhereClauseTestWithOperator('LIKE');
         $this->processWhereClauseTestWithOperator('NOT LIKE');
     }
+
+    public function testTwoWhereClausesAfterEachOther()
+    {
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-id_>_-id_<_100');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $authors = (new Author)
+            ->where("id", ">", 0)
+            ->where("id", "<", 100)
+            ->get();
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->where("id", ">", 0)
+            ->where("id", "<", 100)
+            ->get();
+
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
+    }
 }
