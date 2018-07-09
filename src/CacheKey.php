@@ -164,8 +164,6 @@ class CacheKey
             return "";
         }
 
-        $this->currentBinding++;
-
         return "-" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
     }
 
