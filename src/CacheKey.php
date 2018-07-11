@@ -173,8 +173,6 @@ class CacheKey
             return "";
         }
 
-        $this->currentBinding++;
-
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
