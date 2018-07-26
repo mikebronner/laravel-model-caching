@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.64] - 25 Jul 2018
+### Fixed
+- caching of subqueries of `->whereNotIn()` and `->whereIn()`.
+- nested where bindings.
+
 ## [0.2.63] - 9 Jun 2018
 ### Fixed
 - where clause binding resolution issue.
