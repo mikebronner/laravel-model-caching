@@ -89,4 +89,19 @@ class WhereRawTest extends IntegrationTestCase
 
         $this->assertEquals($expectedIds, $authors->pluck("id")->toArray());
     }
+
+    public function testNestedWhereRawWithBindings()
+    {
+        $books = (new Book)
+            ->where(function ($query) {
+                $query->whereRaw("title like ? or description like ? or published_at like ? or price like ?", ['%larravel%', '%larravel%', '%larravel%', '%larravel%',]);
+            })->get();
+
+        $uncachedBooks = (new UncachedBook)
+            ->where(function ($query) {
+                $query->whereRaw("title like ? or description like ? or published_at like ? or price like ?", ['%larravel%', '%larravel%', '%larravel%', '%larravel%',]);
+            })->get();
+
+        $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+    }
 }

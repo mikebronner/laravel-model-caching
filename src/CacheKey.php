@@ -164,8 +164,6 @@ class CacheKey
             return "";
         }
 
-        $this->currentBinding++;
-
         return "-" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
     }
 
@@ -174,8 +172,6 @@ class CacheKey
         if ($where["type"] !== "Column") {
             return "";
         }
-
-        $this->currentBinding++;
 
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }

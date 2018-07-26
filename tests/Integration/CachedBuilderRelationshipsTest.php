@@ -38,4 +38,23 @@ class CachedBuilderRelationshipsTest extends IntegrationTestCase
         $this->assertNotEmpty($booksWithStores);
         $this->assertEquals($booksWithStores, $cachedResults);
     }
+
+    public function testWhereHasRelationship()
+    {
+        $books = (new Book)
+            ->with("stores")
+            ->whereHas("stores", function ($query) {
+                $query->whereRaw('address like ?', ['%s%']);
+            })
+            ->get();
+
+        $uncachedBooks = (new UncachedBook)
+            ->with("stores")
+            ->whereHas("stores", function ($query) {
+                $query->whereRaw('address like ?', ['%s%']);
+            })
+            ->get();
+
+        $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+    }
 }
