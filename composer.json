@@ -18,18 +18,18 @@
         "php": ">=7.1.3"
     },
     "require-dev": {
+        "codedungeon/phpunit-result-printer": "*",
         "fzaninotto/faker": "*",
         "mockery/mockery": "*",
         "orchestra/database": "3.6.*",
-        "orchestra/testbench": "3.6.*",
         "orchestra/testbench-browser-kit": "3.6.*",
+        "orchestra/testbench": "3.6.*",
         "php-coveralls/php-coveralls" : "*",
         "phpmd/phpmd": "*",
         "phpunit/phpunit": "7.*",
-        "sebastian/phpcpd": "*",
-        "symfony/thanks": "*",
         "predis/predis": "*",
-        "codedungeon/phpunit-result-printer": "^0.19.10"
+        "sebastian/phpcpd": "*",
+        "symfony/thanks": "*"
     },
     "autoload": {
         "psr-4": {
