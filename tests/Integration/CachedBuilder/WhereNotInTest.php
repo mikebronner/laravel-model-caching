@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class WhereNotInTest extends IntegrationTestCase
 {
-    
-
     public function testWhereNotInQuery()
     {
         $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-author_id_not_in_1_2_3_4');
@@ -59,6 +57,32 @@ class WhereNotInTest extends IntegrationTestCase
             ->get($key)['value'];
         $liveResults = (new UncachedBook)
             ->whereNotIn('id', [1, 2])
+            ->get();
+
+        $this->assertEquals($liveResults->pluck("id"), $results->pluck("id"));
+        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+    }
+
+    public function testWhereNotInSubquery()
+    {
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_notinsub_book-id_<_10');
+        $tags = [
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
+        ];
+
+        $results = (new Book)
+            ->whereNotIn("id", function ($query) {
+                $query->select("id")->from("authors")->where("id", "<", 10);
+            })
+            ->get();
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedBook)
+            ->whereNotIn("id", function ($query) {
+                $query->select("id")->from("authors")->where("id", "<", 10);
+            })
             ->get();
 
         $this->assertEquals($liveResults->pluck("id"), $results->pluck("id"));

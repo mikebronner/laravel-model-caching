@@ -97,7 +97,7 @@ class CacheKey
 
     protected function getTypeClause($where) : string
     {
-        $type =in_array($where["type"], ["In", "NotIn", "Null", "NotNull", "between"])
+        $type = in_array($where["type"], ["In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub"])
             ? strtolower($where["type"])
             : strtolower($where["operator"]);
 
@@ -120,6 +120,18 @@ class CacheKey
 
     protected function getValuesFromWhere(array $where) : string
     {
+        if (array_get($where, "query")) {
+            $prefix = $this->getCachePrefix();
+            $subKey = (new self($this->eagerLoad, $this->model, $where["query"]))
+                ->make();
+            $subKey = str_replace($prefix, "", $subKey);
+            $subKey = str_replace($this->getModelSlug(), "", $subKey);
+            $classParts = explode("\\", get_class($this->model));
+            $subKey = strtolower(array_pop($classParts)) . $subKey;
+
+            return $subKey;
+        }
+
         if (is_array(array_get($where, "values"))) {
             return implode("_", $where["values"]);
         }
