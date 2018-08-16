@@ -14,7 +14,7 @@ trait CreatesApplication
 
     protected function cache()
     {
-        $cache = cache();
+        $cache = app('cache');
 
         if (config('laravel-model-caching.store')) {
             $cache = $cache->store(config('laravel-model-caching.store'));
@@ -33,7 +33,7 @@ trait CreatesApplication
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
-        $this->cache = cache()
+        $this->cache = app('cache')
             ->store(config('laravel-model-caching.store'));
 
         $this->cache()->flush();

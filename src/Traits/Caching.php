@@ -13,7 +13,7 @@ trait Caching
 
     public function cache(array $tags = [])
     {
-        $cache = cache();
+        $cache = app('cache');
 
         if (config('laravel-model-caching.store')) {
             $cache = $cache->store(config('laravel-model-caching.store'));
@@ -70,7 +70,7 @@ trait Caching
     ) : string {
         $eagerLoad = $this->eagerLoad ?? [];
         $model = $this->model ?? $this;
-        $query = $this->query ?? app(Builder::class);
+        $query = $this->query ?? app('db')->query();
 
         return (new CacheKey($eagerLoad, $model, $query))
             ->make($columns, $idColumn, $keyDifferentiator);
@@ -80,7 +80,7 @@ trait Caching
     {
         $eagerLoad = $this->eagerLoad ?? [];
         $model = $this->model ?? $this;
-        $query = $this->query ?? app(Builder::class);
+        $query = $this->query ?? app('db')->query();
 
         $tags = (new CacheTags($eagerLoad, $model, $query))
             ->make();

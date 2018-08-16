@@ -31,10 +31,10 @@ class CachableTest extends IntegrationTestCase
 
         $authors = (new Author)
             ->all();
-        $defaultcacheResults = cache()
+        $defaultcacheResults = app('cache')
             ->tags($tags)
             ->get($key)['value'];
-        $customCacheResults = cache()
+        $customCacheResults = app('cache')
             ->store('customCache')
             ->tags($tags)
             ->get($key)['value'];
@@ -51,7 +51,7 @@ class CachableTest extends IntegrationTestCase
         (new PrefixedAuthor)->get();
 
         $results = $this->
-            cache()
+            app('cache')
             ->tags([
                 'genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor',
             ])
