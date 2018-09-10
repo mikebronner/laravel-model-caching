@@ -12,7 +12,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FlushTest extends IntegrationTestCase
 {
-    
+    public function setUp()
+    {
+        parent::setUp();
+
+        if (starts_with($this->app->version(), '5.7')) {
+            $this->withoutMockingConsoleOutput();
+        }
+    }
 
     public function testGivenModelIsFlushed()
     {
@@ -20,11 +27,13 @@ class FlushTest extends IntegrationTestCase
         $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
-        $cachedResults = $this->cache
+        $cachedResults = $this
+            ->cache
             ->tags($tags)
             ->get($key)['value'];
         $result = $this->artisan('modelCache:clear', ['--model' => Author::class]);
-        $flushedResults = $this->cache
+        $flushedResults = $this
+            ->cache
             ->tags($tags)
             ->get($key)['value'];
 

@@ -72,6 +72,9 @@ trait CreatesApplication
 
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('database.redis.cache', [
+            'host' => env('REDIS_HOST', '192.168.10.10'),
+        ]);
         $app['config']->set('database.redis.default', [
             'host' => env('REDIS_HOST', '192.168.10.10'),
         ]);

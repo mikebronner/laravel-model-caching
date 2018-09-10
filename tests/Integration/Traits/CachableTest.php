@@ -17,8 +17,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CachableTest extends IntegrationTestCase
 {
-    
-
     public function testSpecifyingAlternateCacheDriver()
     {
         $configCacheStores = config('cache.stores');
