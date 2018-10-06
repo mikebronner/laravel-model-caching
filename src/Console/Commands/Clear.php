@@ -21,7 +21,7 @@ class Clear extends Command
 
     protected function flushEntireCache() : int
     {
-        cache()
+        app('cache')
             ->store(config('laravel-model-caching.store'))
             ->flush();
 

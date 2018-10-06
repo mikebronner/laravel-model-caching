@@ -29,10 +29,10 @@ class CachableTest extends IntegrationTestCase
 
         $authors = (new Author)
             ->all();
-        $defaultcacheResults = cache()
+        $defaultcacheResults = app('cache')
             ->tags($tags)
             ->get($key)['value'];
-        $customCacheResults = cache()
+        $customCacheResults = app('cache')
             ->store('customCache')
             ->tags($tags)
             ->get($key)['value'];
