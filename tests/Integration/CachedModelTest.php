@@ -17,8 +17,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CachedModelTest extends IntegrationTestCase
 {
-
-
     public function testAllModelResultsCreatesCache()
     {
         $authors = (new Author)->all();
@@ -191,18 +189,4 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertCount(11, $authorsAfterCreate);
         $this->assertCount(11, $uncachedAuthors);
     }
-
-    // /** @group test */
-    // public function testModelObserver()
-    // {
-    //     (new Author)->observe(AuthorObserver::class);
-    //     $authors = (new Author)->get();
-    //     $author1 = $authors->first();
-    //     $author2 = $authors->last();
-    //
-    //     $author1->save();
-    //
-    //     $this->assertEquals("saving@noemail.com", $author1->email);
-    //     $this->assertEquals("retrieved@noemail.com", $author2->email);
-    // }
 }
