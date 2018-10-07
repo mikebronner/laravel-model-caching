@@ -69,6 +69,14 @@ class CachedBuilder extends EloquentBuilder
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
+    public function forceDelete()
+    {
+        $this->cache($this->makeCacheTags())
+            ->flush();
+
+        return parent::forceDelete();
+    }
+
     public function get($columns = ["*"])
     {
         if (! $this->isCachable()) {

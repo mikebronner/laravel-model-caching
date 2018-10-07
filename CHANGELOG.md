@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - use of custom pagination name.
 - edge-case where tag creation failed.
+- usage of `forceDelete()` in the Builder.
 
 ## [0.3.0] - 10 Sep 2018
 ### Added
