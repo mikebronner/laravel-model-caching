@@ -126,12 +126,13 @@ class CachedBuilder extends EloquentBuilder
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = request($pageName, $page ?: 1);
+        $page = request()->input($pageName)
+            ?: $page
+            ?: 1;
 
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
-
         $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);

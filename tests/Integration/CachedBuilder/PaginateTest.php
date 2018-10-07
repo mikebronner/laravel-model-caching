@@ -20,8 +20,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 class PaginateTest extends IntegrationTestCase
 {
-
-
     public function testPaginationIsCached()
     {
         $authors = (new Author)
@@ -44,6 +42,7 @@ class PaginateTest extends IntegrationTestCase
         $this->assertEquals($liveResults->pluck("name"), $authors->pluck("name"));
     }
 
+    /** @group test */
     public function testPaginationReturnsCorrectLinks()
     {
         if (starts_with(app()->version(), "5.6")

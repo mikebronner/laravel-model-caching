@@ -1,8 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
@@ -16,7 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CachedModelTest extends IntegrationTestCase
 {
-    
+
 
     public function testAllModelResultsCreatesCache()
     {
@@ -190,4 +191,18 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertCount(11, $authorsAfterCreate);
         $this->assertCount(11, $uncachedAuthors);
     }
+
+    // /** @group test */
+    // public function testModelObserver()
+    // {
+    //     (new Author)->observe(AuthorObserver::class);
+    //     $authors = (new Author)->get();
+    //     $author1 = $authors->first();
+    //     $author2 = $authors->last();
+    //
+    //     $author1->save();
+    //
+    //     $this->assertEquals("saving@noemail.com", $author1->email);
+    //     $this->assertEquals("retrieved@noemail.com", $author2->email);
+    // }
 }

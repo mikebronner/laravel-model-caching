@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
@@ -38,6 +39,7 @@ trait CreatesApplication
 
         $this->cache()->flush();
         $publishers = factory(Publisher::class, 10)->create();
+        (new Author)->observe(AuthorObserver::class);
         factory(Author::class, 10)->create()
             ->each(function ($author) use ($publishers) {
                 factory(Book::class, random_int(5, 25))->make()
