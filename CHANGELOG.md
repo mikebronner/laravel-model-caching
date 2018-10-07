@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 10 Sep 2018
+### Changed
+- use of `cache()` helper method to `app("cache")` to allow for better Lumen compatibility. Thanks @nope7777!
+
+### Updated
+- test script for Laravel 5.7 to use non-dev version of test dependency.
+
+### Removed
+- `codedungeon/phpunit-result-printer` unit test output printer.
+
+### Fixed
+- use of custom pagination name.
+
 ## [0.3.0] - 10 Sep 2018
 ### Added
 - Laravel 5.7 compatibility.

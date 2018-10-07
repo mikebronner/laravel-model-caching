@@ -126,7 +126,7 @@ class CachedBuilder extends EloquentBuilder
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = request("page", $page ?: 1);
+        $page = request($pageName, $page ?: 1);
 
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);

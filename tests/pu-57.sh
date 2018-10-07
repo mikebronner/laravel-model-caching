@@ -3,9 +3,9 @@
 cp composer.json original-composer.json
 
 composer require codedungeon/phpunit-result-printer --no-update --dev
-composer require "orchestra/database:3.7.x-dev" --no-update --dev
+composer require "orchestra/database:3.7.x-dev@dev" --no-update --dev
 composer require "orchestra/testbench:3.7.*" --no-update --dev
-composer require "orchestra/testbench-browser-kit:3.7.x-dev" --no-update --dev
+composer require "orchestra/testbench-browser-kit:3.7.*" --no-update --dev
 composer require "illuminate/cache:5.7.*" --no-update
 composer require "illuminate/config:5.7.*" --no-update
 composer require "illuminate/console:5.7.*" --no-update

@@ -88,7 +88,7 @@ trait Caching
         return $tags;
     }
 
-    public function getModelCacheCooldown(Model $instance)
+    public function getModelCacheCooldown(Model $instance) : array
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
@@ -99,11 +99,7 @@ trait Caching
             return [null, null, null];
         }
 
-        return [
-            $cacheCooldown,
-            $invalidatedAt,
-            $savedAt,
-        ];
+        return [$cacheCooldown, $invalidatedAt, $savedAt];
     }
 
     protected function getCacheCooldownDetails(
