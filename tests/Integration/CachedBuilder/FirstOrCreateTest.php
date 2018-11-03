@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class FirstOrCreateTest extends IntegrationTestCase
 {
-    
-
     public function testFirstOrCreateFlushesCacheForModel()
     {
         (new Author)->truncate();

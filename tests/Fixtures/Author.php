@@ -10,9 +10,13 @@ class Author extends Model
 {
     use Cachable;
 
+    protected $casts = [
+        "finances" => "array",
+    ];
     protected $fillable = [
         'name',
         'email',
+        "finances",
     ];
 
     public function books() : HasMany

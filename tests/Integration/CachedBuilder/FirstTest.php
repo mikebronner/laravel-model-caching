@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class FirstTest extends IntegrationTestCase
 {
-    
-
     public function testFirstReturnsAllAttributesForModel()
     {
         $author = (new Author)->where("id", "=", 1)->first();

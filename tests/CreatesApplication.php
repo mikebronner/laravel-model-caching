@@ -74,6 +74,12 @@ trait CreatesApplication
 
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testbench', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
         $app['config']->set('database.redis.cache', [
             'host' => env('REDIS_HOST', '192.168.10.10'),
         ]);

@@ -97,7 +97,7 @@ class CacheKey
 
     protected function getTypeClause($where) : string
     {
-        $type = in_array($where["type"], ["In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub"])
+        $type = in_array($where["type"], ["In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub", "JsonContains"])
             ? strtolower($where["type"])
             : strtolower($where["operator"]);
 

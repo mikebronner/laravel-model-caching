@@ -8,6 +8,6 @@ $factory->define(Book::class, function (Faker $faker) {
         'title' => $faker->title,
         'description' => $faker->optional()->paragraphs(3, true),
         'published_at' => $faker->dateTime,
-        'price' => $faker->randomFloat(2),
+        'price' => $faker->randomFloat(2, 0, 999999),
     ];
 });
