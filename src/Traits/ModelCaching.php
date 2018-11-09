@@ -26,32 +26,32 @@ trait ModelCaching
     public static function bootCachable()
     {
         static::created(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersiting($instance);
+            $instance->checkCooldownAndFlushAfterPersisting($instance);
         });
 
         static::deleted(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersiting($instance);
+            $instance->checkCooldownAndFlushAfterPersisting($instance);
         });
 
         static::saved(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersiting($instance);
+            $instance->checkCooldownAndFlushAfterPersisting($instance);
         });
 
         // TODO: figure out how to add this listener
         // static::restored(function ($instance) {
-        //     $instance->checkCooldownAndFlushAfterPersiting($instance);
+        //     $instance->checkCooldownAndFlushAfterPersisting($instance);
         // });
 
         static::pivotAttached(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersiting($instance);
+            $instance->checkCooldownAndFlushAfterPersisting($instance);
         });
 
         static::pivotDetached(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersiting($instance);
+            $instance->checkCooldownAndFlushAfterPersisting($instance);
         });
 
         static::pivotUpdated(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersiting($instance);
+            $instance->checkCooldownAndFlushAfterPersisting($instance);
         });
     }
 
