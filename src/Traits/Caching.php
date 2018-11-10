@@ -148,7 +148,7 @@ trait Caching
         $instance->flushCache();
     }
 
-    protected function checkCooldownAndFlushAfterPersiting(Model $instance)
+    protected function checkCooldownAndFlushAfterPersisting(Model $instance)
     {
         [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
 

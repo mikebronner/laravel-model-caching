@@ -97,7 +97,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function insert(array $values)
     {
-        $this->checkCooldownAndFlushAfterPersiting($this->model);
+        $this->checkCooldownAndFlushAfterPersisting($this->model);
 
         return parent::insert($values);
     }
@@ -188,7 +188,7 @@ class CachedBuilder extends EloquentBuilder
 
     public function update(array $values)
     {
-        $this->checkCooldownAndFlushAfterPersiting($this->model);
+        $this->checkCooldownAndFlushAfterPersisting($this->model);
 
         return parent::update($values);
     }
