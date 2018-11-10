@@ -13,6 +13,8 @@ class CreateBookStore extends Migration
             $table->unsignedInteger('store_id');
             $table->timestamps();
 
+            $table->string("test")->nullable();
+
             $table->foreign('book_id')
                 ->references('id')
                 ->on('books')

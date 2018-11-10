@@ -4,7 +4,100 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.2.51] - 51 Mar 2018
+## [0.3.2] - 3 Nov 2018
+### Added
+- handling of `whereJsonContains()` and `orWhereJsonContains()`.
+
+### Fixed
+- price field value generation in BookFactory to not exceed database field limits.
+
+## [0.3.1] - 7 Oct 2018
+### Changed
+- use of `cache()` helper method to `app("cache")` to allow for better Lumen compatibility. Thanks @nope7777!
+
+### Updated
+- test script for Laravel 5.7 to use non-dev version of test dependency.
+
+### Removed
+- `codedungeon/phpunit-result-printer` unit test output printer.
+
+### Fixed
+- use of custom pagination name.
+- edge-case where tag creation failed.
+- usage of `forceDelete()` in the Builder.
+
+## [0.3.0] - 10 Sep 2018
+### Added
+- Laravel 5.7 compatibility.
+
+## [0.2.64] - 25 Jul 2018
+### Fixed
+- caching of subqueries of `->whereNotIn()` and `->whereIn()`.
+- nested where bindings.
+
+## [0.2.63] - 9 Jun 2018
+### Fixed
+- where clause binding resolution issue.
+
+## [0.2.62] - 1 Jun 2018
+### Fixed
+- function name typo.
+
+### Removed
+- dump() used for debugging.
+
+## [0.2.61] - 31 May 2018
+### Fixed
+- caching of paginated queries with page identifiers as arrays (`?page[size]=1`).
+
+## [0.2.60] - 27 May 2018
+### Added
+- unit tests for multiple versions of Laravel simultaneously.
+- backwards-compatibility to Laravel 5.4.
+
+## [0.2.59] - 27 May 2018
+### Fixed
+- caching of queries with `whereNotIn` clauses.
+
+### Updated
+- readme to specify that lazy-loaded relationships are currently not cached.
+
+## [0.2.58] - 24 May 2018
+### Fixed
+- caching of queries with `whereIn` clauses.
+
+## [0.2.57] - 19 May 2018
+### Added
+- database name to cache keys and tags to help with multi-tenancy use-cases.
+
+### Fixed
+- `find()` using array parameter.
+
+## [0.2.56] - 12 May 2018
+### Fixed
+- nested `whereNull` within `whereHas`.
+
+## [0.2.55] - 6 May 2018
+### Fixed
+- caching of `between` where clauses.
+- test cache keys and brought them back to green.
+
+## [0.2.54] - 6 May 2018
+### Fixed
+- caching of query parameter bindings.
+
+## [0.2.53] - 6 May 2018
+### Fixed
+- `->inRandomOrder()` to not cache the query.
+
+## [0.2.52] - 21 Mar 2018
+### Changed
+- `flush` console command to be called `clear`, to match other laravel commands.
+
+### Fixed
+- implementation of `count()` method.
+
+## [0.2.51] - 10 Mar 2018
 ### Added
 - disabling of `all()` query.
 

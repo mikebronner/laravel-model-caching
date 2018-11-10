@@ -1,5 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use Carbon\Carbon;
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
@@ -12,7 +13,7 @@ trait Caching
 
     public function cache(array $tags = [])
     {
-        $cache = cache();
+        $cache = app('cache');
 
         if (config('laravel-model-caching.store')) {
             $cache = $cache->store(config('laravel-model-caching.store'));
@@ -49,7 +50,7 @@ trait Caching
 
             $this->cache()
                 ->rememberForever($cacheKey, function () {
-                    return now();
+                    return (new Carbon)->now();
                 });
         }
     }
@@ -69,7 +70,7 @@ trait Caching
     ) : string {
         $eagerLoad = $this->eagerLoad ?? [];
         $model = $this->model ?? $this;
-        $query = $this->query ?? app(Builder::class);
+        $query = $this->query ?? app('db')->query();
 
         return (new CacheKey($eagerLoad, $model, $query))
             ->make($columns, $idColumn, $keyDifferentiator);
@@ -78,16 +79,19 @@ trait Caching
     protected function makeCacheTags() : array
     {
         $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this->model ?? $this;
-        $query = $this->query ?? app(Builder::class);
-
+        $model = $this->model instanceof Model
+            ? $this->model
+            : $this;
+        $query = $this->query instanceof Builder
+            ? $this->query
+            : app('db')->query();
         $tags = (new CacheTags($eagerLoad, $model, $query))
             ->make();
 
         return $tags;
     }
 
-    public function getModelCacheCooldown(Model $instance)
+    public function getModelCacheCooldown(Model $instance) : array
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
@@ -98,11 +102,7 @@ trait Caching
             return [null, null, null];
         }
 
-        return [
-            $cacheCooldown,
-            $invalidatedAt,
-            $savedAt,
-        ];
+        return [$cacheCooldown, $invalidatedAt, $savedAt];
     }
 
     protected function getCacheCooldownDetails(
@@ -128,7 +128,7 @@ trait Caching
         [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown
-            || now()->diffInSeconds($invalidatedAt) < $cacheCooldown
+            || (new Carbon)->now()->diffInSeconds($invalidatedAt) < $cacheCooldown
         ) {
             return;
         }
@@ -160,7 +160,7 @@ trait Caching
 
         $this->setCacheCooldownSavedAtTimestamp($instance);
 
-        if (now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
+        if ((new Carbon)->now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
             $instance->flushCache();
         }
     }
@@ -179,7 +179,7 @@ trait Caching
 
         $instance->cache()
             ->rememberForever($cacheKey, function () {
-                return now();
+                return (new Carbon)->now();
             });
     }
 }

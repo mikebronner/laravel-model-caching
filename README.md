@@ -17,14 +17,19 @@ for me, and one that would let me cache custom queries, as well as cache model
 relationships. This package is an attempt to address those requirements.
 
 ## Features
--   automatic, self-invalidating relationship (both eager- and lazy-loaded) caching.
+-   automatic, self-invalidating relationship (only eager-loading) caching.
 -   automatic, self-invalidating model query caching.
 -   automatic use of cache tags for cache providers that support them (will
     flush entire cache for providers that don't).
 
 ## Requirements
 -   PHP >= 7.1.3
--   Laravel >= 5.5
+-   Laravel 5.4 - 5.7
+
+### Possible Conflicting Packages
+Any packages that also override `newEloquentModel()` from the `Model` class will
+likely conflict with this package. So far these may include the following:
+- [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
 
 [![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
 
@@ -141,12 +146,16 @@ $results = $myModel->disableCache()->where('field', $value)->get();
 ### Manual Flushing of Specific Model
 You can flush the cache of a specific model using the following artisan command:
 ```sh
-php artisan modelCaching:flush --model=App\Model
+php artisan modelCache:clear --model=App\Model
 ```
 
 This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
+
+## Possible Future Improvements
+- [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
+- [caching of global scopes, see #106](https://github.com/GeneaLabs/laravel-model-caching/issues/106).
 
 ## Summary
 **That's all you need to do. All model queries and relationships are now

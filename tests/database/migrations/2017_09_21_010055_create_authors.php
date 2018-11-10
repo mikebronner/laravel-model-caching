@@ -13,6 +13,7 @@ class CreateAuthors extends Migration
 
             $table->string('email');
             $table->string('name');
+            $table->json("finances")->nullable();
         });
     }
 

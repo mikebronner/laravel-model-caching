@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
@@ -14,7 +15,7 @@ trait CreatesApplication
 
     protected function cache()
     {
-        $cache = cache();
+        $cache = app('cache');
 
         if (config('laravel-model-caching.store')) {
             $cache = $cache->store(config('laravel-model-caching.store'));
@@ -33,14 +34,15 @@ trait CreatesApplication
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
-        $this->cache = cache()
+        $this->cache = app('cache')
             ->store(config('laravel-model-caching.store'));
 
         $this->cache()->flush();
         $publishers = factory(Publisher::class, 10)->create();
+        (new Author)->observe(AuthorObserver::class);
         factory(Author::class, 10)->create()
             ->each(function ($author) use ($publishers) {
-                factory(Book::class, random_int(2, 10))->make()
+                factory(Book::class, random_int(5, 25))->make()
                     ->each(function ($book) use ($author, $publishers) {
                         $book->author()->associate($author);
                         $book->publisher()->associate($publishers[rand(0, 9)]);
@@ -72,6 +74,15 @@ trait CreatesApplication
 
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testbench', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
+        $app['config']->set('database.redis.cache', [
+            'host' => env('REDIS_HOST', '192.168.10.10'),
+        ]);
         $app['config']->set('database.redis.default', [
             'host' => env('REDIS_HOST', '192.168.10.10'),
         ]);

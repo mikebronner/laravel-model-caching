@@ -1,8 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
@@ -16,14 +17,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CachedModelTest extends IntegrationTestCase
 {
-    use RefreshDatabase;
-
     public function testAllModelResultsCreatesCache()
     {
         $authors = (new Author)->all();
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
         $cachedResults = $this
@@ -39,8 +38,8 @@ class CachedModelTest extends IntegrationTestCase
 
     public function testScopeDisablesCaching()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->where("name", "Bruno")
             ->disableCache()
@@ -56,8 +55,8 @@ class CachedModelTest extends IntegrationTestCase
 
     public function testScopeDisablesCachingWhenCalledOnModel()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new PrefixedAuthor)
             ->disableCache()
             ->where("name", "Bruno")
@@ -74,8 +73,8 @@ class CachedModelTest extends IntegrationTestCase
     public function testScopeDisableCacheDoesntCrashWhenCachingIsDisabledInConfig()
     {
         config(['laravel-model-caching.disabled' => true]);
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new PrefixedAuthor)
             ->where("name", "Bruno")
             ->disableCache()
@@ -94,9 +93,9 @@ class CachedModelTest extends IntegrationTestCase
         config(['laravel-model-caching.disabled' => true]);
         $authors = (new Author)
             ->all();
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
         config(['laravel-model-caching.disabled' => false]);
 
@@ -119,10 +118,10 @@ class CachedModelTest extends IntegrationTestCase
             })
             ->get();
 
-        $key = sha1('genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesbook_exists_and_books.author_id_=_authors.id-id_=_1-author');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-exists-and_books.author_id_=_authors.id-id_=_1-author');
         $tags = [
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesbook',
-            'genealabs:laravel-model-caching:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
         $cachedResults = $this

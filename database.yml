@@ -1,0 +1,6 @@
+test:
+  adapter: postgresql
+  database: testing
+  username: homestead
+  password: secret
+  encoding: utf8

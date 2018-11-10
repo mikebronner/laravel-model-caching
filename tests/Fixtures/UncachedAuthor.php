@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class UncachedAuthor extends Model
 {
+    protected $casts = [
+        "finances" => "array",
+    ];
     protected $fillable = [
         'name',
         'email',
+        "finances",
     ];
     protected $table = 'authors';
 
