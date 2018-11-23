@@ -59,7 +59,7 @@ class CacheKey
 
     protected function getModelSlug() : string
     {
-        return str_slug(get_class($this->model));
+    	return str_slug(get_class($this->model).":".$this->model->getTable());
     }
 
     protected function getOffsetClause() : string
