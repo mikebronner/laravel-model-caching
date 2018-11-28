@@ -15,30 +15,28 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
-class WhereInTest extends IntegrationTestCase
+class WhereInRawTest extends IntegrationTestCase
 {
-    public function testWithInUsingCollectionQuery()
+    public function testWhereInRawUsingRelationship()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-author_id_in_1_2_3_4');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-books');
         $tags = [
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
         ];
-        $authors = (new UncachedAuthor)
-            ->where("id", "<", 5)
-            ->get(["id"]);
 
-        $books = (new Book)
-            ->whereIn("author_id", $authors)
+        $authors = (new Author)
+            ->with("books")
             ->get();
         $cachedResults = $this
             ->cache()
             ->tags($tags)
             ->get($key)['value'];
-        $liveResults = (new UncachedBook)
-            ->whereIn("author_id", $authors)
+        $liveResults = (new UncachedAuthor)
+            ->with("books")
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
+        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
 }
