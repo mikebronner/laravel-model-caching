@@ -28,7 +28,8 @@
         "phpunit/phpunit": "7.*",
         "predis/predis": "*",
         "sebastian/phpcpd": "*",
-        "symfony/thanks": "*"
+        "symfony/thanks": "*",
+        "codedungeon/phpunit-result-printer": "^0.23.4"
     },
     "autoload": {
         "psr-4": {

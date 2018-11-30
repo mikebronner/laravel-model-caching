@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class InRandomOrderQueryTest extends IntegrationTestCase
 {
-    
-
     public function testInRandomOrderCachesResults()
     {
         $cachedBook1 = (new Book)

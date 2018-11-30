@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class WhereHasTest extends IntegrationTestCase
 {
-    
-
     public function testWhereHasClause()
     {
         $authors = (new Author)

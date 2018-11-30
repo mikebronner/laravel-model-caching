@@ -30,6 +30,7 @@ class CacheKey
         string $keyDifferentiator = ""
     ) : string {
         $key = $this->getCachePrefix();
+        $key .= $this->getTableSlug();
         $key .= $this->getModelSlug();
         $key .= $this->getIdColumn($idColumn ?: "");
         $key .= $this->getQueryColumns($columns);
@@ -55,6 +56,12 @@ class CacheKey
         }
 
         return "-limit_{$this->query->limit}";
+    }
+
+    protected function getTableSlug() : string
+    {
+        return str_slug($this->model->getTable())
+            . ":";
     }
 
     protected function getModelSlug() : string

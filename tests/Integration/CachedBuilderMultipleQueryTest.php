@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class CachedBuilderMultipleQueryTest extends IntegrationTestCase
 {
-    
-
     public function testCallingAllThenFirstQueriesReturnsDifferingResults()
     {
         $allAuthors = (new Author)->all();

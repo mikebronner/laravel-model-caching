@@ -17,15 +17,13 @@ use Illuminate\Support\Collection;
 
 class CachedBuilderRelationshipsTest extends IntegrationTestCase
 {
-    
-
     public function testHasRelationshipResults()
     {
         $booksWithStores = (new Book)
             ->with("stores")
             ->has("stores")
             ->get();
-        $key = "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-exists-and_books.id_=_book_store.book_id-stores";
+        $key = "genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-exists-and_books.id_=_book_store.book_id-stores";
         $tags = [
             "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook",
             "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesstore",

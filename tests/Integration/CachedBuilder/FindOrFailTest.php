@@ -17,14 +17,12 @@ use Illuminate\Support\Collection;
 
 class FindOrFailTest extends IntegrationTestCase
 {
-    
-
     public function testFindOrFailCachesModels()
     {
         $author = (new Author)
             ->findOrFail(1);
 
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-find_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-find_1');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];

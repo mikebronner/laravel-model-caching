@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class WhereTest extends IntegrationTestCase
 {
-
-
     public function testWithQuery()
     {
         $books = (new Book)
@@ -45,7 +43,7 @@ class WhereTest extends IntegrationTestCase
         $authors = (new Author)
             ->where('name', '=', $author->name)
             ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
             $author->name);
         $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
@@ -67,7 +65,7 @@ class WhereTest extends IntegrationTestCase
             ->where('name', $operator, $author->name)
             ->get();
         $keyParts = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-name',
+            'genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-name',
             '_',
             str_replace(' ', '_', strtolower($operator)),
             '_',
@@ -100,7 +98,7 @@ class WhereTest extends IntegrationTestCase
 
     public function testTwoWhereClausesAfterEachOther()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-id_>_-id_<_100');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_-id_<_100');
         $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $authors = (new Author)

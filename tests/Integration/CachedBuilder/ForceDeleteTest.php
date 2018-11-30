@@ -29,7 +29,7 @@ class ForceDeleteTest extends IntegrationTestCase
                 'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
             ])
             ->get(sha1(
-                'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-id_=_1'
+                'genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_=_1'
             ))["value"];
 
         (new Author)
@@ -41,7 +41,7 @@ class ForceDeleteTest extends IntegrationTestCase
                 'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
             ])
             ->get(sha1(
-                'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-id_=_1'
+                'genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_=_1'
             ))["value"];
 
         $this->assertEquals(get_class($resultsBefore), get_class($author));

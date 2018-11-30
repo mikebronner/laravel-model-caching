@@ -17,14 +17,12 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BuilderCachingTest extends IntegrationTestCase
 {
-    
-
     public function testDisablingAllQuery()
     {
         $allAuthors = (new Author)
             ->disableCache()
             ->all();
-        $key = sha1("genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor");
+        $key = sha1("genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = [
             "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor",
         ];

@@ -19,7 +19,7 @@ class WhereInTest extends IntegrationTestCase
 {
     public function testWithInUsingCollectionQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-author_id_in_1_2_3_4');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-author_id_in_1_2_3_4');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
         ];

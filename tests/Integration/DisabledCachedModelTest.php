@@ -15,11 +15,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DisabledCachedModelTest extends IntegrationTestCase
 {
-    
-
     public function testCacheCanBeDisabledOnModel()
     {
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->disableCache()
@@ -37,7 +35,7 @@ class DisabledCachedModelTest extends IntegrationTestCase
 
     public function testCacheCanBeDisabledOnQuery()
     {
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor');
         $tags = ['genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->with('books')

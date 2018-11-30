@@ -20,15 +20,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 class DisabledCachedBuilderTest extends IntegrationTestCase
 {
-    
-
     public function testAvgModelResultsIsNotCached()
     {
         $authorId = (new Author)
             ->with('books', 'profile')
             ->disableCache()
             ->avg('id');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-avg_id');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile-avg_id');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -72,8 +70,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
 
                 $cachedChunks['authors']->push($chunk);
                 $cachedChunks['keys']->push(sha1(
-                    "genealabslaravelmodelcachingtestsfixturesauthor-books-pr" .
-                    "ofile_orderBy_authors.id_asc{$offset}-limit_3"
+                    "genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile_orderBy_authors.id_asc{$offset}-limit_3"
                 ));
             });
 
@@ -99,7 +96,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->count();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-count');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile-count');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -123,7 +120,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->cursor();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-cursor');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile-cursor');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -149,7 +146,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books')
             ->disableCache()
             ->find(1);
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_1');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
         ];
@@ -170,7 +167,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->get();
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -194,7 +191,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->max('id');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-max_id');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile-max_id');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -218,7 +215,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->min('id');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-min_id');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile-min_id');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -242,7 +239,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->pluck('name', 'id');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-pluck_name_id');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-pluck_name_id');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -266,7 +263,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->sum('id');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor-books-profile-sum_id');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile-sum_id');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -290,7 +287,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->with('books', 'profile')
             ->disableCache()
             ->value('name');
-        $key = sha1('genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-first');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_name-books-profile-first');
         $tags = [
             'genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabslaravelmodelcachingtestsfixturesbook',
@@ -315,7 +312,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
             ->disableCache()
             ->paginate(3);
 
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];

@@ -17,11 +17,9 @@ use Illuminate\Support\Collection;
 
 abstract class LazyLoadTest extends IntegrationTestCase
 {
-    
-
 //     public function testLazyLoadingRelationshipQuery()
 //     {
-//         $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
+//         $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
 //         $tags = [
 //             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
 //         ];

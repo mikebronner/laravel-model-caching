@@ -17,11 +17,9 @@ use Illuminate\Support\Collection;
 
 class WhenTest extends IntegrationTestCase
 {
-    
-
     public function testWhenQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
         ];

@@ -25,7 +25,7 @@ class PaginateTest extends IntegrationTestCase
         $authors = (new Author)
             ->paginate(3);
 
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_page_1');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
@@ -155,7 +155,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testCustomPageNamePagination()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_custom-page_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-paginate_by_3_custom-page_1');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];

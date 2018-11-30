@@ -17,8 +17,6 @@ use Illuminate\Support\Collection;
 
 class WhereNullTest extends IntegrationTestCase
 {
-    
-
     public function testWhereNullClause()
     {
         $books = (new Book)

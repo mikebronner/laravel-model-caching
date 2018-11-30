@@ -17,12 +17,10 @@ use Illuminate\Support\Collection;
 
 class FindTest extends IntegrationTestCase
 {
-    
-
     public function testFindModelResultsCreatesCache()
     {
         $author = collect()->push((new Author)->find(1));
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor_1');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_1');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
