@@ -29,6 +29,14 @@ class Author extends Model
         return $this->hasOne(Profile::class);
     }
 
+    public function getLatestBookAttribute()
+    {
+        return $this
+            ->books()
+            ->latest("id")
+            ->first();
+    }
+
     public function scopeStartsWithA(Builder $query) : Builder
     {
         return $query->where('name', 'LIKE', 'A%');

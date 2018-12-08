@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 
 class UncachedAuthor extends Model
 {
@@ -20,6 +21,14 @@ class UncachedAuthor extends Model
     public function books() : HasMany
     {
         return $this->hasMany(UncachedBook::class, 'author_id', 'id');
+    }
+
+    public function getLatestBookAttribute()
+    {
+        return $this
+            ->books()
+            ->latest("id")
+            ->first();
     }
 
     public function profile() : HasOne
