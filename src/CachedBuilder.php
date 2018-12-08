@@ -35,6 +35,14 @@ class CachedBuilder extends EloquentBuilder
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
+    public function decrement($column, $amount = 1, array $extra = [])
+    {
+        $this->cache($this->makeCacheTags())
+            ->flush();
+
+        return parent::decrement($column, $amount, $extra);
+    }
+
     public function delete()
     {
         $this->cache($this->makeCacheTags())
@@ -86,6 +94,14 @@ class CachedBuilder extends EloquentBuilder
         $cacheKey = $this->makeCacheKey($columns);
 
         return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    public function increment($column, $amount = 1, array $extra = [])
+    {
+        $this->cache($this->makeCacheTags())
+            ->flush();
+
+        return parent::increment($column, $amount, $extra);
     }
 
     public function inRandomOrder($seed = '')
