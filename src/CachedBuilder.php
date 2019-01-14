@@ -150,7 +150,7 @@ class CachedBuilder extends EloquentBuilder
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = request()->input($pageName)
+        $page = app('request')->input($pageName)
             ?: $page
             ?: 1;
 
