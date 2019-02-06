@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "fico7489/laravel-pivot": "dev-new@dev",
+        "fico7489/laravel-pivot": "3.*",
         "illuminate/cache": "5.4 - 5.7",
         "illuminate/config": "5.4 - 5.7",
         "illuminate/console": "5.4 - 5.7",
