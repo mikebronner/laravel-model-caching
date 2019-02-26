@@ -61,7 +61,8 @@ class CachedBuilder extends EloquentBuilder
         }
 
         $idKey = collect($id)->implode('-');
-        $cacheKey = $this->makeCacheKey($columns, null, "-find_{$idKey}");
+        $preStr = is_array($id) ? 'find-list' : 'find';
+        $cacheKey = $this->makeCacheKey($columns, null, "-" . $preStr . "_{$idKey}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
