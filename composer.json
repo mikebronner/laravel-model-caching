@@ -8,8 +8,14 @@
             "email": "hello@genealabs.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mikebronner/laravel-pivot"
+        }
+    ],
     "require": {
-        "fico7489/laravel-pivot": "3.*",
+        "fico7489/laravel-pivot": "dev-patch-1@dev",
         "illuminate/cache": "5.8",
         "illuminate/config": "5.8",
         "illuminate/console": "5.8",
