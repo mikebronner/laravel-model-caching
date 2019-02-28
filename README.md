@@ -24,7 +24,7 @@ relationships. This package is an attempt to address those requirements.
 
 ## Requirements
 -   PHP >= 7.1.3
--   Laravel 5.4 - 5.7
+-   Laravel 5.8
 
 ### Possible Conflicting Packages
 Any packages that also override `newEloquentModel()` from the `Model` class will
