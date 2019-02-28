@@ -138,7 +138,7 @@ trait Caching
 
         $instance
             ->cache()
-            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
+            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:seconds");
         $instance
             ->cache()
             ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
