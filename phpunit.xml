@@ -8,7 +8,7 @@
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
     processIsolation="false"
-    stopOnFailure="false"
+    stopOnFailure="true"
 >
 <testsuites>
     <testsuite name="Feature">
@@ -19,7 +19,7 @@
     </testsuite>
 </testsuites>
 <filter>
-    <whitelist processUncoveredFilesFromWhitelist="true">
+    <whitelist processUncoveredFilesFromWhitelist="false">
         <directory suffix=".php">./src</directory>
     </whitelist>
 </filter>

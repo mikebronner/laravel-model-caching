@@ -46,6 +46,7 @@ class PaginateTest extends IntegrationTestCase
     {
         if (starts_with(app()->version(), "5.6")
             || starts_with(app()->version(), "5.7")
+            || starts_with(app()->version(), "5.8")
         ) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
@@ -83,6 +84,7 @@ class PaginateTest extends IntegrationTestCase
     {
         if (starts_with(app()->version(), "5.6")
             || starts_with(app()->version(), "5.7")
+            || starts_with(app()->version(), "5.8")
         ) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
@@ -120,6 +122,7 @@ class PaginateTest extends IntegrationTestCase
     {
         if (starts_with(app()->version(), "5.6")
             || starts_with(app()->version(), "5.7")
+            || starts_with(app()->version(), "5.8")
         ) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';

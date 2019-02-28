@@ -6,21 +6,11 @@ services:
 matrix:
     include:
         - php: 7.1.3
-          env: PU_FILE=57 REDIS_HOST=127.0.0.1
-        - php: 7.1.3
-          env: PU_FILE=56 REDIS_HOST=127.0.0.1
-        - php: 7.1.3
-          env: PU_FILE=55 REDIS_HOST=127.0.0.1
-        - php: 7.1.3
-          env: PU_FILE=54 REDIS_HOST=127.0.0.1
+          env: REDIS_HOST=127.0.0.1
         - php: 7.2
-          env: PU_FILE=57 REDIS_HOST=127.0.0.1
-        - php: 7.2
-          env: PU_FILE=56 REDIS_HOST=127.0.0.1
-        - php: 7.2
-          env: PU_FILE=55 REDIS_HOST=127.0.0.1
-        - php: 7.2
-          env: PU_FILE=54 REDIS_HOST=127.0.0.1
+          env: REDIS_HOST=127.0.0.1
+        - php: 7.3
+          env: REDIS_HOST=127.0.0.1
 
 services:
     - redis-server
@@ -28,11 +18,7 @@ services:
 before_script:
     - travis_retry composer self-update
     - travis_retry composer install --no-interaction --prefer-source
-    - chmod +x tests/*.sh
     - psql -c 'create database testing;' -U postgres
-
-script:
-    - ./tests/pu-${PU_FILE}.sh
 
 after_success:
     - travis_retry php vendor/bin/php-coveralls -v

@@ -19,7 +19,7 @@ class WhereNotInTest extends IntegrationTestCase
 {
     public function testWhereNotInQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-author_id_not_in_1_2_3_4');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-author_id_notin_1_2_3_4');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -44,7 +44,7 @@ class WhereNotInTest extends IntegrationTestCase
 
     public function testWhereNotInResults()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_not_in_1_2');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
         ];
@@ -65,11 +65,10 @@ class WhereNotInTest extends IntegrationTestCase
 
     public function testWhereNotInSubquery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_notinsub_bookbooks:-id_<_10');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_select_id_from_authors_where_id_<_10');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
         ];
-
         $results = (new Book)
             ->whereNotIn("id", function ($query) {
                 $query->select("id")->from("authors")->where("id", "<", 10);

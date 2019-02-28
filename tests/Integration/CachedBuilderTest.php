@@ -677,7 +677,7 @@ class CachedBuilderTest extends IntegrationTestCase
 
     public function testHashCollision()
     {
-        $key1 = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_not_in_1_2');
+        $key1 = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2');
         $tags1 = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook'];
         $books = (new Book)
             ->whereNotIn('id', [1, 2])

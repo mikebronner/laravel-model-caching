@@ -24,7 +24,7 @@ trait CreatesApplication
         return $cache;
     }
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
