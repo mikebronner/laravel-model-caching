@@ -33,6 +33,24 @@ class FindTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
+    public function testFindMultipleModelResultsCreatesCache()
+    {
+        $authors = (new Author)->find([1, 2, 3]);
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-find_list_1_2_3');
+        $tags = [
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)["value"];
+        $liveResults = (new UncachedAuthor)->find([1, 2, 3]);
+
+        $this->assertEquals($authors->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+    }
+
     public function testSubsequentFindsReturnDifferentModels()
     {
         $author1 = (new Author)->find(1);
