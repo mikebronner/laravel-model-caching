@@ -10,28 +10,12 @@
     ],
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "version": "dev-master",
-                "name": "mikebronner/laravel-pivot",
-                "source": {
-                    "url": "https://github.com/mikebronner/laravel-pivot.git",
-                    "type": "git",
-                    "reference": "master"
-                },
-                "autoload": {
-                    "classmap": [
-                    ]
-                },
-                "dist": {
-                    "url": "https://github.com/mikebronner/laravel-pivot/archive/master.zip",
-                    "type": "zip"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/mikebronner/laravel-pivot"
         }
     ],
     "require": {
-        "mikebronner/laravel-pivot": "dev-master@dev",
+        "fico7489/laravel-pivot": "3.0.*@dev",
         "illuminate/cache": "5.8.*",
         "illuminate/config": "5.8.*",
         "illuminate/console": "5.8.*",
