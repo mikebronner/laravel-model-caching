@@ -10,12 +10,12 @@
     ],
     "repositories": [
         {
-            "type": "zip",
-            "url": "https://github.com/mikebronner/laravel-pivot/archive/patch-1.zip"
+            "type": "vcs",
+            "url": "https://github.com/mikebronner/laravel-pivot"
         }
     ],
     "require": {
-        "fico7489/laravel-pivot": "dev-patch-1@dev",
+        "mikebronner/laravel-pivot": "dev-master@dev",
         "illuminate/cache": "5.8.*",
         "illuminate/config": "5.8.*",
         "illuminate/console": "5.8.*",
