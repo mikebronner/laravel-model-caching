@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "mikebronner/laravel-pivot": "dev-master@dev",
+        "mikebronner/laravel-pivot": "3.2",
         "illuminate/cache": "5.8.*",
         "illuminate/config": "5.8.*",
         "illuminate/console": "5.8.*",
