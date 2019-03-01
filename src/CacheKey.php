@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CacheKey
 {
@@ -41,7 +42,7 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
-// dump($key);
+
         return $key;
     }
 
@@ -307,6 +308,16 @@ class CacheKey
             return "";
         }
 
-        return "-" . implode("-", $eagerLoads->keys()->toArray());
+        return $eagerLoads->keys()->reduce(function ($carry, $related) {
+            if (! method_exists($this->model, $related)) {
+                return "{$carry}-{$related}";
+            }
+
+            $relatedModel = $this->model->$related()->getRelated();
+            $relatedConnection = $relatedModel->getConnection()->getName();
+            $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
+
+            return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
+        });
     }
 }

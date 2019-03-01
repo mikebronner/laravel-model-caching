@@ -17,13 +17,11 @@ use Illuminate\Support\Collection;
 
 class GetTest extends IntegrationTestCase
 {
-    
-
     public function testGetModelResultsCreatesCache()
     {
         $authors = (new Author)->with('books', 'profile')
             ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-books-profile');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-testing::memory::books-testing::memory::profile');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
@@ -34,7 +32,7 @@ class GetTest extends IntegrationTestCase
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)->with('books', 'profile')
             ->get();
-
+// dd($cachedResults);
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
