@@ -1,5 +1,7 @@
 language: php
 
+github_token: $GITHUB_TOKEN
+
 services:
     - postgresql
 
