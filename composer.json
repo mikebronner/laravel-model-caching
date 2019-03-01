@@ -10,10 +10,6 @@
     ],
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/mikebronner/laravel-pivot"
-        }
-        {
             "type": "package",
             "package": {
                 "version": "dev-master",
