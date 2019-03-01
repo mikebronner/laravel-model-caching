@@ -10,8 +10,8 @@
     ],
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/mikebronner/laravel-pivot"
+            "type": "zip",
+            "url": "https://github.com/mikebronner/laravel-pivot/archive/patch-1.zip"
         }
     ],
     "require": {
