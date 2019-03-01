@@ -19,6 +19,7 @@ services:
 
 before_script:
     - travis_retry composer self-update
+    - travis_retry composer config --global github-protocols https
     - travis_retry composer install --no-interaction --prefer-source
     - psql -c 'create database testing;' -U postgres
 
