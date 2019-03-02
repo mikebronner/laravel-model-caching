@@ -24,7 +24,7 @@ relationships. This package is an attempt to address those requirements.
 
 ## Requirements
 -   PHP >= 7.1.3
--   Laravel 5.8 (There seems to be an issue with version 0.4.7 not resolving the dependencies correctly. We are working on it and should have a fix soon.)
+-   Laravel 5.8 (There seems to be an issue with version 0.4.7 not resolving the dependencies correctly. We are working on it and should have a fix soon. See https://github.com/GeneaLabs/laravel-model-caching/issues/219 for a possible work-around.)
 
 ### Possible Conflicting Packages
 Any packages that also override `newEloquentModel()` from the `Model` class will
