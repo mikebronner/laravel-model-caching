@@ -8,12 +8,6 @@
             "email": "hello@genealabs.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mikebronner/laravel-pivot"
-        }
-    ],
     "require": {
         "mikebronner/laravel-pivot": "dev-master@dev",
         "illuminate/cache": "5.8.*",
