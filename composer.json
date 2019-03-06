@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "mikebronner/laravel-pivot": "dev-master@dev",
+        "fico7489/laravel-pivot": "*",
         "illuminate/cache": "5.8.*",
         "illuminate/config": "5.8.*",
         "illuminate/console": "5.8.*",
