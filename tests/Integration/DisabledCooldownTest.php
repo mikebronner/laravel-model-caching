@@ -7,56 +7,58 @@ use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Support\Facades\Event;
 
 /**
-* @SuppressWarnings(PHPMD.TooManyPublicMethods)
-* @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
  */
 class DisabledCooldownTest extends IntegrationTestCase
 {
 
-    public function testCooldownCacheIsNotSearchedWhenSetInConfig()
-    {
-    	$config = config('laravel-model-cache');
+	public function testCooldownCacheIsNotSearchedWhenSetInConfig()
+	{
+		$config = config( 'laravel-model-cache' );
 
-    	$config['cooldown-disable'][] = 'App\Author';
+		$config['cooldown-disable'][] = 'App\Author';
 
-    	config($config);
+		config( $config );
 
-	    Event::fake();
+		Event::fake();
 
-    	Author::first();
+		Author::first();
 
-    	Event::assertNotDispatched(CacheMissed::class, function(CacheMissed $event){
-			return $event->key === 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author-cooldown:seconds';
-	    });
-    }
+		Event::assertNotDispatched( CacheMissed::class, function( CacheMissed $event ){
+			return $event->key
+				=== 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author-cooldown:seconds';
+		} );
+	}
 
-    public function testCooldownCacheIsNotSearchedWhenNotEnabled()
-    {
-	    $config = config('laravel-model-cache');
+	public function testCooldownCacheIsNotSearchedWhenNotEnabled()
+	{
+		$config = config( 'laravel-model-cache' );
 
-	    $config['enable-cooldown'] = false;
+		$config['enable-cooldown'] = false;
 
-	    config($config);
+		config( $config );
 
-	    Event::fake();
+		Event::fake();
 
-	    Author::first();
+		Author::first();
 
-	    Event::assertNotDispatched(CacheMissed::class, function(CacheMissed $event){
-		    return $event->key === 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author-cooldown:seconds';
-	    });
-    }
+		Event::assertNotDispatched( CacheMissed::class, function( CacheMissed $event ){
+			return $event->key
+				=== 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author-cooldown:seconds';
+		} );
+	}
 
-    public function testCooldownCacheIsNotSearchedWithTrait()
-    {
-	    Event::fake();
+	public function testCooldownCacheIsNotSearchedWithTrait()
+	{
+		Event::fake();
 
-	    DisableCooldownAuthor::first();
+		DisableCooldownAuthor::first();
 
-	    Event::assertNotDispatched(CacheMissed::class, function(CacheMissed $event){
-		    return $event->key === 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\DisableCooldownAuthor-cooldown:seconds';
-	    });
-    }
-
+		Event::assertNotDispatched( CacheMissed::class, function( CacheMissed $event ){
+			return $event->key
+				=== 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\DisableCooldownAuthor-cooldown:seconds';
+		} );
+	}
 
 }
