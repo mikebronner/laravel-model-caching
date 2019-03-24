@@ -6,6 +6,7 @@ use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
 
 trait Caching
 {
@@ -95,6 +96,11 @@ trait Caching
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
+
+        if( $this->cooldownDisabled($modelClassName) ){
+        	return [null, null, null];
+        }
+
         [$cacheCooldown, $invalidatedAt, $savedAt] = $this
             ->getCacheCooldownDetails($instance, $cachePrefix, $modelClassName);
 
