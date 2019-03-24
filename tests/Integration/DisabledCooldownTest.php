@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\DisableCooldownAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Support\Facades\Event;
@@ -25,7 +26,7 @@ class DisabledCooldownTest extends IntegrationTestCase
     	Author::first();
 
     	Event::assertNotDispatched(CacheMissed::class, function(CacheMissed $event){
-			return $event->key === 'genealabs:laravel-model-caching::App\Author-cooldown:seconds';
+			return $event->key === 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author-cooldown:seconds';
 	    });
     }
 
@@ -42,7 +43,7 @@ class DisabledCooldownTest extends IntegrationTestCase
 	    Author::first();
 
 	    Event::assertNotDispatched(CacheMissed::class, function(CacheMissed $event){
-		    return $event->key === 'genealabs:laravel-model-caching::App\Author-cooldown:seconds';
+		    return $event->key === 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author-cooldown:seconds';
 	    });
     }
 
