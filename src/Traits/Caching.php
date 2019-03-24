@@ -171,6 +171,35 @@ trait Caching
             && ! config('laravel-model-caching.disabled');
     }
 
+    public function cooldownDisabled(string $class) : bool
+    {
+    	return ! config('laravel-model-caching.enable-cooldown', true)
+		    || in_array($class, config('laravel-model-caching.cooldown-disable', []))
+		    || $this->getAllTraitsUsedByClass($class)
+		            ->contains('GeneaLabs\LaravelModelCaching\Traits\DisableCooldown');
+    }
+
+	/** @SuppressWarnings(PHPMD.BooleanArgumentFlag) */
+	public static function getAllTraitsUsedByClass(
+		string $classname,
+		bool $autoload = true
+	) : Collection {
+		$traits = collect();
+
+		if (class_exists($classname, $autoload)) {
+			$traits = collect(class_uses($classname, $autoload));
+		}
+
+		$parentClass = get_parent_class($classname);
+
+		if ($parentClass) {
+			$traits = $traits
+				->merge(static::getAllTraitsUsedByClass($parentClass, $autoload));
+		}
+
+		return $traits;
+	}
+
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
     {
         $cachePrefix = $this->getCachePrefix();
