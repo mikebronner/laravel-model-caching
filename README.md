@@ -136,6 +136,19 @@ By default, any cachable model will always check the cache for the cooldown vari
 
 You can disable cooldown globally by setting `MODEL_CACHE_COOLDOWN_ENABLE=false` in your `.env` file.
 
+The `DisableCooldown` trait is a convenient way to disable cooldown per model.
+```php
+<?php namespace App;
+
+use GeneaLabs\LaravelModelCaching\Traits\DisableCooldown;
+
+class Author extends BaseModel
+{
+    use DisableCooldown;
+    //
+}
+```
+
 You can alternatively disable per model by setting the `cooldown-disable` key to an array of class names:
 ```php
 // config/laravel-model-caching.php
