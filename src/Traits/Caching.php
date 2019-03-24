@@ -6,6 +6,7 @@ use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
 
 trait Caching
 {
@@ -95,6 +96,11 @@ trait Caching
     {
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
+
+        if( $this->cooldownDisabled($modelClassName) ){
+        	return [null, null, null];
+        }
+
         [$cacheCooldown, $invalidatedAt, $savedAt] = $this
             ->getCacheCooldownDetails($instance, $cachePrefix, $modelClassName);
 
@@ -170,6 +176,35 @@ trait Caching
         return $this->isCachable
             && ! config('laravel-model-caching.disabled');
     }
+
+    public function cooldownDisabled(string $class) : bool
+    {
+    	return ! config('laravel-model-caching.enable-cooldown', true)
+		    || in_array($class, config('laravel-model-caching.cooldown-disable', []))
+		    || $this->getAllTraitsUsedByClass($class)
+		            ->contains('GeneaLabs\LaravelModelCaching\Traits\DisableCooldown');
+    }
+
+	/** @SuppressWarnings(PHPMD.BooleanArgumentFlag) */
+	public static function getAllTraitsUsedByClass(
+		string $classname,
+		bool $autoload = true
+	) : Collection {
+		$traits = collect();
+
+		if (class_exists($classname, $autoload)) {
+			$traits = collect(class_uses($classname, $autoload));
+		}
+
+		$parentClass = get_parent_class($classname);
+
+		if ($parentClass) {
+			$traits = $traits
+				->merge(static::getAllTraitsUsedByClass($parentClass, $autoload));
+		}
+
+		return $traits;
+	}
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
     {

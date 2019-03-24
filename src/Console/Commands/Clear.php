@@ -1,7 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Console\Commands;
 
+use GeneaLabs\LaravelModelCaching\Traits\Caching;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 
 class Clear extends Command
 {
@@ -33,7 +33,7 @@ class Clear extends Command
     protected function flushModelCache(string $option) : int
     {
         $model = new $option;
-        $usesCachableTrait = $this->getAllTraitsUsedByClass($option)
+        $usesCachableTrait = Caching::getAllTraitsUsedByClass($option)
             ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
 
         if (! $usesCachableTrait) {
@@ -47,26 +47,5 @@ class Clear extends Command
         $this->info("✔︎ Cache for model '{$option}' has been flushed.");
 
         return 0;
-    }
-
-    /** @SuppressWarnings(PHPMD.BooleanArgumentFlag) */
-    protected function getAllTraitsUsedByClass(
-        string $classname,
-        bool $autoload = true
-    ) : Collection {
-        $traits = collect();
-
-        if (class_exists($classname, $autoload)) {
-            $traits = collect(class_uses($classname, $autoload));
-        }
-
-        $parentClass = get_parent_class($classname);
-
-        if ($parentClass) {
-            $traits = $traits
-                ->merge($this->getAllTraitsUsedByClass($parentClass, $autoload));
-        }
-
-        return $traits;
     }
 }
