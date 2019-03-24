@@ -47,5 +47,16 @@ class DisabledCooldownTest extends IntegrationTestCase
 	    });
     }
 
+    public function testCooldownCacheIsNotSearchedWithTrait()
+    {
+	    Event::fake();
+
+	    DisableCooldownAuthor::first();
+
+	    Event::assertNotDispatched(CacheMissed::class, function(CacheMissed $event){
+		    return $event->key === 'genealabs:laravel-model-caching::GeneaLabs\LaravelModelCaching\Tests\Fixtures\DisableCooldownAuthor-cooldown:seconds';
+	    });
+    }
+
 
 }
