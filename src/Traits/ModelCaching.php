@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 trait ModelCaching
 {
+    protected $useCacheCooldown = false;
+
     public static function all($columns = ['*'])
     {
         if (config('laravel-model-caching.disabled')) {
@@ -104,5 +106,10 @@ trait ModelCaching
             });
 
         return $query;
+    }
+
+    public function getUseCacheCooldownAttribute() : bool
+    {
+        return $this->useCacheCooldown;
     }
 }

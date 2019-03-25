@@ -93,6 +93,10 @@ trait Caching
 
     public function getModelCacheCooldown(Model $instance) : array
     {
+        if (! $instance->useCacheCooldown) {
+            return [null, null, null];
+        }
+
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($instance);
         [$cacheCooldown, $invalidatedAt, $savedAt] = $this

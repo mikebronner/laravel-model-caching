@@ -124,7 +124,19 @@ For example you might have a busy site where comments are submitted at a high
 rate, and you don't want every comment submission to invalidate the cache. While
 I don't necessarily recommend this, you might experiment it's effectiveness.
 
-It can be implemented like so:
+To ise it, it must be enabled in the model:
+```php
+class MyModel extends Model
+{
+    use Cachable;
+
+    protected $useCacheCooldown = true;
+
+    // ...
+}
+```
+
+After that it can be implemented in queries:
 ```php
 (new Comment)
     ->withCacheCooldownSeconds(30)

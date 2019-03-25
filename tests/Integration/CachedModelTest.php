@@ -2,18 +2,10 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
 
 class CachedModelTest extends IntegrationTestCase
 {
@@ -155,17 +147,17 @@ class CachedModelTest extends IntegrationTestCase
 
     public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
     {
-        $authors = (new Author)
+        $authors = (new AuthorWithCooldown)
             ->withCacheCooldownSeconds(1)
             ->get();
 
         factory(Author::class, 1)->create();
-        $authorsDuringCooldown = (new Author)
+        $authorsDuringCooldown = (new AuthorWithCooldown)
             ->get();
         $uncachedAuthors = (new UncachedAuthor)
             ->get();
         sleep(2);
-        $authorsAfterCooldown = (new Author)
+        $authorsAfterCooldown = (new AuthorWithCooldown)
             ->get();
 
         $this->assertCount(10, $authors);
@@ -176,7 +168,7 @@ class CachedModelTest extends IntegrationTestCase
 
     public function testModelCacheDoesInvalidateWhenNoCooldownPeriod()
     {
-        $authors = (new Author)
+        $authors = (new AuthorWithCooldown)
             ->get();
 
         factory(Author::class, 1)->create();
