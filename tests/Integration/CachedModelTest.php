@@ -6,6 +6,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
+use ReflectionClass;
 
 class CachedModelTest extends IntegrationTestCase
 {
@@ -143,6 +144,33 @@ class CachedModelTest extends IntegrationTestCase
             ->keyBy('id');
 
         $this->assertNotEmpty($books1->diffKeys($books2));
+    }
+
+    public function testCooldownIsNotQueriedForNormalCachedModels()
+    {
+        $class = new ReflectionClass(Author::class);
+        $method = $class->getMethod('getModelCacheCooldown');
+        $method->setAccessible(true);
+        $author = (new Author)
+            ->first();
+
+        $this->assertEquals([null, null, null], $method->invokeArgs($author, [$author]));
+    }
+
+    public function testCooldownIsQueriedForCooldownModels()
+    {
+        $class = new ReflectionClass(AuthorWithCooldown::class);
+        $method = $class->getMethod('getModelCacheCooldown');
+        $method->setAccessible(true);
+        $author = (new AuthorWithCooldown)
+            ->withCacheCooldownSeconds(1)
+            ->first();
+        
+        [$usesCacheCooldown, $expiresAt, $savedAt] = $method->invokeArgs($author, [$author]);
+
+        $this->assertEquals($usesCacheCooldown, 1);
+        $this->assertEquals("Carbon\Carbon", get_class($expiresAt));
+        $this->assertNull($savedAt);
     }
 
     public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
