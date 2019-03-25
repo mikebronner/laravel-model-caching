@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class AuthorWithCooldown extends Author
 {
     protected $table = "authors";
-    protected $useCacheCooldown = true;
+    protected $cacheCooldownSeconds = 1;
 }

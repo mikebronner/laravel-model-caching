@@ -93,7 +93,7 @@ trait Caching
 
     public function getModelCacheCooldown(Model $instance) : array
     {
-        if (! $instance->useCacheCooldown) {
+        if (! $instance->cacheCooldownSeconds) {
             return [null, null, null];
         }
 
