@@ -5,6 +5,7 @@ use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Str;
 
 class CacheTags
 {
@@ -32,7 +33,7 @@ class CacheTags
                 $relation = $this->getRelation($relationName);
 
                 return $this->getCachePrefix()
-                    . str_slug(get_class($relation->getQuery()->getModel()));
+                    . Str::slug(get_class($relation->getQuery()->getModel()));
             })
             ->prepend($this->getTagName())
             ->values()
@@ -64,6 +65,6 @@ class CacheTags
     protected function getTagName() : string
     {
         return $this->getCachePrefix()
-            . str_slug(get_class($this->model));
+            . Str::slug(get_class($this->model));
     }
 }

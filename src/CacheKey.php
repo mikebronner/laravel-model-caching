@@ -3,9 +3,11 @@
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class CacheKey
 {
@@ -62,13 +64,13 @@ class CacheKey
 
     protected function getTableSlug() : string
     {
-        return str_slug($this->model->getTable())
+        return Str::slug($this->model->getTable())
             . ":";
     }
 
     protected function getModelSlug() : string
     {
-        return str_slug(get_class($this->model));
+        return Str::slug(get_class($this->model));
     }
 
     protected function getOffsetClause() : string
@@ -87,7 +89,7 @@ class CacheKey
         return $orders
             ->reduce(function ($carry, $order) {
                 if (($order["type"] ?? "") === "Raw") {
-                    return $carry . "_orderByRaw_" . str_slug($order["sql"]);
+                    return $carry . "_orderByRaw_" . Str::slug($order["sql"]);
                 }
 
                 return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
@@ -127,7 +129,7 @@ class CacheKey
 
     protected function getValuesFromWhere(array $where) : string
     {
-        if (array_get($where, "query")) {
+        if (Arr::get($where, "query")) {
             $prefix = $this->getCachePrefix();
             $subKey = (new self($this->eagerLoad, $this->model, $where["query"]))
                 ->make();
@@ -139,11 +141,11 @@ class CacheKey
             return $subKey;
         }
 
-        if (is_array(array_get($where, "values"))) {
+        if (is_array(Arr::get($where, "values"))) {
             return implode("_", collect($where["values"])->flatten()->toArray());
         }
 
-        return array_get($where, "value", "");
+        return Arr::get($where, "value", "");
     }
 
     protected function getValuesFromBindings(array $where, string $values) : string
