@@ -16,6 +16,7 @@ matrix:
 
 services:
     - redis-server
+    - postgresql
 
 before_script:
     - travis_retry composer self-update
