@@ -14,8 +14,9 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as Author
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorBeginsWithA;
 
-class ModelScopeTest extends IntegrationTestCase
+class ScopeTest extends IntegrationTestCase
 {
     public function testScopeClauseParsing()
     {
@@ -56,6 +57,29 @@ class ModelScopeTest extends IntegrationTestCase
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
             ->nameStartsWith("B")
+            ->get();
+
+        $this->assertTrue($authors->contains($author));
+        $this->assertTrue($cachedResults->contains($author));
+        $this->assertTrue($liveResults->contains($author));
+    }
+
+    /** @group test */
+    public function testGlobalScopesAreCached()
+    {
+        $author = factory(Author::class, 1)
+            ->create(['name' => 'Alois'])
+            ->first();
+        $authors = (new AuthorBeginsWithA)
+            ->get();
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswitha');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthorbeginswitha'];
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->nameStartsWith("A")
             ->get();
 
         $this->assertTrue($authors->contains($author));

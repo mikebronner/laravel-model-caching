@@ -1,12 +1,17 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class UncachedAuthor extends Model
+class AuthorBeginsWithA extends Model
 {
+    use Cachable;
+
+    protected $table = "authors";
     protected $casts = [
         "finances" => "array",
     ];
@@ -15,11 +20,22 @@ class UncachedAuthor extends Model
         'email',
         "finances",
     ];
-    protected $table = 'authors';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new NameBeginsWith);
+    }
 
     public function books() : HasMany
     {
-        return $this->hasMany(UncachedBook::class, 'author_id', 'id');
+        return $this->hasMany(Book::class);
+    }
+
+    public function profile() : HasOne
+    {
+        return $this->hasOne(Profile::class);
     }
 
     public function getLatestBookAttribute()
@@ -28,11 +44,6 @@ class UncachedAuthor extends Model
             ->books()
             ->latest("id")
             ->first();
-    }
-
-    public function profile() : HasOne
-    {
-        return $this->hasOne(UncachedProfile::class, 'author_id', 'id');
     }
 
     public function scopeStartsWithA(Builder $query) : Builder
