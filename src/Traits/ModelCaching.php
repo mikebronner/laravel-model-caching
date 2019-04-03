@@ -69,7 +69,7 @@ trait ModelCaching
     public function newEloquentBuilder($query)
     {
         if (! $this->isCachable()) {
-            $this->isCachable = true;
+            $this->isCachable = false;
 
             return new EloquentBuilder($query);
         }
