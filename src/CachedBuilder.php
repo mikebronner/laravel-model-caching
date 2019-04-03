@@ -166,24 +166,18 @@ class CachedBuilder extends EloquentBuilder
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-	/**
-	 * Get the relation instance for the given relation name.
-	 * This is overloaded so we can disable model cache on
-	 * relations if parent has disabled model caching.
-	 *
-	 * @param  string  $name
-	 * @return \Illuminate\Database\Eloquent\Relations\Relation
-	 */
-	public function getRelation($name)
-	{
-		$relation = parent::getRelation($name);
+    public function getRelation($name)
+    {
+        $relation = parent::getRelation($name);
 
-		if(!$this->isCachable() && is_a($relation->getQuery(), self::class)){
-			$relation->getQuery()->disableModelCaching();
-		}
+        if (! $this->isCachable()
+            && is_a($relation->getQuery(), self::class)
+        ) {
+            $relation->getQuery()->disableModelCaching();
+        }
 
-		return $relation;
-	}
+        return $relation;
+    }
 
     protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string
     {
