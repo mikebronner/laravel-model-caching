@@ -41,4 +41,9 @@ class Author extends Model
     {
         return $query->where('name', 'LIKE', 'A%');
     }
+
+    public function scopeNameStartsWith(Builder $query, string $startOfName) : Builder
+    {
+        return $query->where("name", "LIKE", "{$startOfName}%");
+    }
 }
