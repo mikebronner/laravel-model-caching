@@ -3,6 +3,88 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [0.4.12] - 3 Apr 2019
+### Updated
+- string and array helpers to use the `Str` and `Arr` classes directly, in preparation for helper deprecations in Laravel 5.9. Thanks @mycarrysun
+
+### Fixed
+- disabling of model caching on relationship queries if model caching was disabled on the model. Thanks @mycarrysun
+- error that occurred if `whereIn` was given an empty array. Thanks @Ben52
+
+## [0.4.11] - 25 Mar 2019
+### Changed
+- `useCacheCooldown` to `cacheCooldownSeconds` in models.
+
+## [0.4.10] - 24 Mar 2019
+### Updated
+- cache cool down functionality to not trigger if it is not set on the model. This should hopefully improve performance. Thanks @mycarrysun for implementing the PR, and thanks @yemenifree for alerting me to the issue!
+
+## [0.4.9] - 6 Mar 2019
+### Changed
+- `laravel-pivot` dependency back to that of the original owner, as Laravel 5.8 compatibility has been restored.
+
+## [0.4.8] - 4 Mar 2019
+### Changed
+- to rely on temporarily published `mikebronner/laravel-pivot` package on packagist.
+
+## [0.4.7] - 1 Mar 2019
+### Fixed
+- installation of patched laravel-pivot dependency.
+
+## [0.4.6] - 28 Feb 2019
+### Fixed
+- dependency constraints from 5.8 to 5.8.*.
+
+## [0.4.5] - 28 Feb 2019
+### Fixed
+- using `find()` to get multiple items via an array. Thanks @cluebattery !
+
+## [0.4.4] - 28 Feb 2019
+### Added
+- functionality for caching of model relationships across different connections and databases. Thanks @PokeGuys for starting the conversation around this problem.
+
+## [0.4.3] - 28 Feb 2019
+### Fixed
+- cache cooldown flush when cool-down seconds option was used.
+
+## [0.4.2] - 28 Feb 2019
+### Fixed
+- `laravel-pivot` package compatibility temporarily with Laravel 5.8 patch of my own until they provide compatibility.
+
+## [0.4.1] - 28 Feb 2019
+### Fixed
+- version requirements in composer.json.
+
+## [0.4.0] - 28 Feb 2019
+### Added
+- Laravel 5.8 compatibility.
+
+### Removed
+- compatibility with previous versions of Laravel, as it was no longer sustainable with all the changes required.
+
+## [0.3.7] - 6 Feb 2019
+### Updated
+- depency laravel-pivot to next major release version, from a dev-version.
+
+### Changed
+- reference to `request()` helper to `app("request")` for Lumen compatibility. Thanks @PokeGuys
+
+## [0.3.6] - 8 Dec 2018
+### Added
+- functionality to invalidate cache after running `increment()` and `decrement()` queries.
+
+## [0.3.5] - 30 Nov 2018
+### Added
+- tracking of model table in cache key for those using dynamic table names in models.
+
+### Updated
+- dependency of `laravel-pivot` package to use the new code branch which includes a fix for Laravel Telescope compatibility.
+
+## [0.3.5] - 28 Nov 2018
+### Fixed
+- relationship queries breaking on new where clause type `InRaw`.
+
 ## [0.3.3] - 10 Nov 2018
 ### Fixed
 - typo in method `checkCooldownAndFlushAfterPersiting()` to 
