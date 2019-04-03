@@ -64,13 +64,13 @@ class CacheKey
 
     protected function getTableSlug() : string
     {
-        return Str::slug($this->model->getTable())
+        return (new Str)->slug($this->model->getTable())
             . ":";
     }
 
     protected function getModelSlug() : string
     {
-        return Str::slug(get_class($this->model));
+        return (new Str)->slug(get_class($this->model));
     }
 
     protected function getOffsetClause() : string
@@ -89,7 +89,7 @@ class CacheKey
         return $orders
             ->reduce(function ($carry, $order) {
                 if (($order["type"] ?? "") === "Raw") {
-                    return $carry . "_orderByRaw_" . Str::slug($order["sql"]);
+                    return $carry . "_orderByRaw_" . (new Str)->slug($order["sql"]);
                 }
 
                 return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
@@ -129,7 +129,7 @@ class CacheKey
 
     protected function getValuesFromWhere(array $where) : string
     {
-        if (Arr::get($where, "query")) {
+        if ((new Arr)->get($where, "query")) {
             $prefix = $this->getCachePrefix();
             $subKey = (new self($this->eagerLoad, $this->model, $where["query"]))
                 ->make();
@@ -141,16 +141,15 @@ class CacheKey
             return $subKey;
         }
 
-        if (is_array(Arr::get($where, "values"))) {
+        if (is_array((new Arr)->get($where, "values"))) {
             return implode("_", collect($where["values"])->flatten()->toArray());
         }
 
-        return Arr::get($where, "value", "");
+        return (new Arr)->get($where, "value", "");
     }
 
     protected function getValuesFromBindings(array $where, string $values) : string
     {
-        // if (! $values && ($this->query->bindings["where"][$this->currentBinding] ?? false)) {
         if ($this->query->bindings["where"][$this->currentBinding] ?? false) {
             $values = $this->query->bindings["where"][$this->currentBinding];
             $this->currentBinding++;

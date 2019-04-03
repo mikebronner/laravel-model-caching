@@ -33,7 +33,7 @@ class CacheTags
                 $relation = $this->getRelation($relationName);
 
                 return $this->getCachePrefix()
-                    . Str::slug(get_class($relation->getQuery()->getModel()));
+                    . (new Str)->slug(get_class($relation->getQuery()->getModel()));
             })
             ->prepend($this->getTagName())
             ->values()
@@ -65,6 +65,6 @@ class CacheTags
     protected function getTagName() : string
     {
         return $this->getCachePrefix()
-            . Str::slug(get_class($this->model));
+            . (new Str)->slug(get_class($this->model));
     }
 }
