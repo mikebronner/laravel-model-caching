@@ -31,7 +31,7 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
         <env name="DB_CONNECTION" value="testing"/>
-        <env name="DB_HOST" value="192.168.10.10"/>
+        <env name="DB_HOST" value="127.0.0.1"/>
         <env name="DB_DATABASE" value="testing"/>
         <env name="DB_USERNAME" value="homestead"/>
         <env name="DB_PASSWORD" value="secret"/>
