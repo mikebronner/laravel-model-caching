@@ -3,8 +3,19 @@ language: php
 github_token: $GITHUB_TOKEN
 
 services:
-    - postgresql
-    - redis-server
+  - postgresql
+  - redis-server
+
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+      - postgresql-10
+      - postgresql-client-10
+
+env:
+  global:
+    - PGPORT=5433
 
 matrix:
     include:
