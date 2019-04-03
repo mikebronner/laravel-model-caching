@@ -35,7 +35,8 @@ class FindTest extends IntegrationTestCase
 
     public function testFindMultipleModelResultsCreatesCache()
     {
-        $authors = (new Author)->find([1, 2, 3]);
+        $authors = (new Author)
+            ->find([1, 2, 3]);
         $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-find_list_1_2_3');
         $tags = [
             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
@@ -68,5 +69,17 @@ class FindTest extends IntegrationTestCase
 
         $this->assertEquals($uncachedAuthor->count(), $author->count());
         $this->assertEquals($uncachedAuthor->pluck("id"), $author->pluck("id"));
+    }
+
+    public function testFindWithSingleElementArrayDoesntConflictWithNormalFind()
+    {
+        $author1 = (new Author)
+            ->find(1);
+        $author2 = (new Author)
+            ->find([1]);
+        
+        $this->assertNotEquals($author1, $author2);
+        $this->assertIsIterable($author2);
+        $this->assertEquals(Author::class, get_class($author1));
     }
 }
