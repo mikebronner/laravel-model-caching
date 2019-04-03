@@ -4,6 +4,7 @@ github_token: $GITHUB_TOKEN
 
 services:
     - postgresql
+    - redis-server
 
 matrix:
     include:
@@ -13,10 +14,6 @@ matrix:
           env: REDIS_HOST=127.0.0.1
         - php: 7.3
           env: REDIS_HOST=127.0.0.1
-
-services:
-    - redis-server
-    - postgresql
 
 before_script:
     - travis_retry composer self-update
