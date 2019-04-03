@@ -24,7 +24,6 @@ before_script:
   - travis_retry composer config --global github-protocols https
   - travis_retry composer install --no-interaction --prefer-source
   - psql -c 'create database testing;' -U postgres
-  - psql -c "CREATE USER homestead WITH PASSWORD 'secret';" -U postgres
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
