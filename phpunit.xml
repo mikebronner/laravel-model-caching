@@ -10,19 +10,19 @@
     processIsolation="false"
     stopOnFailure="true"
 >
-<testsuites>
-    <testsuite name="Feature">
-        <directory suffix="Test.php">./tests/Feature</directory>
-    </testsuite>
-    <testsuite name="Integration">
-        <directory suffix="Test.php">./tests/Integration</directory>
-    </testsuite>
-</testsuites>
-<filter>
-    <whitelist processUncoveredFilesFromWhitelist="false">
-        <directory suffix=".php">./src</directory>
-    </whitelist>
-</filter>
+    <testsuites>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
     <php>
         <env name="APP_KEY" value="base64:Xgs1LQt1GdVHhD6qyYCXnyq61DE3UKqJ5k2SJc+Nw2g="/>
         <env name="APP_ENV" value="testing"/>
