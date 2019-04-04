@@ -154,6 +154,13 @@ or:
 There are two methods by which model-caching can be disabled:
 1. Use `->disableCache()` in a query-by-query instance.
 2. Set `MODEL_CACHE_DISABLED=TRUE` in your `.env` file.
+3. If you only need to disable the cache for a block of code, or for non-
+    eloquent queries, this is probably the better option:
+    ```php
+    app("model-cache")->runDisabled(function () {
+        // your code here, it may return, as well
+    });
+    ```
 
 **Recommendation: use option #1 in all your seeder queries to avoid pulling in
 cached information when reseeding multiple times.**

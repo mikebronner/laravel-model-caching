@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.13] - 4 Apr 2019
+### Added
+- helper function to run closure with model-caching disabled. Thanks for the suggestion, @mycarrysun
+
 ## [0.4.12] - 3 Apr 2019
 ### Updated
 - string and array helpers to use the `Str` and `Arr` classes directly, in preparation for helper deprecations in Laravel 5.9. Thanks @mycarrysun
