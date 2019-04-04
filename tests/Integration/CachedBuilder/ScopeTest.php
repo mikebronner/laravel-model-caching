@@ -64,7 +64,6 @@ class ScopeTest extends IntegrationTestCase
         $this->assertTrue($liveResults->contains($author));
     }
 
-    /** @group test */
     public function testGlobalScopesAreCached()
     {
         $author = factory(Author::class, 1)
