@@ -114,9 +114,11 @@ class CacheKey
         return str_replace(" ", "_", $type);
     }
 
-    protected function getValuesClause(array $where = null) : string
+    protected function getValuesClause(array $where = []) : string
     {
-        if (in_array($where["type"], ["NotNull", "Null"])) {
+        if (! $where
+            || in_array($where["type"], ["NotNull", "Null"])
+        ) {
             return "";
         }
 
@@ -171,7 +173,7 @@ class CacheKey
                 $value .= $this->getColumnClauses($where);
                 $value .= $this->getRawClauses($where);
                 $value .= $this->getInAndNotInClauses($where);
-                $value .= $this->getOtherClauses($where, $carry);
+                $value .= $this->getOtherClauses($where);
 
                 return $value;
             });
