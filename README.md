@@ -157,8 +157,8 @@ There are two methods by which model-caching can be disabled:
 3. If you only need to disable the cache for a block of code, or for non-
     eloquent queries, this is probably the better option:
     ```php
-    app("model-cache")->runDisabled(function () {
-        // your code here, it may return, as well
+    $result = app("model-cache")->runDisabled(function () {
+        return (new MyModel)->get(); // or any other stuff you need to run with model-caching disabled
     });
     ```
 
