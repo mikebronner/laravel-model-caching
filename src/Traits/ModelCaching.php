@@ -112,7 +112,7 @@ trait ModelCaching
         return $query;
     }
 
-    public function getcacheCooldownSecondsAttribute() : bool
+    public function getcacheCooldownSecondsAttribute() : int
     {
         return $this->cacheCooldownSeconds;
     }
