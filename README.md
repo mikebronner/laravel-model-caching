@@ -34,8 +34,9 @@ likely conflict with this package. So far these may include the following:
 [![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
 
 ## Installation
+Be sure to not require a specific version of this package when requiring it:
 ```
-composer require genealabs/laravel-model-caching
+composer require genealabs/laravel-model-caching:*
 ```
 
 ## Configuration
