@@ -49,4 +49,29 @@ class SelectTest extends IntegrationTestCase
         $this->assertEquals($liveResults, $books);
         $this->assertEquals($liveResults, $cachedResults);
     }
+
+    // public function testSelectFieldsAreCached()
+    // {
+    //     $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_id_name-first');
+    //     $tags = [
+    //         'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
+    //     ];
+
+    //     $authorFields = (new Author)
+    //         ->select("id", "name")
+    //         ->first()
+    //         ->getAttributes();
+    //     $uncachedFields = (new UncachedAuthor)
+    //         ->select("id", "name")
+    //         ->first()
+    //         ->getAttributes();
+    //     $cachedFields = $this
+    //         ->cache()
+    //         ->tags($tags)
+    //         ->get($key)['value']
+    //         ->getAttributes();
+
+    //     $this->assertEquals($cachedFields, $authorFields);
+    //     $this->assertEquals($cachedFields, $uncachedFields);
+    // }
 }

@@ -98,8 +98,15 @@ class CacheKey
 
     protected function getQueryColumns(array $columns) : string
     {
-        if ($columns === ["*"] || $columns === []) {
+        if (($columns === ["*"]
+                || $columns === [])
+            && ! $this->query->columns
+        ) {
             return "";
+        }
+
+        if ($this->query->columns) {
+            return "_" . implode("_", $this->query->columns);
         }
 
         return "_" . implode("_", $columns);
