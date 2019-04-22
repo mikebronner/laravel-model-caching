@@ -4,9 +4,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UncachedAuthor extends Model
 {
+    use SoftDeletes;
+    
     protected $casts = [
         "finances" => "array",
     ];

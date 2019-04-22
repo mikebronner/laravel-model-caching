@@ -10,6 +10,7 @@ class CreateAuthors extends Migration
         Schema::create('authors', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->string('email');
             $table->string('name');

@@ -76,6 +76,10 @@ class CachedBuilder extends EloquentBuilder
             return parent::first($columns);
         }
 
+        if (! is_array($columns)) {
+            $columns = [$columns];
+        }
+
         $cacheKey = $this->makeCacheKey($columns, null, "-first");
 
         return $this->cachedValue(func_get_args(), $cacheKey);

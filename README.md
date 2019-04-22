@@ -180,8 +180,11 @@ This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
 
-## Possible Future Improvements
+## Things That Don't Work Currently
+The following items currently do no work with this package:
 - [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
+- [using select() clauses in Eloquent queries, see #238](https://github.com/GeneaLabs/laravel-model-caching/issues/238) (word-around discussed in the issue)
+- [using SoftDeletes on Models, see #237](https://github.com/GeneaLabs/laravel-model-caching/issues/237)
 
 ## Summary
 **That's all you need to do. All model queries and relationships are now
