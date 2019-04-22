@@ -31,15 +31,15 @@ Any packages that also override `newEloquentModel()` from the `Model` class will
 likely conflict with this package. So far these may include the following:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
 
-[![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
-
 ### Things That Don't Work Currently
+The following items currently do no work with this package:
 ```diff
-- The following items currently do no work with this package:
-- - [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
-- - [using select() clauses in Eloquent queries, see #238](https://github.com/GeneaLabs/laravel-model-caching/issues/238) (word-around discussed in the issue)
-- - [using SoftDeletes on Models, see #237](https://github.com/GeneaLabs/laravel-model-caching/issues/237)
+- caching of lazy-loaded relationships, see #127
+- using select() clauses in Eloquent queries, see #238 (work-around discussed in the issue)
+- using SoftDeletes on Models, see #237
 ```
+
+[![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
 
 ## Installation
 Be sure to not require a specific version of this package when requiring it:
