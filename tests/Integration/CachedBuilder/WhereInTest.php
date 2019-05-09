@@ -78,4 +78,26 @@ class WhereInTest extends IntegrationTestCase
         $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
+
+    /** @group test */
+    public function testWhereInUsesCorrectBindings()
+    {
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_in_1_2_3_4_5-id_between_1_99999');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $authors = (new Author)
+            ->whereIn('id', [1,2,3,4,5])
+            ->whereBetween('id', [1, 99999])
+            ->get();
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->whereIn('id', [1,2,3,4,5])
+            ->whereBetween('id', [1, 99999])
+            ->get();
+
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
+    }
 }

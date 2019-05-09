@@ -116,4 +116,29 @@ class WhereTest extends IntegrationTestCase
         $this->assertEmpty($authors->diffKeys($cachedResults));
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
+
+    public function testWhereUsesCorrectBinding()
+    {
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_5-name_like_B%');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+
+        $authors = (new Author)
+            ->where("id", ">", 2)
+            ->where("name", "LIKE", "A%")
+            ->get();
+        $authors = (new Author)
+            ->where("id", ">", 5)
+            ->where("name", "LIKE", "B%")
+            ->get();
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->where("id", ">", 5)
+            ->where("name", "LIKE", "B%")
+            ->get();
+
+        $this->assertEmpty($authors->diffKeys($cachedResults));
+        $this->assertEmpty($liveResults->diffKeys($cachedResults));
+    }
 }
