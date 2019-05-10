@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.16] - 10 May 2019
+### Changed
+- the way the database name is determined when creating the cache prefix.
+
+## [0.4.15] - 9 May 2019
+### Fixed
+- bindings used in `whereIn` clauses.
+
+## [0.4.14] - 21 Apr 2019
+### Fixed
+- where `first()` didn't pass an array parameter.
+
 ## [0.4.13] - 4 Apr 2019
 ### Added
 - helper function to run closure with model-caching disabled. Thanks for the suggestion, @mycarrysun
