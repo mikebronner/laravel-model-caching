@@ -102,4 +102,25 @@ class WhereRawTest extends IntegrationTestCase
 
         $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
     }
+
+    public function testWhereRawParametersCacheUniquely()
+    {
+        $book1 = (new UncachedBook)->first();
+        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+
+        $result1 = (new Book)
+            ->whereRaw("id = ?", [$book1->id])
+            ->get();
+        $result2 = (new Book)
+            ->whereRaw("id = ?", [$book2->id])
+            ->get();
+        $key1 = sha1("genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book1->id}");
+        $key2 = sha1("genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book2->id}");
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook'];
+        $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
+        $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
+
+        $this->assertEquals($cachedBook1->first()->title, $result1->first()->title);
+        $this->assertEquals($cachedBook2->first()->title, $result2->first()->title);
+    }
 }
