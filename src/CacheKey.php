@@ -158,7 +158,7 @@ class CacheKey
 
     protected function getValuesFromBindings(array $where, string $values) : string
     {
-        if ($this->query->bindings["where"][$this->currentBinding] ?? false) {
+        if (($this->query->bindings["where"][$this->currentBinding] ?? false) !== false) {
             $values = $this->query->bindings["where"][$this->currentBinding];
             $this->currentBinding++;
 
@@ -168,7 +168,7 @@ class CacheKey
             }
         }
 
-        return $values ?: "";
+        return $values;
     }
 
     protected function getWhereClauses(array $wheres = []) : string

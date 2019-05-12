@@ -98,7 +98,7 @@ class WhereTest extends IntegrationTestCase
 
     public function testTwoWhereClausesAfterEachOther()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_-id_<_100');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_0-id_<_100');
         $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $authors = (new Author)
