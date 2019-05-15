@@ -218,7 +218,7 @@ class CacheKey
 
     protected function getInAndNotInClauses(array $where) : string
     {
-        if (! in_array($where["type"], ["In", "NotIn"])) {
+        if (! in_array($where["type"], ["In", "NotIn", "InRaw"])) {
             return "";
         }
 
@@ -264,7 +264,7 @@ class CacheKey
 
     protected function getRawClauses(array $where) : string
     {
-        if ($where["type"] !== "raw") {
+        if (! in_array($where["type"], ["raw"])) {
             return "";
         }
 
@@ -288,7 +288,7 @@ class CacheKey
 
     protected function getOtherClauses(array $where) : string
     {
-        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn"])) {
+        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn", "InRaw"])) {
             return "";
         }
 

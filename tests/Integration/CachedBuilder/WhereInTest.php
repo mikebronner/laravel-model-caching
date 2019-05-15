@@ -79,7 +79,6 @@ class WhereInTest extends IntegrationTestCase
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
 
-    /** @group test */
     public function testWhereInUsesCorrectBindings()
     {
         $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-id_in_1_2_3_4_5-id_between_1_99999');

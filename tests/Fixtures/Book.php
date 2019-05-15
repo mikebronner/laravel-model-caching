@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Book extends Model
 {
@@ -31,6 +32,11 @@ class Book extends Model
     public function comments() : MorphMany
     {
         return $this->morphMany(Comment::class, "commentable");
+    }
+
+    public function image() : MorphOne
+    {
+        return $this->morphOne(Image::class, "imagable");
     }
 
     public function publisher() : BelongsTo
