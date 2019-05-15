@@ -2,7 +2,9 @@
 
 use Carbon\Carbon;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use GeneaLabs\LaravelModelCaching\CacheBelongsToMany;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
 
 trait ModelCaching
 {
@@ -75,6 +77,12 @@ trait ModelCaching
         }
 
         return new CachedBuilder($query);
+    }
+
+    protected function newBelongsToMany(EloquentBuilder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey,
+                                        $parentKey, $relatedKey, $relationName = null)
+    {
+        return new CacheBelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName);
     }
 
     public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder

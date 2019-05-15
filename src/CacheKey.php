@@ -19,8 +19,8 @@ class CacheKey
 
     public function __construct(
         array $eagerLoad,
-        Model $model,
-        Builder $query
+        $model,
+        $query
     ) {
         $this->eagerLoad = $eagerLoad;
         $this->model = $model;

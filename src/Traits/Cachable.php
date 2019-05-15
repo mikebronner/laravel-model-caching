@@ -4,7 +4,9 @@ use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
 
 trait Cachable
 {
-    use PivotEventTrait;
-    use Caching;
-    use ModelCaching;
+    use Caching,
+        ModelCaching,
+        PivotEventTrait {
+            ModelCaching::newBelongsToMany insteadof PivotEventTrait;
+        }
 }
