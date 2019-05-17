@@ -34,7 +34,7 @@ likely conflict with this package. So far these may include the following:
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
 ```diff
-- caching of lazy-loaded relationships, see #127
+- caching of lazy-loaded relationships, see #127. Currently lazy-loaded belongs-to relationships are cached. Caching of other relationships is in the works.
 - using select() clauses in Eloquent queries, see #238 (work-around discussed in the issue)
 - using SoftDeletes on Models, see #237
 ```
