@@ -15,32 +15,23 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
-abstract class LazyLoadTest extends IntegrationTestCase
+class LazyLoadTest extends IntegrationTestCase
 {
-//     public function testLazyLoadingRelationshipQuery()
-//     {
-//         $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
-//         $tags = [
-//             'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
-//         ];
-//         $book = (new Book)
-//             ->first();
-//
-// dump("start");
-//         $stores = $book->stores;
-// dump("end");
-//         dd($stores);
-//         $cachedResults = $this
-//             ->cache()
-//             ->tags($tags)
-//             ->get($key)['value'];
-//         $liveResults = (new UncachedBook)
-//             ->when(true, function ($query) {
-//                 $query->where("id", "<", 5);
-//             })
-//             ->get();
-//
-//         $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
-//         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
-//     }
+     public function testLazyLoadingRelationshipQuery()
+     {
+        $key = sha1('genealabs:laravel-model-caching:mysql:eloquent:book-store:genealabslaravelmodelcachingcachebelongstomany-book_store.book_id_=_15');
+        $tags = [
+            'genealabs:laravel-model-caching:mysql:eloquent:genealabslaravelmodelcachingtestsfixturesstore',
+        ];
+        $book = (new Book)::find(15);
+        $stores = $book->stores;
+        $cachedStores = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $uncachedBook = (new UncachedBook)->find(15);
+        $uncachedStores = $uncachedBook->stores;
+
+        $this->assertEquals($cachedStores->pluck("id"), $uncachedStores->pluck("id"));
+     }
 }
