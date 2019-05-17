@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.21] - 17 May 2019
+### Added
+- my own implementation of laravel pivot events, based on `fico7489/laravel-pivot`.
+
+### Fixed
+- Laravel Telescope compatibility.
+
+### Removed
+- dependency on `fico7489/laravel-pivot`.
+
+## [0.4.20] - 17 May 2019
+### Added
+- caching lazy-loading of belongs-to relationships. Thanks @tmishutin for leading the way forward on this effort! Hopefully this solution will work as a template for lazy-loading other relationship types going forward.
+
+### Fixed
+- an issue with prefixing found during testing.
+
+### Removed
+- unused code.
+
+## [0.4.19] - 16 May 2019
+### Added
+- work-around for Laravel Telescope compatibility to README.
+
 ## [0.4.18] - 14 May 2019
 ### Fixed
 - polymorphic relationship caching, as well as other queries using `InRaw`.

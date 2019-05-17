@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "fico7489/laravel-pivot": "*",
+        "genealabs/laravel-pivot-events": "*",
         "illuminate/cache": "5.8.*",
         "illuminate/config": "5.8.*",
         "illuminate/console": "5.8.*",

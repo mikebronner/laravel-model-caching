@@ -1,6 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
-use Fico7489\Laravel\Pivot\Traits\FiresPivotEventsTrait;
+use GeneaLabs\LaravelPivotEvents\Traits\FiresPivotEventsTrait;
 use GeneaLabs\LaravelModelCaching\Traits\Buildable;
 use GeneaLabs\LaravelModelCaching\Traits\BuilderCaching;
 use GeneaLabs\LaravelModelCaching\Traits\Caching;

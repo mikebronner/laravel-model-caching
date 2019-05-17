@@ -1,6 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
+use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 
 trait Cachable
 {

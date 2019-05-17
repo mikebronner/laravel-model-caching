@@ -48,38 +48,6 @@ composer require genealabs/laravel-model-caching:*
 ```
 
 ## Configuration
-### Telescope Compatibility
-Due to how a dependent package fires pivot events that are currently
-incompatible with Laravel Telescope, you will need to adjust your Model Watcher
-in your Telescope configuration, if you use Telescope (if not, you can safely
-ignore this section):
-
-```php
-use GeneaLabs\LaravelModelCaching\Telescope\ModelWatcher as CustomModelWatcher;
-// ...
-
-return [
-
-    // ...
-    
-    'watchers' => [
-        
-        // ...
-        
-        CustomModelWatcher::class => [
-            'enabled' => env('TELESCOPE_MODEL_WATCHER', true),
-            'events' => ['eloquent.*'],
-        ],
-        
-        // ...
-
-    ],
-
-    // ...
-
-];
-```
-
 ### Recommended (Optional) Custom Cache Store
 If you would like to use a different cache store than the default one used by
 your Laravel application, you may do so by setting the `MODEL_CACHE_STORE`
@@ -113,6 +81,7 @@ abstract class BaseModel
     //
 }
 ```
+
 ### Multiple Database Connections
 __Thanks to @dtvmedia for suggestion this feature. This is actually a more robust
 solution than cache-prefixes.__
