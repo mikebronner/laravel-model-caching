@@ -69,8 +69,16 @@ trait Caching
         string $keyDifferentiator = ''
     ) : string {
         $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this->model ?? $this;
-        $query = $this->query ?? app('db')->query();
+        $model = $this->model
+            ?? $this;
+        $query = $this->query
+            ?? app('db')->query();
+        
+        if ($this->query
+            && method_exists($this->query, "getQuery")
+        ) {
+            $query = $this->query->getQuery();
+        }
 
         return (new CacheKey($eagerLoad, $model, $query))
             ->make($columns, $idColumn, $keyDifferentiator);
@@ -79,8 +87,8 @@ trait Caching
     protected function makeCacheTags() : array
     {
         $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this->model instanceof Model
-            ? $this->model
+        $model = $this->getModel() instanceof Model
+            ? $this->getModel()
             : $this;
         $query = $this->query instanceof Builder
             ? $this->query

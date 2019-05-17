@@ -22,9 +22,9 @@ class BuilderCachingTest extends IntegrationTestCase
         $allAuthors = (new Author)
             ->disableCache()
             ->all();
-        $key = sha1("genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor");
+        $key = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = [
-            "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
         $cachedAuthors = $this
             ->cache()
