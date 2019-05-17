@@ -1,37 +1,40 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class LazyLoadTest extends IntegrationTestCase
 {
-     public function testLazyLoadingRelationshipQuery()
-     {
-        $key = sha1('genealabs:laravel-model-caching:mysql:eloquent:book-store:genealabslaravelmodelcachingcachebelongstomany-book_store.book_id_=_15');
+    public function testLazyLoadingRelationshipQuery()
+    {
+        $bookId = (new Store)
+            ->disableModelCaching()
+            ->with("books")
+            ->first()
+            ->books
+            ->first()
+            ->id;
+        $key = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
         $tags = [
-            'genealabs:laravel-model-caching:mysql:eloquent:genealabslaravelmodelcachingtestsfixturesstore',
+            'genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesstore',
         ];
-        $book = (new Book)::find(15);
-        $stores = $book->stores;
+
+        $stores = (new Book)
+            ->find($bookId)
+            ->stores;
         $cachedStores = $this
             ->cache()
             ->tags($tags)
             ->get($key)['value'];
-        $uncachedBook = (new UncachedBook)->find(15);
+        $uncachedBook = (new UncachedBook)
+            ->find($bookId);
         $uncachedStores = $uncachedBook->stores;
 
-        $this->assertEquals($cachedStores->pluck("id"), $uncachedStores->pluck("id"));
-     }
+        $this->assertEquals($uncachedStores->pluck("id"), $stores->pluck("id"));
+        $this->assertEquals($uncachedStores->pluck("id"), $cachedStores->pluck("id"));
+        $this->assertNotNull($cachedStores);
+        $this->assertNotNull($uncachedStores);
+    }
 }

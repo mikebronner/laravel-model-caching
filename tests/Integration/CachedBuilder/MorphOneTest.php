@@ -22,11 +22,11 @@ class MorphOneTest extends IntegrationTestCase
 
     public function testMorphTo()
     {
-        $key1 = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_1-testing::memory::image');
-        $key2 = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_2-testing::memory::image');
+        $key1 = sha1('genealabs:laravel-model-caching:testing::memory::test-prefix:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_1-testing::memory::image');
+        $key2 = sha1('genealabs:laravel-model-caching:testing::memory::test-prefix:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_2-testing::memory::image');
         $tags = [
-            "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook",
-            "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesimage",
+            "genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesimage",
         ];
 
         $books1 = (new Book)

@@ -69,8 +69,20 @@ trait Caching
         string $keyDifferentiator = ''
     ) : string {
         $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this->model ?? $this;
-        $query = $this->query ?? app('db')->query();
+        $model = $this->model
+            ?? $this;
+        $query = $this->query
+            ?? app('db')->query();
+        
+        if ($this->query
+            && method_exists($this->query, "getQuery")
+        ) {
+            $query = $this->query->getQuery();
+        }
+
+        if (get_class($query) === EloquentBuilder::class) {
+            $query = new CachedBuilder($query);
+        }
 
         return (new CacheKey($eagerLoad, $model, $query))
             ->make($columns, $idColumn, $keyDifferentiator);

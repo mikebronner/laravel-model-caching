@@ -1,30 +1,13 @@
-<?php
-namespace GeneaLabs\LaravelModelCaching;
+<?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use GeneaLabs\LaravelModelCaching\Traits\BuilderCaching;
-use GeneaLabs\LaravelModelCaching\Traits\Caching;
-use Fico7489\Laravel\Pivot\Traits\FiresPivotEventsTrait;
+use Illuminate\Support\Collection;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BaseModel;
 
-class CacheBelongsToMany extends BelongsToMany
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ */
+trait Buildable
 {
-    use BuilderCaching,
-        Caching,
-        FiresPivotEventsTrait;
-
-    protected function makeCacheKey(
-        array $columns = ['*'],
-        $idColumn = null,
-        string $keyDifferentiator = ''
-    ) : string {
-        $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this->model ?? $this;
-        $query = $this->query->getQuery() ?? app('db')->query();
-
-        return (new CacheKey($eagerLoad, $model, $query))
-            ->make($columns, $idColumn, $keyDifferentiator);
-    }
-
     public function avg($column)
     {
         if (! $this->isCachable()) {
@@ -308,7 +291,17 @@ class CacheBelongsToMany extends BelongsToMany
         string $hashedCacheKey,
         string $method
     ) {
-        $this->checkCooldownAndRemoveIfExpired($this->getModel());
+        $model = new BaseModel;
+
+        if (property_exists($this, "model")) {
+            $model = $this->model;
+        }
+
+        if (\method_exists($this, "getModel")) {
+            $model = $this->getModel();
+        }
+
+        $this->checkCooldownAndRemoveIfExpired($model);
 
         return $this->cache($cacheTags)
             ->rememberForever(

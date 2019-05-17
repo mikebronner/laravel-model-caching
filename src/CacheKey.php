@@ -54,7 +54,9 @@ class CacheKey
 
     protected function getLimitClause() : string
     {
-        if (! $this->query->limit) {
+        if (! property_exists($this->query, "limit")
+            || ! $this->query->limit
+        ) {
             return "";
         }
 
@@ -74,7 +76,9 @@ class CacheKey
 
     protected function getOffsetClause() : string
     {
-        if (! $this->query->offset) {
+        if (! property_exists($this->query, "offset")
+            || ! $this->query->offset
+        ) {
             return "";
         }
 
@@ -83,6 +87,12 @@ class CacheKey
 
     protected function getOrderByClauses() : string
     {
+        if (! property_exists($this->query, "orders")
+            || ! $this->query->orders
+        ) {
+            return "";
+        }
+
         $orders = collect($this->query->orders);
 
         return $orders
@@ -100,12 +110,15 @@ class CacheKey
     {
         if (($columns === ["*"]
                 || $columns === [])
-            && ! $this->query->columns
+            && (! property_exists($this->query, "columns")
+                || ! $this->query->columns)
         ) {
             return "";
         }
 
-        if ($this->query->columns) {
+        if (property_exists($this->query, "columns")
+            && $this->query->columns
+        ) {
             return "_" . implode("_", $this->query->columns);
         }
 
@@ -302,7 +315,9 @@ class CacheKey
     {
         $wheres = collect($wheres);
 
-        if ($wheres->isEmpty()) {
+        if ($wheres->isEmpty()
+            && property_exists($this->query, "wheres")
+        ) {
             $wheres = collect($this->query->wheres);
         }
 
