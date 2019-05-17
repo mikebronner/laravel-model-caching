@@ -80,10 +80,6 @@ trait Caching
             $query = $this->query->getQuery();
         }
 
-        if (get_class($query) === EloquentBuilder::class) {
-            $query = new CachedBuilder($query);
-        }
-
         return (new CacheKey($eagerLoad, $model, $query))
             ->make($columns, $idColumn, $keyDifferentiator);
     }

@@ -89,10 +89,6 @@ trait ModelCaching
         $relatedKey,
         $relationName = null
     ) {
-        if (get_class($query) === EloquentBuilder::class) {
-            $query = new CachedBuilder($query);
-        }
-
         return new CachedBelongsToMany(
             $query,
             $parent,
