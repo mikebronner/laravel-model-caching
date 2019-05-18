@@ -12,5 +12,6 @@ $factory->define(Author::class, function (Faker $faker) {
             "weekly" => 100,
             "daily" => 20,
         ],
+        "is_famous" => $faker->boolean(),
     ];
 });

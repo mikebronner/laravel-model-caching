@@ -162,19 +162,6 @@ trait Buildable
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function getRelation($name)
-    {
-        $relation = parent::getRelation($name);
-
-        if (! $this->isCachable()
-            && is_a($relation->getQuery(), self::class)
-        ) {
-            $relation->getQuery()->disableModelCaching();
-        }
-
-        return $relation;
-    }
-
     protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string
     {
         $result = "";

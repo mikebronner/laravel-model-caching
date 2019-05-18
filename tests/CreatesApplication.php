@@ -42,6 +42,10 @@ trait CreatesApplication
         (new Author)->observe(AuthorObserver::class);
         factory(Author::class, 10)->create()
             ->each(function ($author) use ($publishers) {
+                $profile = factory(Profile::class)
+                    ->make();
+                $profile->author_id = $author->id;
+                $profile->save();
                 factory(Book::class, random_int(5, 25))->make()
                     ->each(function ($book) use ($author, $publishers) {
                         $book->author()->associate($author);

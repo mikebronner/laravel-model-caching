@@ -69,8 +69,16 @@ trait Caching
         string $keyDifferentiator = ''
     ) : string {
         $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this->model
-            ?? $this;
+        $model = $this;
+
+        if (property_exists($this, "model")) {
+            $model = $this->model;
+        }
+
+        if (method_exists($this, "getModel")) {
+            $model = $this->getModel();
+        }
+
         $query = $this->query
             ?? app('db')->query();
         

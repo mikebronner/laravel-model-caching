@@ -13,6 +13,7 @@ class CreateAuthors extends Migration
             $table->softDeletes();
 
             $table->string('email');
+            $table->boolean("is_famous")->default(false);
             $table->string('name');
             $table->json("finances")->nullable();
         });
