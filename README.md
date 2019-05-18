@@ -30,6 +30,10 @@ relationships. This package is an attempt to address those requirements.
 Any packages that also override `newEloquentModel()` from the `Model` class will
 likely conflict with this package. So far these may include the following:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
+- [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
+  This package conflicts with Laravel Telescope. We have forked our own solution
+  for pivot events that replaces this package. If you previously had this package
+  installed, we recommend uninstalling it to avoid conflicts.
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
