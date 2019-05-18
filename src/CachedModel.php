@@ -3,7 +3,7 @@
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Model;
 
-class CachedModel extends Model
+abstract class CachedModel extends Model
 {
     use Cachable;
 }
