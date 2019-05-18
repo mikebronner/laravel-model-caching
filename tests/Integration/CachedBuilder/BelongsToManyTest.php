@@ -128,4 +128,35 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNotEmpty($result);
         $this->assertNull($cachedResult);
     }
+
+    public function testUncachedRelatedModelDoesntCache()
+    {
+        $bookId = (new Store)
+            ->disableModelCaching()
+            ->with("books")
+            ->first()
+            ->books
+            ->first()
+            ->id;
+        $key = sha1("genealabs:laravel-model-caching:testing::memory::book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
+        $tags = [
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesuncachedstore',
+        ];
+
+        $result = (new Book)
+            ->find($bookId)
+            ->uncachedStores;
+        $cachedResult = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $uncachedResult = (new UncachedBook)
+            ->find($bookId)
+            ->stores;
+
+        $this->assertEquals($uncachedResult->pluck("id"), $result->pluck("id"));
+        $this->assertNull($cachedResult);
+        $this->assertNotNull($result);
+        $this->assertNotNull($uncachedResult);
+    }
 }

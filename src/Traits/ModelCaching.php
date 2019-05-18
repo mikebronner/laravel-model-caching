@@ -5,6 +5,7 @@ use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait ModelCaching
 {
@@ -89,7 +90,22 @@ trait ModelCaching
         $relatedKey,
         $relationName = null
     ) {
-        return new CachedBelongsToMany(
+        if (method_exists($query->getModel(), "isCachable")
+            && $query->getModel()->isCachable()
+        ) {
+            return new CachedBelongsToMany(
+                $query,
+                $parent,
+                $table,
+                $foreignPivotKey,
+                $relatedPivotKey,
+                $parentKey,
+                $relatedKey,
+                $relationName
+            );
+        }
+
+        return new BelongsToMany(
             $query,
             $parent,
             $table,
