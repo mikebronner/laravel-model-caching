@@ -8,9 +8,9 @@ class SoftDeletesTest extends IntegrationTestCase
 {
     public function testWithTrashedIsCached()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-first');
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-first');
         $tags = [
-            'genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
         ];
         $author = (new UncachedAuthor)
             ->first();
@@ -33,9 +33,9 @@ class SoftDeletesTest extends IntegrationTestCase
 
     // public function testWithoutTrashedIsCached()
     // {
-    //     $key = sha1('genealabs:laravel-model-caching:testing::memory::test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor_1-first');
+    //     $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_1-first');
     //     $tags = [
-    //         'genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesauthor',
+    //         'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
     //     ];
     //     $author = (new UncachedAuthor)
     //         ->first();

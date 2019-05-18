@@ -25,9 +25,9 @@ class WhereJsonContainsTest extends IntegrationTestCase
 
     public function testWithInUsingCollectionQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:pgsql:testing:test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->total_jsoncontains_5000');
+        $key = sha1('genealabs:laravel-model-caching:pgsql:testing:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->total_jsoncontains_5000');
         $tags = [
-            'genealabs:laravel-model-caching:pgsql:testing:test-prefix:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:pgsql:testing:genealabslaravelmodelcachingtestsfixturesauthor',
         ];
 
         $authors = (new Author)

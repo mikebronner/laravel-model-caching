@@ -14,8 +14,8 @@ class WhereRawTest extends IntegrationTestCase
             ->whereRaw('name <> \'\'')
             ->first()]);
 
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor_and_name-first');
-        $tags = ['genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor_and_name-first');
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
 
@@ -34,8 +34,8 @@ class WhereRawTest extends IntegrationTestCase
             ->whereRaw("name != 'test3'")
             ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthorname_!=_test_and_name_!=_'test3'_and_name_=_Guido_Feest__AND_name_!=_test2");
-        $tags = ['genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1("genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthorname_!=_test_and_name_!=_'test3'_and_name_=_Guido_Feest__AND_name_!=_test2");
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
         $liveResults = (new UncachedAuthor)
@@ -105,9 +105,9 @@ class WhereRawTest extends IntegrationTestCase
         $result2 = (new Book)
             ->whereRaw("id = ?", [$book2->id])
             ->get();
-        $key1 = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book1->id}");
-        $key2 = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book2->id}");
-        $tags = ['genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesbook'];
+        $key1 = sha1("genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book1->id}");
+        $key2 = sha1("genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book2->id}");
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook'];
         $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
         $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
 
@@ -128,9 +128,9 @@ class WhereRawTest extends IntegrationTestCase
             ->where("id", ">", 1)
             ->whereRaw("id = ?", [$book2->id])
             ->get();
-        $key1 = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:books:genealabslaravelmodelcachingtestsfixturesbook-id_>_0-_and_id_=_{$book1->id}");
-        $key2 = sha1("genealabs:laravel-model-caching:testing::memory::test-prefix:books:genealabslaravelmodelcachingtestsfixturesbook-id_>_1-_and_id_=_{$book2->id}");
-        $tags = ['genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesbook'];
+        $key1 = sha1("genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_>_0-_and_id_=_{$book1->id}");
+        $key2 = sha1("genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_>_1-_and_id_=_{$book2->id}");
+        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook'];
         $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
         $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
 

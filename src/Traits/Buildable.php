@@ -1,8 +1,5 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Illuminate\Support\Collection;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BaseModel;
-
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
@@ -291,17 +288,13 @@ trait Buildable
         string $hashedCacheKey,
         string $method
     ) {
-        $model = new BaseModel;
-
         if (property_exists($this, "model")) {
-            $model = $this->model;
+            $this->checkCooldownAndRemoveIfExpired($this->model);
         }
 
-        if (\method_exists($this, "getModel")) {
-            $model = $this->getModel();
+        if (method_exists($this, "getModel")) {
+            $this->checkCooldownAndRemoveIfExpired($this->getModel());
         }
-
-        $this->checkCooldownAndRemoveIfExpired($model);
 
         return $this->cache($cacheTags)
             ->rememberForever(
