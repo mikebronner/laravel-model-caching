@@ -46,16 +46,16 @@ trait ModelCaching
         //     $instance->checkCooldownAndFlushAfterPersisting($instance);
         // });
 
-        static::pivotAttached(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersisting($instance);
+        static::pivotAttached(function ($instance, $secondInstance, $relationship) {
+            $instance->checkCooldownAndFlushAfterPersisting($instance, $relationship);
         });
 
-        static::pivotDetached(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersisting($instance);
+        static::pivotDetached(function ($instance, $secondInstance, $relationship) {
+            $instance->checkCooldownAndFlushAfterPersisting($instance, $relationship);
         });
 
-        static::pivotUpdated(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersisting($instance);
+        static::pivotUpdated(function ($instance, $secondInstance, $relationship) {
+            $instance->checkCooldownAndFlushAfterPersisting($instance, $relationship);
         });
     }
 

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.23] - 18 May 2019
+### Added
+- tests for lazy-loading the following relationships:
+    - BelongsTo
+    - BelongsToMany
+    - HasMany
+    - HasOne
+
+### Fixed
+- BelongsToMany relationship cache not being automatically invalidated.
+
 ## [0.4.22] - 17 May 2019
 ### Fixed
 - issue introduce in previous release related to cache cooldown and prefixes.

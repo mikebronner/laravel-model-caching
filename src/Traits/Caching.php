@@ -168,12 +168,16 @@ trait Caching
         $instance->flushCache();
     }
 
-    protected function checkCooldownAndFlushAfterPersisting(Model $instance)
+    protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
     {
         [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown) {
             $instance->flushCache();
+
+            if ($relationship) {
+                $instance->$relationship()->getModel()->flushCache();
+            }
 
             return;
         }
@@ -182,6 +186,10 @@ trait Caching
 
         if ((new Carbon)->now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
             $instance->flushCache();
+
+            if ($relationship) {
+                $instance->$relationship()->getModel()->flushCache();
+            }
         }
     }
 
