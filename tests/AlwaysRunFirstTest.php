@@ -10,6 +10,15 @@ class AlwaysRunFirstTest extends BaseTestCase
     {
         parent::setUp();
 
+        $this->app['config']->set('database.default', 'baseline');
+        $this->app['config']->set('database.connections.baseline', [
+            'driver' => 'sqlite',
+            "url" => null,
+            'database' => __DIR__ . '/database/baseline.sqlite',
+            'prefix' => '',
+            "foreign_key_constraints" => false,
+        ]);
+
         $this->createBaselineSqliteDatabase();
 
         $this->withFactories(__DIR__ . '/database/factories');
@@ -26,20 +35,10 @@ class AlwaysRunFirstTest extends BaseTestCase
             ->run();
     }
 
-    protected function getEnvironmentSetUp($app)
+    private function createBaselineSqliteDatabase()
     {
-        parent::getEnvironmentSetUp($app);
-        
-        $app['config']->set('database.default', 'baseline');
-        $app['config']->set('database.connections.baseline', [
-            'driver' => 'sqlite',
-            "url" => null,
-            'database' => __DIR__ . '/database/baseline.sqlite',
-            'prefix' => '',
-            "foreign_key_constraints" => false,
-        ]);
+        shell_exec("cd " . __DIR__ . "/database && rm *.sqlite && touch baseline.sqlite");
     }
-
 
     /** @test */
     public function migrateAndInstallTheDatabase()

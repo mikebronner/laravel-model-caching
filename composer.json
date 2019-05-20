@@ -37,7 +37,8 @@
     },
     "autoload-dev": {
         "classmap": [
-            "tests/database/factories"
+            "tests/database/factories",
+            "tests/database/seeds"
         ],
         "psr-4": {
             "GeneaLabs\\LaravelModelCaching\\Tests\\": "tests/"
