@@ -12,9 +12,9 @@ class LazyLoadTest extends IntegrationTestCase
 {
     public function testBelongsToRelationship()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-first");
         $tags = [
-            'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor',
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
 
         $result = (new Book)
@@ -42,9 +42,9 @@ class LazyLoadTest extends IntegrationTestCase
 
     public function testHasManyRelationship()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull");
         $tags = [
-            'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook',
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
 
         $result = (new Author)
@@ -73,9 +73,9 @@ class LazyLoadTest extends IntegrationTestCase
         $authorId = (new UncachedProfile)
             ->first()
             ->author_id;
-        $key = sha1("genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:profiles:genealabslaravelmodelcachingtestsfixturesprofile-profiles.author_id_=_{$authorId}-profiles.author_id_notnull-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:profiles:genealabslaravelmodelcachingtestsfixturesprofile-profiles.author_id_=_{$authorId}-profiles.author_id_notnull-first");
         $tags = [
-            'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesprofile',
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesprofile",
         ];
 
         $result = (new Author)

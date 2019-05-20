@@ -22,11 +22,11 @@ class MorphOneTest extends IntegrationTestCase
 
     public function testMorphTo()
     {
-        $key1 = sha1("genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_1-testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:image");
-        $key2 = sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_2-testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:image');
+        $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_1-testing:{$this->testingSqlitePath}testing.sqlite:image");
+        $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_2-testing:{$this->testingSqlitePath}testing.sqlite:image");
         $tags = [
-            "genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
-            "genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesimage",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesimage",
         ];
 
         $books1 = (new Book)

@@ -8,6 +8,7 @@ trait CreatesApplication
     use EnvironmentSetup;
 
     protected $cache;
+    protected $testingSqlitePath;
 
     protected function cache()
     {
@@ -23,6 +24,7 @@ trait CreatesApplication
     public function setUp() : void
     {
         $databasePath = __DIR__ . "/database";
+        $this->testingSqlitePath = "{$databasePath}/";
         $baselinePath = "{$databasePath}/baseline.sqlite";
         $testingPath = "{$databasePath}/testing.sqlite";
 
