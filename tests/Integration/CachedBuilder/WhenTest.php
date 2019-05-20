@@ -8,9 +8,9 @@ class WhenTest extends IntegrationTestCase
 {
     public function testWhenQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
+        $key = sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_<_5');
         $tags = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook',
         ];
 
         $books = (new Book)

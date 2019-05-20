@@ -16,9 +16,4 @@ class CreateProfiles extends Migration
             $table->text('last_name');
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

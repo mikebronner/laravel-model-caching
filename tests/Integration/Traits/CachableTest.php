@@ -24,8 +24,8 @@ class CachableTest extends IntegrationTestCase
         // TODO: make sure the alternate cache is actually loaded
         config(['cache.stores' => $configCacheStores]);
         config(['laravel-model-caching.store' => 'customCache']);
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $authors = (new Author)
             ->all();
@@ -51,9 +51,9 @@ class CachableTest extends IntegrationTestCase
         $results = $this->
             cache()
             ->tags([
-                'genealabs:laravel-model-caching:testing::memory::test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor',
+                'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:test-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor',
             ])
-            ->get(sha1('genealabs:laravel-model-caching:testing::memory::test-prefix:authors:genealabslaravelmodelcachingtestsfixturesprefixedauthor'))['value'];
+            ->get(sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:test-prefix:authors:genealabslaravelmodelcachingtestsfixturesprefixedauthor'))['value'];
 
         $this->assertNotNull($results);
     }
@@ -67,9 +67,9 @@ class CachableTest extends IntegrationTestCase
         $cachedResults = $this
             ->cache()
             ->tags([
-                'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor',
             ])
-            ->get(sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor'))['value'];
+            ->get(sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor'))['value'];
         $liveResults = (new UncachedAuthor)->all();
 
         $this->assertInstanceOf(Collection::class, $authors);
@@ -85,9 +85,9 @@ class CachableTest extends IntegrationTestCase
         $cachedAuthors = $this
             ->cache()
             ->tags([
-                'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor',
+                'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor',
             ])
-            ->get(sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor'));
+            ->get(sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor'));
 
         config(['laravel-model-caching.disabled' => false]);
 

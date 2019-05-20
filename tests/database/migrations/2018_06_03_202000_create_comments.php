@@ -17,9 +17,4 @@ class CreateComments extends Migration
             $table->string("subject");
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

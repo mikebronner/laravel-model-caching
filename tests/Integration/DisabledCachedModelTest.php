@@ -8,8 +8,8 @@ class DisabledCachedModelTest extends IntegrationTestCase
 {
     public function testCacheCanBeDisabledOnModel()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor');
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor');
+        $tags = ['genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor'];
         $authors = (new Author)
             ->disableCache()
             ->get();
@@ -26,10 +26,10 @@ class DisabledCachedModelTest extends IntegrationTestCase
 
     public function testCacheCanBeDisabledOnQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::authors:genealabslaravelmodelcachingtestsfixturesauthor-testing::memory::books');
+        $key = sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books');
         $tags = [
-            "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor",
-            "genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
         $authors = (new Author)
             ->with('books')

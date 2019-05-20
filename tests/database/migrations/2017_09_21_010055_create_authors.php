@@ -18,9 +18,4 @@ class CreateAuthors extends Migration
             $table->json("finances")->nullable();
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

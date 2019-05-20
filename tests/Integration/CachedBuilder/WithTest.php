@@ -54,10 +54,10 @@ class WithTest extends IntegrationTestCase
 
     public function testWithBelongsToManyRelationshipQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::books:genealabslaravelmodelcachingtestsfixturesbook-books.id_=_3-testing::memory::stores-first');
+        $key = sha1('genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.id_=_3-testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:stores-first');
         $tags = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesstore',
+            'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook',
+            'genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore',
         ];
 
         $stores = (new Book)
