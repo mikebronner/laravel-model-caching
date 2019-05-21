@@ -9,7 +9,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait ModelCaching
 {
-    protected $cacheCooldownSeconds = 0;
+    public function __get($key)
+    {
+        if ($key === "cachePrefix") {
+            return $this->cachePrefix
+                ?? "";
+        }
+
+        if ($key === "cacheCooldownSeconds") {
+            return $this->cacheCooldownSeconds
+                ?? 0;
+        }
+
+        return parent::__get($key);
+    }
+
+    public function __set($key, $value)
+    {
+        if ($key === "cachePrefix") {
+            $this->cachePrefix = $value;
+        }
+
+        if ($key === "cacheCooldownSeconds") {
+            $this->cacheCooldownSeconds = $value;
+        }
+
+        parent::__set($key, $value);
+    }
 
     public static function all($columns = ['*'])
     {
@@ -150,10 +176,5 @@ trait ModelCaching
             });
 
         return $query;
-    }
-
-    public function getcacheCooldownSecondsAttribute() : int
-    {
-        return $this->cacheCooldownSeconds;
     }
 }

@@ -57,10 +57,20 @@ trait Caching
 
     protected function getCachePrefix() : string
     {
+        $cachePrefix = config("laravel-model-caching.cache-prefix", "");
+
+        if ($this->model
+            && property_exists($this->model, "cachePrefix")
+        ) {
+            $cachePrefix = $this->model->cachePrefix;
+        }
+
+        $cachePrefix = $cachePrefix
+            ? "{$cachePrefix}:"
+            : "";
+
         return "genealabs:laravel-model-caching:"
-            . (config('laravel-model-caching.cache-prefix')
-                ? config('laravel-model-caching.cache-prefix', '') . ":"
-                : "");
+            . $cachePrefix;
     }
 
     protected function makeCacheKey(

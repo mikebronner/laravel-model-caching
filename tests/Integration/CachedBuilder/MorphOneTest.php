@@ -23,7 +23,7 @@ class MorphOneTest extends IntegrationTestCase
     public function testMorphTo()
     {
         $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_1-testing:{$this->testingSqlitePath}testing.sqlite:image");
-        $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_2-testing:{$this->testingSqlitePath}testing.sqlite:image");
+        $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_=_4-testing:{$this->testingSqlitePath}testing.sqlite:image");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesimage",
@@ -38,7 +38,7 @@ class MorphOneTest extends IntegrationTestCase
             ->get($key1)['value'];
         $books2 = (new Book)
             ->with("image")
-            ->where("author_id", 2)
+            ->where("author_id", 4)
             ->get();
         $cachedResults2 = $this->cache()
             ->tags($tags)

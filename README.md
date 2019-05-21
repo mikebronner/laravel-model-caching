@@ -50,6 +50,11 @@ Be sure to not require a specific version of this package when requiring it:
 composer require genealabs/laravel-model-caching:*
 ```
 
+## Upgrade Notes
+### 0.5.0
+The following implementations have changed (see the respective sections below):
+- model-specific cache prefix
+
 ## Configuration
 ### Recommended (Optional) Custom Cache Store
 If you would like to use a different cache store than the default one used by
@@ -99,10 +104,6 @@ prefixing to keep cache entries separate for multi-tenant applications. For this
 it is recommended to add the Cachable trait to a base model, then set the cache
 key prefix config value there.
 
-**Note that the config setting is included before the parent method is called,
-so that the setting is available in the parent as well. If you are developing a
-multi-tenant application, see the note above.**
-
 Here's is an example:
 ```php
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
@@ -116,13 +117,14 @@ class BaseModel extends Model
 {
     use Cachable;
 
-    public function __construct($attributes = [])
-    {
-        config(['laravel-model-caching.cache-prefix' => 'test-prefix']);
-
-        parent::__construct($attributes);
-    }
+    protected $cachePrefix = "test-prefix";
 }
+```
+
+The cache prefix can also be set in the configuration to prefix all cached
+models across the board:
+```php
+    'cache-prefix' => 'test-prefix',
 ```
 
 ### Exception: User Model

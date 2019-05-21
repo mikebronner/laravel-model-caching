@@ -3,7 +3,6 @@
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Str;
 
 class CacheKey

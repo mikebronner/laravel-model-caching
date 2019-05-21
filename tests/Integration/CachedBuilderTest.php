@@ -89,7 +89,6 @@ class CachedBuilderTest extends IntegrationTestCase
         $this->assertNull($results);
     }
 
-    /** @group test */
     public function testHasManyRelationshipIsCached()
     {
         $authors = (new Author)->with('books')->get();
