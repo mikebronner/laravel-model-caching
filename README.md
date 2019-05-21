@@ -24,6 +24,11 @@ relationships. This package is an attempt to address those requirements.
 ## Requirements
 -   PHP >= 7.1.3
 -   Laravel 5.8
+    ```diff
+    - Please note that prior Laravel versions are not supported and the package
+    - versions that are compatible with prior versions of Laravel contain bugs.
+    - Please only use with the versions of Laravel noted above to be compatible.
+    ```
 
 ### Possible Conflicting Packages
 Any packages that also override `newEloquentModel()` from the `Model` class will
