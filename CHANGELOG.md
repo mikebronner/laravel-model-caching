@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.5.0] - 20 May 2019
 ### Changed
 - implementation of model-based cache prefix.
+- the way tests are run to be MUCH more performant.
+
+### Removed
+- dead code.
 
 ## [0.4.24] - 18 May 2019
 ### Fixed
