@@ -12,17 +12,4 @@ class CachedBelongsToMany extends BelongsToMany
     use BuilderCaching;
     use Caching;
     use FiresPivotEventsTrait;
-
-    public function getRelation($name)
-    {
-        $relation = parent::getRelation($name);
-
-        if (! $this->isCachable()
-            && is_a($relation->getQuery(), self::class)
-        ) {
-            $relation->getQuery()->disableModelCaching();
-        }
-
-        return $relation;
-    }
 }

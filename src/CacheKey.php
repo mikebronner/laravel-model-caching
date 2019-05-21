@@ -148,18 +148,6 @@ class CacheKey
 
     protected function getValuesFromWhere(array $where) : string
     {
-        if ((new Arr)->get($where, "query")) {
-            $prefix = $this->getCachePrefix();
-            $subKey = (new self($this->eagerLoad, $this->model, $where["query"]))
-                ->make();
-            $subKey = str_replace($prefix, "", $subKey);
-            $subKey = str_replace($this->getModelSlug(), "", $subKey);
-            $classParts = explode("\\", get_class($this->model));
-            $subKey = strtolower(array_pop($classParts)) . $subKey;
-
-            return $subKey;
-        }
-
         if (is_array((new Arr)->get($where, "values"))) {
             return implode("_", collect($where["values"])->flatten()->toArray());
         }
@@ -215,18 +203,6 @@ class CacheKey
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
-    protected function getInClauses(array $where) : string
-    {
-        if (! in_array($where["type"], ["In"])) {
-            return "";
-        }
-
-        $this->currentBinding++;
-        $values = $this->recursiveImplode($where["values"], "_");
-
-        return "-{$where["column"]}_in{$values}";
-    }
-
     protected function getInAndNotInClauses(array $where) : string
     {
         if (! in_array($where["type"], ["In", "NotIn", "InRaw"])) {
@@ -248,10 +224,6 @@ class CacheKey
         $result = "";
 
         foreach ($items as $value) {
-            if ($value instanceof Expression) {
-                $value = $value->getValue();
-            }
-
             if (is_string($value)) {
                 $value = str_replace('"', '', $value);
                 $value = explode(" ", $value);

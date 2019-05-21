@@ -68,10 +68,6 @@ trait Buildable
             return parent::first($columns);
         }
 
-        if (! is_array($columns)) {
-            $columns = [$columns];
-        }
-
         $cacheKey = $this->makeCacheKey($columns, null, "-first");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
@@ -167,12 +163,6 @@ trait Buildable
         $result = "";
 
         foreach ($items as $key => $value) {
-            if (is_array($value)) {
-                $result .= $key . $glue . $this->recursiveImplodeWithKey($value, $glue);
-
-                continue;
-            }
-
             $result .= $glue . $key . $glue . $value;
         }
 
