@@ -147,6 +147,13 @@ class CacheKey
 
     protected function getValuesFromWhere(array $where) : string
     {
+        if (array_key_exists("value", $where)
+            && is_object($where["value"])
+            && get_class($where["value"]) === "DateTime"
+        ) {
+            return $where["value"]->format("Y-m-d-H-i-s");
+        }
+
         if (is_array((new Arr)->get($where, "values"))) {
             return implode("_", collect($where["values"])->flatten()->toArray());
         }
@@ -164,6 +171,12 @@ class CacheKey
                 $values .= "_" . $this->query->bindings["where"][$this->currentBinding];
                 $this->currentBinding++;
             }
+        }
+
+        if (is_object($values)
+            && get_class($values) === "DateTime"
+        ) {
+            $values = $values->format("Y-m-d-H-i-s");
         }
 
         return $values;
