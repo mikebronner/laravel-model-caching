@@ -38,7 +38,7 @@ class DateTimeTest extends IntegrationTestCase
         $dateTime = (new DateTime('@' . time()))
             ->sub(new DateInterval("P10Y"));
         $dateTimeString = $dateTime->format("Y-m-d-H-i-s");
-        $key = sha1("genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-publish_at_>_{$dateTimeString}");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-publish_at_>_{$dateTimeString}");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
