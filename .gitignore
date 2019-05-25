@@ -1,4 +1,5 @@
 /build
 /vendor
 composer.lock
-/tests/database/*.sqlite
+/tests/database/baseline.sqlite
+/tests/database/testing.sqlite
