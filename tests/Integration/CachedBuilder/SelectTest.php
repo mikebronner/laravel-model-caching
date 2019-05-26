@@ -1,6 +1,8 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class SelectTest extends IntegrationTestCase
@@ -38,28 +40,51 @@ class SelectTest extends IntegrationTestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
-    // public function testSelectFieldsAreCached()
-    // {
-    //     $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_id_name-first");
-    //     $tags = [
-    //         "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
-    //     ];
+    public function testSelectFieldsAreCached()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_id_name-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
 
-    //     $authorFields = (new Author)
-    //         ->select("id", "name")
-    //         ->first()
-    //         ->getAttributes();
-    //     $uncachedFields = (new UncachedAuthor)
-    //         ->select("id", "name")
-    //         ->first()
-    //         ->getAttributes();
-    //     $cachedFields = $this
-    //         ->cache()
-    //         ->tags($tags)
-    //         ->get($key)['value']
-    //         ->getAttributes();
+        $authorFields = (new Author)
+            ->select("id", "name")
+            ->first()
+            ->getAttributes();
+        $uncachedFields = (new UncachedAuthor)
+            ->select("id", "name")
+            ->first()
+            ->getAttributes();
+        $cachedFields = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value']
+            ->getAttributes();
 
-    //     $this->assertEquals($cachedFields, $authorFields);
-    //     $this->assertEquals($cachedFields, $uncachedFields);
-    // }
+        $this->assertEquals($cachedFields, $authorFields);
+        $this->assertEquals($cachedFields, $uncachedFields);
+    }
+
+    /** @group test */
+    public function testAddSelectMethod()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:/Users/mike/Developer/Sites/laravel-model-caching/tests/database/testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_(SELECT id FROM authors WHERE id = 1)-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $result = (new Author)
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->first();
+        $uncachedResult = (new UncachedAuthor)
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->first();
+        $uncachedResult = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEquals($uncachedResult, $result);
+        $this->assertEquals($uncachedResult, $uncachedResult);
+    }
 }
