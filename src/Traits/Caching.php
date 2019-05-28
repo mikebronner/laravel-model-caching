@@ -1,15 +1,48 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Carbon\Carbon;
+use Closure;
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
 
 trait Caching
 {
     protected $isCachable = true;
+    protected $scopesAreApplied = false;
+
+    protected function applyScopesToInstance()
+    {
+        if (! property_exists($this, "scopes")
+            || $this->scopesAreApplied
+        ) {
+            return;
+        }
+
+        foreach ($this->scopes as $identifier => $scope) {
+            if (! isset($this->scopes[$identifier])) {
+                continue;
+            }
+
+            $this->scopesAreApplied = true;
+
+            $this->callScope(function () use ($scope) {
+                if ($scope instanceof Closure) {
+                    $scope($this);
+                }
+
+                if ($scope instanceof Scope
+                    && $this instanceof CachedBuilder
+                ) {
+                    $scope->apply($this, $this->getModel());
+                }
+            });
+        }
+    }
 
     public function cache(array $tags = [])
     {
@@ -78,6 +111,7 @@ trait Caching
         $idColumn = null,
         string $keyDifferentiator = ''
     ) : string {
+        $this->applyScopesToInstance();
         $eagerLoad = $this->eagerLoad ?? [];
         $model = $this;
 

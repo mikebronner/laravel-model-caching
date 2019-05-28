@@ -4,6 +4,8 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorBeginsWithA;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithInlineGlobalScope;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthorWithInlineGlobalScope;
 
 class ScopeTest extends IntegrationTestCase
 {
@@ -15,7 +17,7 @@ class ScopeTest extends IntegrationTestCase
         $authors = (new Author)
             ->startsWithA()
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_like_A%");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_like_A%-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = $this->cache()
@@ -38,7 +40,7 @@ class ScopeTest extends IntegrationTestCase
         $authors = (new Author)
             ->nameStartsWith("B")
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_like_B%");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_like_B%-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = $this->cache()
@@ -55,12 +57,12 @@ class ScopeTest extends IntegrationTestCase
 
     public function testGlobalScopesAreCached()
     {
-        $author = factory(Author::class, 1)
+        $author = factory(UncachedAuthor::class, 1)
             ->create(['name' => 'Alois'])
             ->first();
         $authors = (new AuthorBeginsWithA)
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswitha");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswitha-name_like_A%");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthorbeginswitha"];
 
         $cachedResults = $this->cache()
@@ -68,6 +70,27 @@ class ScopeTest extends IntegrationTestCase
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
             ->nameStartsWith("A")
+            ->get();
+
+        $this->assertTrue($authors->contains($author));
+        $this->assertTrue($cachedResults->contains($author));
+        $this->assertTrue($liveResults->contains($author));
+    }
+
+    public function testInlineGlobalScopesAreCached()
+    {
+        $author = factory(UncachedAuthor::class, 1)
+            ->create(['name' => 'Alois'])
+            ->first();
+        $authors = (new AuthorWithInlineGlobalScope)
+            ->get();
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorwithinlineglobalscope-authors.deleted_at_null-name_like_A%");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthorwithinlineglobalscope"];
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthorWithInlineGlobalScope)
             ->get();
 
         $this->assertTrue($authors->contains($author));
