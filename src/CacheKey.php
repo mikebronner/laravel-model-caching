@@ -9,17 +9,20 @@ class CacheKey
 {
     use CachePrefixing;
 
+    protected $currentBinding = 0;
     protected $eagerLoad;
+    protected $macroKey;
     protected $model;
     protected $query;
-    protected $currentBinding = 0;
 
     public function __construct(
         array $eagerLoad,
         $model,
-        $query
+        $query,
+        $macroKey
     ) {
         $this->eagerLoad = $eagerLoad;
+        $this->macroKey = $macroKey;
         $this->model = $model;
         $this->query = $query;
     }
@@ -40,6 +43,7 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
+        $key .= $this->macroKey;
 
         return $key;
     }

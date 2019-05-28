@@ -14,6 +14,22 @@ trait Caching
 {
     protected $isCachable = true;
     protected $scopesAreApplied = false;
+    protected $macroKey = "";
+
+    public function __call($method, $parameters)
+    {
+        $result = parent::__call($method, $parameters);
+
+        if (isset($this->localMacros[$method])) {
+            $this->macroKey .= "-{$method}";
+
+            if ($parameters) {
+                $this->macroKey .= implode("_", $parameters);
+            }
+        }
+
+        return $result;
+    }
 
     protected function applyScopesToInstance()
     {
@@ -28,8 +44,6 @@ trait Caching
                 continue;
             }
 
-            $this->scopesAreApplied = true;
-
             $this->callScope(function () use ($scope) {
                 if ($scope instanceof Closure) {
                     $scope($this);
@@ -42,6 +56,8 @@ trait Caching
                 }
             });
         }
+
+        $this->scopesAreApplied = true;
     }
 
     public function cache(array $tags = [])
@@ -132,7 +148,7 @@ trait Caching
             $query = $this->query->getQuery();
         }
 
-        return (new CacheKey($eagerLoad, $model, $query))
+        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey))
             ->make($columns, $idColumn, $keyDifferentiator);
     }
 
