@@ -110,26 +110,26 @@ class WhereTest extends IntegrationTestCase
 
     public function testWhereUsesCorrectBinding()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_5-name_like_B%");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-nested-name_like_B%-name_like_G%-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $authors = (new Author)
-            ->where("id", ">", 2)
             ->where("name", "LIKE", "A%")
+            ->orWhere("name", "LIKE", "D%")
             ->get();
         $authors = (new Author)
-            ->where("id", ">", 5)
             ->where("name", "LIKE", "B%")
+            ->orWhere("name", "LIKE", "G%")
             ->get();
-        $cachedResults = $this->cache()
+        $cachedResults = collect($this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']);
         $liveResults = (new UncachedAuthor)
-            ->where("id", ">", 5)
             ->where("name", "LIKE", "B%")
+            ->orWhere("name", "LIKE", "G%")
             ->get();
 
-        $this->assertEmpty($authors->diffKeys($cachedResults));
-        $this->assertEmpty($liveResults->diffKeys($cachedResults));
+        $this->assertEquals($liveResults->toArray(), $authors->toArray());
+        $this->assertEquals($liveResults->toArray(), $cachedResults->toArray());
     }
 }
