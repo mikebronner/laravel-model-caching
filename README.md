@@ -44,8 +44,6 @@ The following items currently do no work with this package:
 ```diff
 - caching of lazy-loaded relationships, see #127. Currently lazy-loaded belongs-to relationships are cached. Caching of other relationships is in the works.
 - using select() clauses in Eloquent queries, see #238 (work-around discussed in the issue)
-- using SoftDeletes on Models, see #237
-- global scopes currently do not work, see #256
 ```
 
 [![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
