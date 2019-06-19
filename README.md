@@ -236,3 +236,5 @@ dependency. Let your OS package maintainers know you appreciate them by starring
 the packages you use. Simply run composer thanks after installing this package.
 (And not to worry, since it's a dev-dependency it won't be installed in your
 live environment.)
+
+If you have found this package helpful in any way, we ask you consider [donating](https://www.patreon.com/mikebronner), even if it's just a coffee's worth. It helps keep the project going. Thank you!
