@@ -38,6 +38,7 @@ likely conflict with this package. So far these may include the following:
   This package conflicts with Laravel Telescope. We have forked our own solution
   for pivot events that replaces this package. If you previously had this package
   installed, we recommend uninstalling it to avoid conflicts.
+- [chelout/laravel-relationship-events](https://github.com/chelout/laravel-relationship-events)
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
