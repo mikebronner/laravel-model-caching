@@ -4,7 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.5.3] - 21 May 2019
+## [0.5.6] - 2019-06-20
+### Removed
+- all use of helper methods to allow non-Laravel apps to use this package:
+  - app()
+  - config()
+  - cache()
+  - db()
+  - now()
+  - request()
+
+## [0.5.5] - 2019-05-27
+### Fixed
+- parsing of soft-deleted-related queries:
+  - withTrashed()
+  - onlyTrashed()
+  - withoutTrashed()
+
+## [0.5.4] - 2019-05-27
+### Fixed
+- parsing of global scopes. Rewrote how global scopes are analyzed to create appropriate cache key.
+
+## [0.5.3] - 2019-05-21
 ### Fixed
 - calling `flushCache()` on non-cachable related models.
 

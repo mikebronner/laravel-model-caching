@@ -1,11 +1,12 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Carbon\Carbon;
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 trait ModelCaching
 {
@@ -39,7 +40,11 @@ trait ModelCaching
 
     public static function all($columns = ['*'])
     {
-        if (config('laravel-model-caching.disabled')) {
+        $isCacheDisabled = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.disabled");
+
+        if ($isCacheDisabled) {
             return parent::all($columns);
         }
 

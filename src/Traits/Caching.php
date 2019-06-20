@@ -1,14 +1,15 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Carbon\Carbon;
 use Closure;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 
 trait Caching
 {
@@ -62,10 +63,14 @@ trait Caching
 
     public function cache(array $tags = [])
     {
-        $cache = app('cache');
+        $cache = Container::getInstance()
+            ->make("cache");
+        $config = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.store");
 
-        if (config('laravel-model-caching.store')) {
-            $cache = $cache->store(config('laravel-model-caching.store'));
+        if ($config) {
+            $cache = $cache->store($config);
         }
 
         if (is_subclass_of($cache->getStore(), TaggableStore::class)) {
@@ -106,7 +111,9 @@ trait Caching
 
     protected function getCachePrefix() : string
     {
-        $cachePrefix = config("laravel-model-caching.cache-prefix", "");
+        $cachePrefix = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.cache-prefix", "");
 
         if ($this->model
             && property_exists($this->model, "cachePrefix")
@@ -140,7 +147,9 @@ trait Caching
         }
 
         $query = $this->query
-            ?? app('db')->query();
+            ?? Container::getInstance()
+                ->make("db")
+                ->query();
         
         if ($this->query
             && method_exists($this->query, "getQuery")
@@ -160,7 +169,9 @@ trait Caching
             : $this;
         $query = $this->query instanceof Builder
             ? $this->query
-            : app('db')->query();
+            : Container::getInstance()
+                ->make("db")
+                ->query();
         $tags = (new CacheTags($eagerLoad, $model, $query))
             ->make();
 
@@ -259,8 +270,12 @@ trait Caching
 
     public function isCachable() : bool
     {
+        $isCacheDisabled = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.disabled");
+
         return $this->isCachable
-            && ! config('laravel-model-caching.disabled');
+            && ! $isCacheDisabled;
     }
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)

@@ -1,10 +1,14 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use Illuminate\Container\Container;
+
 trait CachePrefixing
 {
     protected function getCachePrefix() : string
     {
-        $cachePrefix = config("laravel-model-caching.cache-prefix", "");
+        $cachePrefix = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.cache-prefix", "");
 
         if ($this->model
             && property_exists($this->model, "cachePrefix")

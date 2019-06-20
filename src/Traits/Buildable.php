@@ -1,5 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use Illuminate\Container\Container;
+
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
@@ -146,7 +148,9 @@ trait Buildable
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = app('request')->input($pageName)
+        $page = Container::getInstance()
+            ->make("request")
+            ->input($pageName)
             ?: $page
             ?: 1;
 

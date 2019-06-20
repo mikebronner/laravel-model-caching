@@ -169,7 +169,7 @@ class CachedModelTest extends IntegrationTestCase
         [$usesCacheCooldown, $expiresAt, $savedAt] = $method->invokeArgs($author, [$author]);
 
         $this->assertEquals($usesCacheCooldown, 1);
-        $this->assertEquals("Carbon\Carbon", get_class($expiresAt));
+        $this->assertEquals("Illuminate\Support\Carbon", get_class($expiresAt));
         $this->assertNull($savedAt);
     }
 
