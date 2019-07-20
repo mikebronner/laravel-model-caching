@@ -3,7 +3,7 @@
 return [
     'cache-prefix' => '',
 
-    'disabled' => env('MODEL_CACHE_DISABLED', false),
+    'enabled' => env('MODEL_CACHE_ENABLED', true),
 
     'store' => env('MODEL_CACHE_STORE'),
 ];

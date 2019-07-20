@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2019-07-20
+### Changed
+- environment variable `MODEL_CACHE_DISABLED` to `MODEL_CACHE_ENABLED` to better conform to standards.
+
+### Fixed
+- how cache key is constructed for SQLite.
+
 ## [0.5.6] - 2019-06-20
 ### Removed
 - all use of helper methods to allow non-Laravel apps to use this package:

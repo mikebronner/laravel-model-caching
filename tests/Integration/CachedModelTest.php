@@ -65,7 +65,7 @@ class CachedModelTest extends IntegrationTestCase
 
     public function testScopeDisableCacheDoesntCrashWhenCachingIsDisabledInConfig()
     {
-        config(['laravel-model-caching.disabled' => true]);
+        config(['laravel-model-caching.enabled' => false]);
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:test-prefix:genealabslaravelmodelcachingtestsfixturesauthor"];
         $authors = (new PrefixedAuthor)
@@ -83,14 +83,14 @@ class CachedModelTest extends IntegrationTestCase
 
     public function testAllMethodCachingCanBeDisabledViaConfig()
     {
-        config(['laravel-model-caching.disabled' => true]);
+        config(['laravel-model-caching.enabled' => false]);
         $authors = (new Author)
             ->all();
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
-        config(['laravel-model-caching.disabled' => false]);
+        config(['laravel-model-caching.enabled' => true]);
 
         $cachedResults = $this
             ->cache()

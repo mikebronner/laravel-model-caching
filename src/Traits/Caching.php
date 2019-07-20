@@ -270,9 +270,9 @@ trait Caching
 
     public function isCachable() : bool
     {
-        $isCacheDisabled = Container::getInstance()
+        $isCacheDisabled = ! Container::getInstance()
             ->make("config")
-            ->get("laravel-model-caching.disabled");
+            ->get("laravel-model-caching.enabled");
 
         return $this->isCachable
             && ! $isCacheDisabled;

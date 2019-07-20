@@ -79,7 +79,7 @@ class CachableTest extends IntegrationTestCase
 
     public function testsCacheFlagDisablesCaching()
     {
-        config(['laravel-model-caching.disabled' => true]);
+        config(['laravel-model-caching.enabled' => false]);
 
         $authors = (new Author)->get();
         $cachedAuthors = $this
@@ -89,7 +89,7 @@ class CachableTest extends IntegrationTestCase
             ])
             ->get(sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null"));
 
-        config(['laravel-model-caching.disabled' => false]);
+        config(['laravel-model-caching.enabled' => true]);
 
         $this->assertNull($cachedAuthors);
         $this->assertNotEmpty($authors);
