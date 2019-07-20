@@ -6,24 +6,27 @@ trait CachePrefixing
 {
     protected function getCachePrefix() : string
     {
-        $cachePrefix = Container::getInstance()
+        $cachePrefix = "genealabs:laravel-model-caching:";
+        $useDatabaseKeying = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.use-database-keying");
+
+        if ($useDatabaseKeying) {
+            $cachePrefix .= $this->getConnectionName() . ":";
+            $cachePrefix .= $this->getDatabaseName() . ":";
+        }
+
+        $cachePrefix .= Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.cache-prefix", "");
 
         if ($this->model
             && property_exists($this->model, "cachePrefix")
         ) {
-            $cachePrefix = $this->model->cachePrefix;
+            $cachePrefix .= $this->model->cachePrefix . ":";
         }
 
-        $cachePrefix = $cachePrefix
-            ? "{$cachePrefix}:"
-            : "";
-
-        return "genealabs:laravel-model-caching:"
-            . $this->getConnectionName() . ":"
-            . $this->getDatabaseName() . ":"
-            . $cachePrefix;
+        return $cachePrefix;
     }
 
     protected function getDatabaseName() : string
