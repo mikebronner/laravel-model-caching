@@ -38,6 +38,11 @@ trait ModelCaching
         parent::__set($key, $value);
     }
 
+    public static function maxCacheTimeout()
+    {
+        return static::$maxCacheTimeout ?? 0;
+    }
+
     public static function all($columns = ['*'])
     {
         $isCacheDisabled = Container::getInstance()
@@ -53,10 +58,21 @@ trait ModelCaching
         $tags = $instance->makeCacheTags();
         $key = $instance->makeCacheKey();
 
+        $cache_callback = function () use ($columns) {
+            return parent::all($columns);
+        };
+
+        if (static::maxCacheTimeout() > 0) {
+            return $instance->cache($tags)
+                ->remember(
+                    $key,
+                    static::maxCacheTimeout(),
+                    $cache_callback
+                );
+        }
+
         return $instance->cache($tags)
-            ->rememberForever($key, function () use ($columns) {
-                return parent::all($columns);
-            });
+            ->rememberForever($key, $cache_callback);
     }
 
     public static function bootCachable()

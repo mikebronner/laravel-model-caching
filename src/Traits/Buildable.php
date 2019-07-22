@@ -273,19 +273,29 @@ trait Buildable
             $this->checkCooldownAndRemoveIfExpired($this->model);
         }
 
+        $cache_callback = function () use ($arguments, $cacheKey, $method) {
+            return [
+              "key" => $cacheKey,
+              "value" => parent::{$method}(...$arguments),
+            ];
+        };
+
         if (method_exists($this, "getModel")) {
             $this->checkCooldownAndRemoveIfExpired($this->getModel());
+            if ($this->getModel()::maxCacheTimeout() > 0) {
+                return $this->cache($cacheTags)
+                  ->remember(
+                    $hashedCacheKey,
+                    $this->getModel()::maxCacheTimeout(),
+                    $cache_callback
+                  );
+            }
         }
 
         return $this->cache($cacheTags)
             ->rememberForever(
                 $hashedCacheKey,
-                function () use ($arguments, $cacheKey, $method) {
-                    return [
-                        "key" => $cacheKey,
-                        "value" => parent::{$method}(...$arguments),
-                    ];
-                }
+                $cache_callback
             );
     }
 }
