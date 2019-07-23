@@ -40,7 +40,10 @@ trait ModelCaching
 
     public static function maxCacheTimeout()
     {
-        return static::$maxCacheTimeout ?? 0;
+        if (property_exists(get_called_class(), 'maxCacheTimeout')) {
+            return static::$maxCacheTimeout ?: 0;
+        }
+        return 0;
     }
 
     public static function all($columns = ['*'])
