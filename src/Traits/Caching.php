@@ -249,7 +249,7 @@ trait Caching
             if ($relationship) {
                 $relationshipInstance = $instance->$relationship()->getModel();
 
-                if (method_exists($instance, "flushCache")) {
+                if (method_exists($relationshipInstance, "flushCache")) {
                     $relationshipInstance->flushCache();
                 }
             }

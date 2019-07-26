@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2019-07-26
+### Added
+- 'modelCache:publish' artisan command.
+- Spatie's QueryBuilder package to list of incompatible packages.
+
+### Fixed
+- registration of config file in service provider.
+- detection if cache is disabled.
+- flushing of cache for pivot events.
+
 ## [0.6.1] - 2019-07-20
 ### Added
 - config and environment variable to allow removal of database information from cache-key.
