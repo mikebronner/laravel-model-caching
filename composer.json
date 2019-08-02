@@ -27,7 +27,7 @@
         "orchestra/testbench": "3.8.*",
         "php-coveralls/php-coveralls" : "*",
         "phpmd/phpmd": "*",
-        "phpunit/phpunit": "^7.5",
+        "phpunit/phpunit": "^8.3",
         "predis/predis": "*",
         "sebastian/phpcpd": "*",
         "symfony/thanks": "*"
