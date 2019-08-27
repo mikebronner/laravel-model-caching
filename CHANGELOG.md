@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.3] - 2019-08-27
+### Fixed
+- caching of methods that could pass field names as string or array.
+
 ## [0.6.2] - 2019-07-26
 ### Added
 - 'modelCache:publish' artisan command.
