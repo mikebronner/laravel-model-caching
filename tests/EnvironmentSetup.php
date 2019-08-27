@@ -12,13 +12,13 @@ trait EnvironmentSetup
             "foreign_key_constraints" => false,
         ]);
         $app['config']->set('database.redis.cache', [
-            'host' => env('REDIS_HOST', '192.168.10.10'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
         ]);
         $app['config']->set('database.redis.default', [
-            'host' => env('REDIS_HOST', '192.168.10.10'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
         ]);
         $app['config']->set('database.redis.model-cache', [
-            'host' => env('REDIS_HOST', '192.168.10.10'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', 6379),
             'database' => 1,

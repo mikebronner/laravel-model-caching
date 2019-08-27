@@ -59,6 +59,7 @@ trait Buildable
         $preStr = is_array($id)
             ? 'find_list'
             : 'find';
+        $columns = collect($columns)->toArray();
         $cacheKey = $this->makeCacheKey($columns, null, "-{$preStr}_{$idKey}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
@@ -70,6 +71,7 @@ trait Buildable
             return parent::first($columns);
         }
 
+        $columns = collect($columns)->toArray();
         $cacheKey = $this->makeCacheKey($columns, null, "-first");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
@@ -89,6 +91,7 @@ trait Buildable
             return parent::get($columns);
         }
 
+        $columns = collect($columns)->toArray();
         $cacheKey = $this->makeCacheKey($columns);
 
         return $this->cachedValue(func_get_args(), $cacheKey);
@@ -157,6 +160,7 @@ trait Buildable
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
+        $columns = collect($columns)->toArray();
         $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);

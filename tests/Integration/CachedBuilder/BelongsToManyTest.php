@@ -4,6 +4,10 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBookWithCachedStores;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\StoreWithUncachedBooks;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BookWithUncachedStores;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBookWithStores;
 
 class BelongsToManyTest extends IntegrationTestCase
 {
@@ -159,4 +163,77 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNotNull($result);
         $this->assertNotNull($uncachedResult);
     }
+
+    // /** @group test */
+    // public function testUncachedDetachesFromCached()
+    // {
+    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
+    //     // $tags = [
+    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+    //     // ];
+
+    //     $store = (new StoreWithUncachedBooks)
+    //         ->with("books")
+    //         ->has("books")
+    //         ->first();
+    //     $store->books()
+    //         ->detach();
+    //     // $store->delete();
+    //     // dd($results);
+    //     // $cachedResult = $this
+    //     //     ->cache()
+    //     //     ->tags($tags)
+    //     //     ->get($key)['value'];
+
+    //     // $this->assertNotEmpty($result);
+    //     // $this->assertNull($cachedResult);
+    // }
+
+    // /** @group test */
+    // public function testCachedDetachesFromUncached()
+    // {
+    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
+    //     // $tags = [
+    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+    //     // ];
+    //     $book = (new UncachedBookWithStores)
+    //         ->with("stores")
+    //         ->has("stores")
+    //         ->first();
+    //     $book->stores()
+    //         ->detach();
+    //     // $book->delete();
+    //     // dd($results);
+    //     // $cachedResult = $this
+    //     //     ->cache()
+    //     //     ->tags($tags)
+    //     //     ->get($key)['value'];
+
+    //     // $this->assertNotEmpty($result);
+    //     // $this->assertNull($cachedResult);
+    // }
+
+    // public function testDetachingFiresEvent()
+    // {
+    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
+    //     // $tags = [
+    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+    //     // ];
+
+    //     $store = (new Store)
+    //         ->with("books")
+    //         ->has("books")
+    //         ->first();
+    //     $store->books()
+    //         ->detach();
+    //     $store->delete();
+    //     // dd($results);
+    //     // $cachedResult = $this
+    //     //     ->cache()
+    //     //     ->tags($tags)
+    //     //     ->get($key)['value'];
+
+    //     // $this->assertNotEmpty($result);
+    //     // $this->assertNull($cachedResult);
+    // }
 }
