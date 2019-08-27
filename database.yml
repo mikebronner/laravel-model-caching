@@ -1,6 +1,6 @@
 test:
   adapter: postgresql
   database: testing
-  username: homestead
-  password: secret
+  username: mike
+  password: ""
   encoding: utf8
