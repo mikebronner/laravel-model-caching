@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Arr;
 
 trait Caching
 {
@@ -130,7 +131,7 @@ trait Caching
     }
 
     protected function makeCacheKey(
-        array $columns = ['*'],
+        $columns = ['*'],
         $idColumn = null,
         string $keyDifferentiator = ''
     ) : string {
@@ -158,7 +159,7 @@ trait Caching
         }
 
         return (new CacheKey($eagerLoad, $model, $query, $this->macroKey))
-            ->make($columns, $idColumn, $keyDifferentiator);
+            ->make(Arr::wrap($columns), $idColumn, $keyDifferentiator);
     }
 
     protected function makeCacheTags() : array
