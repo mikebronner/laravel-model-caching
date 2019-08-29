@@ -8,6 +8,9 @@ exemptLabels:
   - security
   - help wanted
   - bug
+  - enhancement
+  - possible bug
+  - future development
 # Label to use when marking an issue as stale
 staleLabel: wontfix
 # Comment to post when marking an issue as stale. Set to `false` to disable
