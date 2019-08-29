@@ -1,7 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
-use Orchestra\Database\ConsoleServiceProvider;
 
 trait CreatesApplication
 {
@@ -54,7 +53,6 @@ trait CreatesApplication
     {
         return [
             LaravelModelCachingService::class,
-            ConsoleServiceProvider::class,
         ];
     }
 }

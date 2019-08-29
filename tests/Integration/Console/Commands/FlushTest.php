@@ -6,6 +6,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
+use Illuminate\Support\Str;
 
 class FlushTest extends IntegrationTestCase
 {
@@ -13,7 +14,7 @@ class FlushTest extends IntegrationTestCase
     {
         parent::setUp();
 
-        if (starts_with($this->app->version(), '5.7')) {
+        if (Str::startsWith($this->app->version(), '5.7')) {
             $this->withoutMockingConsoleOutput();
         }
     }
