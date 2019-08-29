@@ -14,6 +14,8 @@ class WhereJsonContainsTest extends IntegrationTestCase
         parent::getEnvironmentSetUp($app);
 
         $app['config']->set('database.default', 'pgsql');
+        $app['config']->set('database.connections.pgsql.database', "testing");
+        $app['config']->set('database.connections.pgsql.username', "mike");
     }
 
     public function setUp() : void

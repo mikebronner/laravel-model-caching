@@ -5,6 +5,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
+use Illuminate\Support\Str;
 
 /**
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -415,7 +416,7 @@ class CachedBuilderTest extends IntegrationTestCase
 
     public function testLazyLoadingOnResourceIsCached()
     {
-        if (starts_with(app()->version(), "5.4")) {
+        if (Str::startsWith(app()->version(), "5.4")) {
             $this->markTestIncomplete("Resources don't exist in Laravel 5.4.");
         }
 
