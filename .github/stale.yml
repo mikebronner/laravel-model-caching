@@ -9,7 +9,7 @@ exemptLabels:
   - help wanted
   - bug
   - enhancement
-  - possible bug
+  - unconfirmed bug
   - future development
 # Label to use when marking an issue as stale
 staleLabel: wontfix
