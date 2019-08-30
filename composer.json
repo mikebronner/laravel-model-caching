@@ -8,6 +8,12 @@
             "email": "hello@genealabs.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://nova.laravel.com"
+        }
+    ],
     "require": {
         "genealabs/laravel-pivot-events": "*",
         "illuminate/cache": "5.8 - 6.0",
@@ -20,6 +26,7 @@
     },
     "require-dev": {
         "fzaninotto/faker": "*",
+        "laravel/nova": "2.*",
         "mockery/mockery": "*",
         "orchestra/testbench-browser-kit": "3.9.x-dev@dev",
         "orchestra/testbench": "3.9.x-dev@dev",

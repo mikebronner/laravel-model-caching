@@ -30,5 +30,19 @@ trait EnvironmentSetup
             'connection' => 'model-cache',
         ]);
         $app['config']->set('laravel-model-caching.store', 'model');
+        $app['config']->set("nova", [
+            'name' => 'Nova Site',
+            'url' => env('APP_URL', '/'),
+            'path' => '/nova',
+            'guard' => env('NOVA_GUARD', null),
+            'middleware' => [
+                'web',
+                Authenticate::class,
+                DispatchServingNovaEvent::class,
+                BootTools::class,
+                Authorize::class,
+            ],
+            'pagination' => 'simple',
+        ]);
     }
 }
