@@ -9,23 +9,23 @@
         }
     ],
     "require": {
-        "genealabs/laravel-pivot-events": "*",
-        "illuminate/cache": "5.8 - 6.0",
-        "illuminate/config": "5.8 - 6.0",
-        "illuminate/console": "5.8 - 6.0",
-        "illuminate/container": "5.8 - 6.0",
-        "illuminate/database": "5.8 - 6.0",
-        "illuminate/support": "5.8 - 6.0",
-        "illuminate/http": "5.8 - 6.0"
+        "genealabs/laravel-pivot-events": "^0.2.1",
+        "illuminate/cache": "^6.0",
+        "illuminate/config": "^6.0",
+        "illuminate/console": "^6.0",
+        "illuminate/container": "^6.0",
+        "illuminate/database": "^6.0",
+        "illuminate/http": "^6.0",
+        "illuminate/support": "^6.0"
     },
     "require-dev": {
-        "fzaninotto/faker": "*",
+        "fzaninotto/faker": "^1.4",
         "mockery/mockery": "*",
-        "orchestra/testbench-browser-kit": "3.9.x-dev@dev",
-        "orchestra/testbench": "3.9.x-dev@dev",
+        "orchestra/testbench-browser-kit": "^4.0",
+        "orchestra/testbench": "^4.0",
         "php-coveralls/php-coveralls" : "*",
         "phpmd/phpmd": "*",
-        "phpunit/phpunit": "*",
+        "phpunit/phpunit": "^8.0",
         "predis/predis": "*",
         "sebastian/phpcpd": "*",
         "symfony/thanks": "*"
@@ -50,7 +50,5 @@
                 "GeneaLabs\\LaravelModelCaching\\Providers\\Service"
             ]
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }

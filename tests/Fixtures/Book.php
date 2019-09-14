@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -52,5 +53,10 @@ class Book extends Model
     public function uncachedStores() : BelongsToMany
     {
         return $this->belongsToMany(UncachedStore::class, "book_store", "book_id", "store_id");
+    }
+
+    public function scopeStartsWith(Builder $query, string $startOfName) : Builder
+    {
+        return $query->where("name", "LIKE", "{$startOfName}%");
     }
 }
