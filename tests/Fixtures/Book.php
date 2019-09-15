@@ -19,9 +19,11 @@ class Book extends Model
         'published_at',
     ];
     protected $fillable = [
+        "author_id",
         'description',
         'published_at',
         'title',
+        "publisher_id",
         'price',
     ];
 

@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Author extends Model
@@ -26,6 +27,11 @@ class Author extends Model
         return $this->hasMany(Book::class);
     }
 
+    public function printer() : HasOneThrough
+    {
+        return $this->hasOneThrough(Printer::class, Book::class);
+    }
+    
     public function profile() : HasOne
     {
         return $this->hasOne(Profile::class);

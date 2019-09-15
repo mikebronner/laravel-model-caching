@@ -28,6 +28,7 @@
         "phpunit/phpunit": "^8.0",
         "predis/predis": "*",
         "sebastian/phpcpd": "*",
+        "squizlabs/php_codesniffer": "^3.4",
         "symfony/thanks": "*"
     },
     "autoload": {
