@@ -3,11 +3,15 @@
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\History;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Image;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedImage;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedUser;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +19,16 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         factory(History::class)->create();
+        $user = factory(User::class)->create();
+        $image = factory(Image::class)->create([
+            "imagable_id" => $user->id,
+            "imagable_type" => User::class,
+        ]);
+        factory(Image::class)->create([
+            "imagable_id" => $user->id,
+            "imagable_type" => UncachedUser::class,
+            "path" => $image->path,
+        ]);
         $publishers = factory(Publisher::class, 10)->create();
         (new Author)->observe(AuthorObserver::class);
         factory(Author::class, 10)->create()
