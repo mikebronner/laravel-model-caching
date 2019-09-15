@@ -2,14 +2,16 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Comment;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\History;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Image;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedImage;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPost;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedUser;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use Illuminate\Database\Seeder;
@@ -29,6 +31,20 @@ class DatabaseSeeder extends Seeder
             "imagable_type" => UncachedUser::class,
             "path" => $image->path,
         ]);
+        $post = factory(Post::class)->create();
+        factory(Comment::class, 5)
+            ->create([
+                "commentable_id" => $post->id,
+                "commentable_type" => Post::class,
+            ])
+            ->each(function ($comment) {
+                (new Comment)->create([
+                    "commentable_id" => $comment->commentable_id,
+                    "commentable_type" => UncachedPost::class,
+                    "description" => $comment->description,
+                    "subject" => $comment->subject,
+                ]);
+            });
         $publishers = factory(Publisher::class, 10)->create();
         (new Author)->observe(AuthorObserver::class);
         factory(Author::class, 10)->create()

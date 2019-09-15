@@ -1,9 +1,5 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Supplier;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedSupplier;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedUser;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
@@ -39,7 +35,6 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
         $this->assertNotEmpty($liveResults);
     }
 
-    /** @group test */
     public function testLazyloadedHasOneThrough()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images:genealabslaravelmodelcachingtestsfixturesimage-images.imagable_id_=_2-images.imagable_id_notnull-images.imagable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\User-limit_1");
