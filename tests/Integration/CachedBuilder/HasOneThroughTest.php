@@ -1,63 +1,63 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Supplier;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedSupplier;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class HasOneThroughTest extends IntegrationTestCase
 {
     public function testEagerloadedHasOneThrough()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-authors.id_=_1-testing:{$this->testingSqlitePath}testing.sqlite:printer-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:suppliers:genealabslaravelmodelcachingtestsfixturessupplier-testing:{$this->testingSqlitePath}testing.sqlite:history-limit_1");
         $tags = [
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesprinter",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturessupplier",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixtureshistory",
         ];
 
-        $printer = (new Author)
-            ->with("printer")
-            ->find(1)
-            ->printer;
+        $history = (new Supplier)
+            ->with("history")
+            ->first()
+            ->history;
         $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key)['value']
-            ->printer;
-        $liveResults = (new UncachedAuthor)
-            ->with("printer")
-            ->find(1)
-            ->printer;
+            ->first()
+            ->history;
+        $liveResults = (new UncachedSupplier)
+            ->with("history")
+            ->first()
+            ->history;
 
-        $this->assertEquals($liveResults->id, $printer->id);
+        $this->assertEquals($liveResults->id, $history->id);
         $this->assertEquals($liveResults->id, $cachedResults->id);
-        $this->assertNotEmpty($printer);
+        $this->assertNotEmpty($history);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testLazyloadedHasMany()
+    public function testLazyloadedHasOneThrough()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-authors.id_=_1-limit_1");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:suppliers:genealabslaravelmodelcachingtestsfixturessupplier-testing:{$this->testingSqlitePath}testing.sqlite:history-limit_1");
         $tags = [
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesprinter",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturessupplier",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixtureshistory",
         ];
 
-        // $printer = (new Author)
-        //     ->find(1)
-        //     ->printer;
+        // $history = (new Supplier)
+        //     ->first()
+        //     ->history;
         // $cachedResults = $this->cache()
         //     ->tags($tags)
-        //     ->get($key)['value']
-        //     ->printer;
-        // $liveResults = (new UncachedAuthor)
-        //     ->find(1)
-        //     ->printer;
+        //     ->get($key)['value'];
+        // $liveResults = (new UncachedSupplier)
+        //     ->first()
+        //     ->history;
 
-        // $this->assertEquals($liveResults->id, $printer->id);
+        // $this->assertEquals($liveResults->id, $history->id);
         // $this->assertEquals($liveResults->id, $cachedResults->id);
-        // $this->assertNotEmpty($printer);
+        // $this->assertNotEmpty($history);
         // $this->assertNotEmpty($cachedResults);
         // $this->assertNotEmpty($liveResults);
         $this->markTestSkipped();

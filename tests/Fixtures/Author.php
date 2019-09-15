@@ -4,8 +4,8 @@ use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Author extends Model
@@ -27,9 +27,9 @@ class Author extends Model
         return $this->hasMany(Book::class);
     }
 
-    public function printer() : HasOneThrough
+    public function printers() : HasManyThrough
     {
-        return $this->hasOneThrough(Printer::class, Book::class);
+        return $this->hasManyThrough(Printer::class, Book::class);
     }
     
     public function profile() : HasOne

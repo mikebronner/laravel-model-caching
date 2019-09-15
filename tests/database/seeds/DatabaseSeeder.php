@@ -2,6 +2,7 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\History;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
@@ -13,6 +14,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
+        factory(History::class)->create();
         $publishers = factory(Publisher::class, 10)->create();
         (new Author)->observe(AuthorObserver::class);
         factory(Author::class, 10)->create()
