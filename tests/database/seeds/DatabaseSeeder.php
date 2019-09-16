@@ -11,6 +11,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Tag;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPost;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedUser;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
@@ -31,7 +32,11 @@ class DatabaseSeeder extends Seeder
             "imagable_type" => UncachedUser::class,
             "path" => $image->path,
         ]);
+        factory(Tag::class, 5)->create();
         $post = factory(Post::class)->create();
+        $uncachedPost = (new UncachedPost)->first();
+        $post->tags()->attach(1);
+        $uncachedPost->tags()->attach(1);
         factory(Comment::class, 5)
             ->create([
                 "commentable_id" => $post->id,
