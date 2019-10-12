@@ -49,7 +49,7 @@ class CachedBuilderTest extends IntegrationTestCase
             ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_" .
-                '7_8_9_10-genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbooks'
+                "7_8_9_10-genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbooks"
             ));
 
         $this->assertNull($results);
@@ -67,7 +67,7 @@ class CachedBuilderTest extends IntegrationTestCase
             ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_" .
-                '7_8_9_10-genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbooks'
+                "7_8_9_10-genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbooks"
             ));
 
         $this->assertNull($results);
@@ -84,7 +84,7 @@ class CachedBuilderTest extends IntegrationTestCase
             ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_1_2_3_4_5_6_" .
-                '7_8_9_10-genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbooks'
+                "7_8_9_10-genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbooks"
             ));
 
         $this->assertNull($results);
