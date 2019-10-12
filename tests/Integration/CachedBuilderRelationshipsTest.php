@@ -44,4 +44,27 @@ class CachedBuilderRelationshipsTest extends IntegrationTestCase
 
         $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
     }
+
+    public function testNonCacheableEagerLoadedRelationsAreCleared()
+    {
+        $book = Book::with("uncachedStores")
+            ->whereHas("uncachedStores")
+            ->get()
+            ->first();
+
+        $store = $book->uncachedStores->first();
+        $store->name = "Waterstones";
+        $store->save();
+
+        $results = $this->cache()->tags([
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuncachedstore"
+            ])
+            ->get(sha1(
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-exists-" .
+                "and_books.id_=_book_store.book_id-testing:{$this->testingSqlitePath}testing.sqlite:uncachedStores"
+            ));
+
+        $this->assertNull($results);
+    }
 }
