@@ -2,27 +2,19 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use Illuminate\Support\Str;
 
 class PaginationTest extends FeatureTestCase
 {
     public function testPaginationProvidesDifferentLinksOnDifferentPages()
     {
-        if (Str::startsWith(app()->version(), "5.6")
-            || Str::startsWith(app()->version(), "5.7")
-            || Str::startsWith(app()->version(), "5.8")
-            || Str::startsWith(app()->version(), "6.0")
-        ) {
+        // Checking the version start with 5.6, 5.7, 5.8 or 6.
+        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
         }
 
-        if (Str::startsWith(app()->version(), "5.5")) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-        }
-
-        if (Str::startsWith(app()->version(), "5.4")) {
+        // Checking the version 5.4 and 5.5
+        if (preg_match("/^5\.[4-5]/", app()->version())) {
             $page1ActiveLink = '<li class="active"><span>1</span></li>';
             $page2ActiveLink = '<li class="active"><span>2</span></li>';
         }
@@ -41,21 +33,12 @@ class PaginationTest extends FeatureTestCase
 
     public function testAdvancedPagination()
     {
-        if (Str::startsWith(app()->version(), "5.6")
-            || Str::startsWith(app()->version(), "5.7")
-            || Str::startsWith(app()->version(), "5.8")
-            || Str::startsWith(app()->version(), "6.0")
-        ) {
+        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
         }
 
-        if (Str::startsWith(app()->version(), "5.5")) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-        }
-
-        if (Str::startsWith(app()->version(), "5.4")) {
+        if (preg_match("/^5\.[4-5]/", app()->version())) {
             $page1ActiveLink = '<li class="active"><span>1</span></li>';
             $page2ActiveLink = '<li class="active"><span>2</span></li>';
         }
@@ -67,21 +50,12 @@ class PaginationTest extends FeatureTestCase
 
     public function testCustomPagination()
     {
-        if (Str::startsWith(app()->version(), "5.6")
-            || Str::startsWith(app()->version(), "5.7")
-            || Str::startsWith(app()->version(), "5.8")
-            || Str::startsWith(app()->version(), "6.0")
-        ) {
+        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
         }
 
-        if (Str::startsWith(app()->version(), "5.5")) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-        }
-
-        if (Str::startsWith(app()->version(), "5.4")) {
+        if (preg_match("/^5\.[4-5]/", app()->version())) {
             $page1ActiveLink = '<li class="active"><span>1</span></li>';
             $page2ActiveLink = '<li class="active"><span>2</span></li>';
         }
