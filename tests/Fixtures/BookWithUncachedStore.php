@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class Book extends Model
+class BookWithUncachedStore extends Model
 {
     use Cachable;
 
@@ -26,6 +26,7 @@ class Book extends Model
         "publisher_id",
         'price',
     ];
+    protected $table = "books";
 
     public function author() : BelongsTo
     {
@@ -50,6 +51,11 @@ class Book extends Model
     public function stores() : BelongsToMany
     {
         return $this->belongsToMany(Store::class);
+    }
+
+    public function uncachedStores() : BelongsToMany
+    {
+        return $this->belongsToMany(UncachedStore::class, "book_store", "book_id", "store_id");
     }
 
     public function scopeStartsWith(Builder $query, string $startOfName) : Builder

@@ -1,13 +1,10 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BookWithUncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBookWithCachedStores;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\StoreWithUncachedBooks;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BookWithUncachedStores;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBookWithStores;
 
 class BelongsToManyTest extends IntegrationTestCase
 {
@@ -147,7 +144,7 @@ class BelongsToManyTest extends IntegrationTestCase
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuncachedstore",
         ];
 
-        $result = (new Book)
+        $result = (new BookWithUncachedStore)
             ->find($bookId)
             ->uncachedStores;
         $cachedResult = $this

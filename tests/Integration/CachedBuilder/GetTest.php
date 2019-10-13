@@ -8,7 +8,8 @@ class GetTest extends IntegrationTestCase
 {
     public function testGetModelResultsCreatesCache()
     {
-        $authors = (new Author)->with('books', 'profile')
+        $authors = (new Author)
+            ->with('books', 'profile')
             ->get();
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-testing:{$this->testingSqlitePath}testing.sqlite:books-testing:{$this->testingSqlitePath}testing.sqlite:profile");
         $tags = [
@@ -17,9 +18,12 @@ class GetTest extends IntegrationTestCase
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesprofile",
         ];
 
-        $cachedResults = $this->cache()->tags($tags)
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
             ->get($key)['value'];
-        $liveResults = (new UncachedAuthor)->with('books', 'profile')
+        $liveResults = (new UncachedAuthor)
+            ->with('books', 'profile')
             ->get();
 
         $this->assertEquals($authors, $cachedResults);

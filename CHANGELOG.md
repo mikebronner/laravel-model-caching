@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.7.2] - 2019-10-12
+### Fixed
+- improper caching of non-cachable eagerloaded relationships. Now any query with non-cachable eagerloaded relationships will not be cached in its entirety to prevent stale data. Special thanks to @Hornet-Wing for his help in this.
+
+## [0.7.1] - 2019-10-02
+### Fixed
+- dependency version constraints.
+### Added
+- various tests.
+
+## [0.7.0] - 2019-08-28
+### Added
+- Laravel 6.0 support.
+
 ## [0.6.3] - 2019-08-27
 ### Fixed
 - caching of methods that could pass field names as string or array.

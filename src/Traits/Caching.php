@@ -273,9 +273,37 @@ trait Caching
         $isCacheDisabled = ! Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.enabled");
+        $allRelationshipsAreCachable = true;
+
+        if (property_exists($this, "eagerLoad")
+            && $this->eagerLoad
+        ) {
+            $allRelationshipsAreCachable = collect($this
+                ->eagerLoad)
+                ->keys()
+                ->reduce(function ($carry, $related) {
+                    if (! method_exists($this, $related)
+                        || $carry === false
+                    ) {
+                        return $carry;
+                    }
+        
+                    $relatedModel = $this->model->$related()->getRelated();
+
+                    if (! method_exists($relatedModel, "isCachable")
+                        || ! $relatedModel->isCachable()
+                    ) {
+                        return false;
+                    }
+
+                    return true;
+                })
+                ?? true;
+        }
 
         return $this->isCachable
-            && ! $isCacheDisabled;
+            && ! $isCacheDisabled
+            && $allRelationshipsAreCachable;
     }
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
