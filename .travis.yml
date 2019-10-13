@@ -11,8 +11,8 @@ addons:
 
 env:
   global:
-    - REDIS_HOST=127.0.0.1
-    - DB_HOST=127.0.0.1
+    - REDIS_HOST=192.168.10.10
+    - DB_HOST=192.168.10.10
 
 matrix:
   include:
