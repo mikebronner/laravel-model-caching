@@ -229,7 +229,8 @@ class CacheKey
         $subquery = $this->getValuesFromWhere($where);
         $values = collect($this->query->bindings["where"][$this->currentBinding] ?? []);
         $this->currentBinding += count($where["values"]);
-        $subquery = collect(vsprintf(str_replace("?", "%s", $subquery), $values->toArray()));
+        $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
+        $subquery = collect(vsprintf(str_replace("_??_", "%s", $subquery), $values->toArray()));
         $values = $this->recursiveImplode($subquery->toArray(), "_");
 
         return "-{$where["column"]}_{$type}{$values}";
