@@ -1,10 +1,3 @@
----
-title: Model Caching for Laravel
-description: Building a navigation menu for your site
-extends: _layouts.docs
-section: content
-repository_url: https://github.com/GeneaLabs/laravel-model-caching
----
 # Model Caching for Laravel
 [![Travis](https://img.shields.io/travis/GeneaLabs/laravel-model-caching/master.svg)](https://travis-ci.org/GeneaLabs/laravel-model-caching)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching/master.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
@@ -17,7 +10,7 @@ repository_url: https://github.com/GeneaLabs/laravel-model-caching
 ![pexels-photo-325229](https://user-images.githubusercontent.com/1791050/30768358-0df9d0f2-9fbb-11e7-9f10-ad40b83bbf59.jpg)
 
 ## Supporting This Package
-This is an MIT-licensed open source project with its ongoing development made possible by the support of the community. If you'd like to support this, and our other packages, please consider [becoming a backer or sponsor on Patreon](https://www.patreon.com/mikebronner).
+This is an MIT-licensed open source project with its ongoing development made possible by the support of the community. If you'd like to support this, and our other packages, please consider [becoming a sponsor](https://github.com/sponsors/mikebronner).
 
 ## Impetus
 I created this package in response to a client project that had complex, nested
