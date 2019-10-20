@@ -25,9 +25,24 @@ relationships. This package is an attempt to address those requirements.
 -   automatic use of cache tags for cache providers that support them (will
     flush entire cache for providers that don't).
 
+## Cache Drivers
+This package is best suited for taggable cache drivers:
+```diff
++ Redis
++ MemCached
++ APC
++ Array
+```
+
+It will not work with non-taggable drivers:
+```diff
+- Database
+- File
+- DynamoDB
+```
+
 ## Requirements
--   PHP >= 7.1.3
--   Laravel 5.8
+-   Laravel 6.0+
     ```diff
     - Please note that prior Laravel versions are not supported and the package
     - versions that are compatible with prior versions of Laravel contain bugs.
