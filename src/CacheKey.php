@@ -1,9 +1,11 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
+use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Ramsey\Uuid\Uuid;
 
 class CacheKey
 {
@@ -229,6 +231,18 @@ class CacheKey
         $subquery = $this->getValuesFromWhere($where);
         $values = collect($this->query->bindings["where"][$this->currentBinding] ?? []);
         $this->currentBinding += count($where["values"]);
+
+        if (! is_numeric($subquery) && ! is_numeric(str_replace("_", "", $subquery))) {
+            try {
+                $subquery = Uuid::fromBytes($subquery);
+                $values = $this->recursiveImplode([$subquery], "_");
+
+                return "-{$where["column"]}_{$type}{$values}";
+            } catch (Exception $exception) {
+                // do nothing
+            }
+        }
+
         $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
         $subquery = collect(vsprintf(str_replace("_??_", "%s", $subquery), $values->toArray()));
         $values = $this->recursiveImplode($subquery->toArray(), "_");

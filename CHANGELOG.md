@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.7.3] - 2019-12-22
 ### Added
 - documentation to explain that database transactions are currently not supported.
+- compatibility with binary UUIDs. Thanks @padre!
 
 ### Changed
 - detection if cache is enabled in the `$model->all()` method. Thanks @titrxw!
