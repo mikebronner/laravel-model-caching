@@ -40,16 +40,13 @@ trait ModelCaching
 
     public static function all($columns = ['*'])
     {
-        $cacheIsEnabled = Container::getInstance()
-            ->make("config")
-            ->get("laravel-model-caching.enabled");
-
-        if (! $cacheIsEnabled) {
-            return parent::all($columns);
-        }
-
         $class = get_called_class();
         $instance = new $class;
+
+	    if (!$instance->isCachable()) {
+		    return parent::all($columns);
+	    }
+
         $tags = $instance->makeCacheTags();
         $key = $instance->makeCacheKey();
 
