@@ -27,7 +27,7 @@
         "phpmd/phpmd": "^2.7",
         "phpunit/phpunit": "^8.0",
         "predis/predis": "^1.1",
-        "sebastian/phpcpd": "^4.1",
+        "sebastian/phpcpd": "^5.0",
         "squizlabs/php_codesniffer": "^3.4",
         "symfony/thanks": "^1.2"
     },
