@@ -36,7 +36,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationReturnsCorrectLinks()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
+        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
             $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
@@ -65,7 +65,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationWithOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
+        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
             $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
@@ -94,7 +94,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationWithCustomOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
+        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
             $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';

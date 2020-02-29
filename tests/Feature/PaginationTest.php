@@ -8,7 +8,7 @@ class PaginationTest extends FeatureTestCase
     public function testPaginationProvidesDifferentLinksOnDifferentPages()
     {
         // Checking the version start with 5.6, 5.7, 5.8 or 6.
-        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
+        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
         }
@@ -33,7 +33,7 @@ class PaginationTest extends FeatureTestCase
 
     public function testAdvancedPagination()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
+        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
         }
@@ -50,7 +50,7 @@ class PaginationTest extends FeatureTestCase
 
     public function testCustomPagination()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.))/", app()->version())) {
+        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
         }
