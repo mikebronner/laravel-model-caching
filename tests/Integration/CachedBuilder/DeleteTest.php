@@ -23,7 +23,8 @@ class DeleteTest extends IntegrationTestCase
         $afterDeleteCachedResults = $this
             ->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEquals($beforeDeleteCachedResults->id, $book->id);
         $this->assertNotEquals($beforeDeleteCachedResults, $afterDeleteCachedResults);

@@ -381,7 +381,7 @@ class CachedBuilderTest extends IntegrationTestCase
         $authors = collect([(new Author)->with('books.publisher')
                 ->first()]);
 
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-testing:{$this->testingSqlitePath}testing.sqlite:books-testing:{$this->testingSqlitePath}testing.sqlite:books.publisher-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-testing:{$this->testingSqlitePath}testing.sqlite:books-books.publisher-first");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
@@ -501,7 +501,7 @@ class CachedBuilderTest extends IntegrationTestCase
             ->doesntHave('books')
             ->get();
 
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_notexists_and_authors.id_=_books.author_id");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-notexists-and_authors.id_=_books.author_id-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = $this->cache()
@@ -567,14 +567,15 @@ class CachedBuilderTest extends IntegrationTestCase
             ->first();
         $authorId = $author->id;
         $liveResultId = $liveResult->id;
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $author->delete();
         $liveResult->delete();
         $cachedResult = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
         $deletedAuthor = (new Author)->find($authorId);
 
         $this->assertEquals($liveResultId, $authorId);
@@ -687,12 +688,14 @@ class CachedBuilderTest extends IntegrationTestCase
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
         $cachedAuthors1 = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         (new Author)->disableCache()->get();
         $cachedAuthors2 = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEmpty($cachedAuthors1);
         $this->assertEmpty($cachedAuthors2);

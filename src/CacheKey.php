@@ -46,7 +46,7 @@ class CacheKey
         $key .= $this->getLimitClause();
         $key .= $keyDifferentiator;
         $key .= $this->macroKey;
-
+// dump($key);
         return $key;
     }
 

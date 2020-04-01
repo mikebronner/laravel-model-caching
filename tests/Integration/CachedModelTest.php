@@ -40,7 +40,8 @@ class CachedModelTest extends IntegrationTestCase
 
         $cachedResults = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertNull($cachedResults);
         $this->assertNotEquals($authors, $cachedResults);
@@ -57,7 +58,8 @@ class CachedModelTest extends IntegrationTestCase
 
         $cachedResults = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertNull($cachedResults);
         $this->assertNotEquals($authors, $cachedResults);
@@ -75,7 +77,8 @@ class CachedModelTest extends IntegrationTestCase
 
         $cachedResults = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertNull($cachedResults);
         $this->assertNotEquals($authors, $cachedResults);
@@ -86,7 +89,7 @@ class CachedModelTest extends IntegrationTestCase
         config(['laravel-model-caching.enabled' => false]);
         $authors = (new Author)
             ->all();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor.deleted_at_null");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
@@ -95,7 +98,8 @@ class CachedModelTest extends IntegrationTestCase
         $cachedResults = $this
             ->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEmpty($cachedResults);
         $this->assertNotEmpty($authors);

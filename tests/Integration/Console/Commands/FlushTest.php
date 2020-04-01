@@ -35,7 +35,8 @@ class FlushTest extends IntegrationTestCase
         $flushedResults = $this
             ->cache
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
@@ -60,7 +61,8 @@ class FlushTest extends IntegrationTestCase
         $flushedResults = $this
             ->cache
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
@@ -79,14 +81,16 @@ class FlushTest extends IntegrationTestCase
         $cachedResults = $this->cache
             ->tags($tags)
             ->get($key)['value'];
-        $result = $this->artisan(
+        $result = $this
+            ->artisan(
                 'modelCache:clear',
                 ['--model' => Author::class]
             )
             ->execute();
         $flushedResults = $this->cache
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEquals($authors, $cachedResults);
         $this->assertEmpty($flushedResults);
@@ -137,17 +141,20 @@ class FlushTest extends IntegrationTestCase
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
         $cachedAuthors = $this->cache
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook"];
         $cachedBooks = $this->cache
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores:genealabslaravelmodelcachingtestsfixturesstore");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore"];
         $cachedStores = $this->cache
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
 
         $this->assertEmpty($cachedAuthors);
         $this->assertEmpty($cachedBooks);

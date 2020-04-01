@@ -14,7 +14,7 @@ class WhereRawTest extends IntegrationTestCase
             ->whereRaw('name <> \'\'')
             ->first()]);
 
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_and_name-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-_and_name_<>_''-authors.deleted_at_null-first");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
@@ -34,7 +34,7 @@ class WhereRawTest extends IntegrationTestCase
             ->whereRaw("name != 'test3'")
             ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorname_!=_test_and_name_!=_'test3'_and_name_=_Guido_Feest__AND_name_!=_test2");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_!=_test-_and_name_!=_'test3'-_and_name_=_" . str_replace(" ", "_", $authorName) . "__AND_name_!=_test2-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
