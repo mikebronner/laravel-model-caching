@@ -205,7 +205,7 @@ or:
 ### Disabling Caching of Queries
 There are two methods by which model-caching can be disabled:
 1. Use `->disableCache()` in a query-by-query instance.
-2. Set `MODEL_CACHE_DISABLED=TRUE` in your `.env` file.
+2. Set `MODEL_CACHE_ENABLED=false` in your `.env` file.
 3. If you only need to disable the cache for a block of code, or for non-
     eloquent queries, this is probably the better option:
     ```php
