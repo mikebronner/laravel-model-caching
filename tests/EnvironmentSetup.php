@@ -1,5 +1,10 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
+use Illuminate\Auth\Middleware\Authenticate;
+use Laravel\Nova\Http\Middleware\Authorize;
+use Laravel\Nova\Http\Middleware\BootTools;
+use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
+
 trait EnvironmentSetup
 {
     protected function getEnvironmentSetUp($app)

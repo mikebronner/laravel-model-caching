@@ -1,7 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers\NovaServiceProvider;
 
 trait CreatesApplication
 {
@@ -54,7 +53,6 @@ trait CreatesApplication
     {
         return [
             LaravelModelCachingService::class,
-            NovaServiceProvider::class,
         ];
     }
 }

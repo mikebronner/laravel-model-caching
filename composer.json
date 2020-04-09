@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9",
-        "laravel/nova": "2.*",
+        "laravel/nova": "3.*",
         "orchestra/testbench-browser-kit": "^5.0",
         "orchestra/testbench": "^5.0",
         "php-coveralls/php-coveralls" : "^2.2",

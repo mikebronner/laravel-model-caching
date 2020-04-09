@@ -1,6 +1,5 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers;
 
-use App\User;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
@@ -30,8 +29,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         Nova::routes()
             ->withAuthenticationRoutes()
-            ->withPasswordResetRoutes()
-            ->register();
+            ->withPasswordResetRoutes();
     }
 
     /**
@@ -43,7 +41,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function gate()
     {
-        Gate::define('viewNova', function (User $user) {
+        Gate::define('viewNova', function () {
             return true;
         });
     }
@@ -77,5 +75,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function register()
     {
         //
+    }
+
+    protected function resources()
+    {
+        // See NovaTestCase
     }
 }

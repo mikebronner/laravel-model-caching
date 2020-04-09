@@ -1,15 +1,14 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
-use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
-
-class BelongsToManyTest extends FeatureTestCase
+class BelongsToManyTest extends NovaTestCase
 {
     /** @group test */
-    public function testCacheCanBeDisabledOnModel()
+    public function testBasicNovaIndexRequest()
     {
-        dd();
-        $result = $this->visit("/nova");
+        $this->getJson('nova-api/authors');
+        // $response->dump();
 
-        dd($result);
+        $this->response->assertStatus(200)
+            ->assertJsonCount(10, 'resources');
     }
 }
