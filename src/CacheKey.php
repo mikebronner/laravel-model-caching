@@ -164,6 +164,10 @@ class CacheKey
             return implode("_", collect($where["values"])->flatten()->toArray());
         }
 
+        if (is_array((new Arr)->get($where, "value"))) {
+            return implode("_", collect($where["value"])->flatten()->toArray());
+        }
+
         return (new Arr)->get($where, "value", "");
     }
 
