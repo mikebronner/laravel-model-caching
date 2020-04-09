@@ -49,4 +49,27 @@ class WhereJsonContainsTest extends IntegrationTestCase
         $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
+
+    public function testWithInUsingCollectionQueryWithArrayValues()
+    {
+        $key = sha1("genealabs:laravel-model-caching:pgsql:testing:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->tags_jsoncontains_[\"foo\",\"bar\"]-authors.deleted_at_null");
+        $tags = [
+            'genealabs:laravel-model-caching:pgsql:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+        ];
+
+        $authors = (new Author)
+            ->whereJsonContains("finances->tags", ['foo', 'bar'])
+            ->get();
+        $liveResults = (new UncachedAuthor)
+            ->whereJsonContains("finances->tags", ['foo', 'bar'])
+            ->get();
+
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
+        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+    }
 }
