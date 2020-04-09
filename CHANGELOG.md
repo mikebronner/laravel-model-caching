@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.8.1] - 2020-04-09
 ### Fixed
 - `jsonContains()` with array values. Thanks @dmason30!
-
+- `truncate()` to flush cache. Thanks @dmason30!
 
 ## [0.8.0] - 2020-02-29
 ### Added
