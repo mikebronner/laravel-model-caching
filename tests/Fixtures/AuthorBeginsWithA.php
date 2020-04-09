@@ -5,6 +5,7 @@ use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class AuthorBeginsWithA extends Model
@@ -31,6 +32,11 @@ class AuthorBeginsWithA extends Model
     public function books() : HasMany
     {
         return $this->hasMany(Book::class);
+    }
+
+    public function printers() : HasManyThrough
+    {
+        return $this->hasManyThrough(Printer::class, Book::class);
     }
 
     public function profile() : HasOne

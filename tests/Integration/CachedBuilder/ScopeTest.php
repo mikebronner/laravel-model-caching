@@ -6,6 +6,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorBeginsWithA;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithInlineGlobalScope;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthorWithInlineGlobalScope;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScopeTest extends IntegrationTestCase
 {
@@ -96,5 +97,25 @@ class ScopeTest extends IntegrationTestCase
         $this->assertTrue($authors->contains($author));
         $this->assertTrue($cachedResults->contains($author));
         $this->assertTrue($liveResults->contains($author));
+    }
+
+    public function testLocalScopesInRelationship()
+    {
+        $first = "A";
+        $second = "B";
+        $authors1 = (new Author)
+            ->with(['books' => static function (HasMany $model) use ($first) {
+                $model->startsWith($first);
+            }])
+            ->get();
+        $authors2 = (new Author)
+            ->disableModelCaching()
+            ->with(['books' => static function (HasMany $model) use ($second) {
+                $model->startsWith($second);
+            }])
+            ->get();
+
+        // $this->assertNotEquals($authors1, $authors2);
+        $this->markTestSkipped();
     }
 }

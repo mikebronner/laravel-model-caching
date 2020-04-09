@@ -36,7 +36,7 @@ class CacheTags
             ->prepend($this->getTagName())
             ->values()
             ->toArray();
-
+// dump($tags);
         return $tags;
     }
 

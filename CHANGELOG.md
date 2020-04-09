@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2020-04-09
+### Fixed
+- `jsonContains()` with array values. Thanks @dmason30!
+- `truncate()` to flush cache. Thanks @dmason30!
+
+## [0.8.0] - 2020-02-29
+### Added
+- Laravel 7 compatibility.
+
+## [0.7.4] - 2019-12-22
+### Added
+- documentation to explain that database transactions are currently not supported.
+- compatibility with binary UUIDs. Thanks @padre!
+
+### Changed
+- detection if cache is enabled in the `$model->all()` method. Thanks @titrxw!
+
+## [0.7.2] - 2019-10-12
+### Fixed
+- improper caching of non-cachable eagerloaded relationships. Now any query with non-cachable eagerloaded relationships will not be cached in its entirety to prevent stale data. Special thanks to @Hornet-Wing for his help in this.
+
+## [0.7.1] - 2019-10-02
+### Fixed
+- dependency version constraints.
+### Added
+- various tests.
+
+## [0.7.0] - 2019-08-28
+### Added
+- Laravel 6.0 support.
+
 ## [0.6.3] - 2019-08-27
 ### Fixed
 - caching of methods that could pass field names as string or array.

@@ -30,7 +30,8 @@ class ForceDeleteTest extends IntegrationTestCase
             ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-id_=_1"
-            ))["value"];
+            ))["value"]
+            ?? null;
 
         $this->assertEquals(get_class($resultsBefore), get_class($author));
         $this->assertNotNull($resultsBefore);

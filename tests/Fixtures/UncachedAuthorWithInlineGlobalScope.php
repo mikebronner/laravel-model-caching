@@ -3,7 +3,9 @@
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UncachedAuthorWithInlineGlobalScope extends Model
@@ -32,6 +34,11 @@ class UncachedAuthorWithInlineGlobalScope extends Model
     public function books() : HasMany
     {
         return $this->hasMany(UncachedBook::class);
+    }
+
+    public function printers() : HasManyThrough
+    {
+        return $this->hasManyThrough(Printer::class, Book::class, "author_id");
     }
 
     public function profile() : HasOne

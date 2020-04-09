@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class AuthorWithInlineGlobalScope extends Model
 {
@@ -35,6 +36,11 @@ class AuthorWithInlineGlobalScope extends Model
     public function books() : HasMany
     {
         return $this->hasMany(Book::class);
+    }
+
+    public function printers() : HasManyThrough
+    {
+        return $this->hasManyThrough(Printer::class, Book::class);
     }
 
     public function profile() : HasOne

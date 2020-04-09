@@ -11,6 +11,7 @@ exemptLabels:
   - enhancement
   - unconfirmed bug
   - future development
+  - documentation
 # Label to use when marking an issue as stale
 staleLabel: wontfix
 # Comment to post when marking an issue as stale. Set to `false` to disable

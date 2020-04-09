@@ -18,12 +18,14 @@ class HelperTest extends IntegrationTestCase
 
         $cachedResults1 = $this->cache()
             ->tags($tags)
-            ->get($key)["value"];
+            ->get($key)["value"]
+            ?? null;
         (new Author)
             ->get();
         $cachedResults2 = $this->cache()
             ->tags($tags)
-            ->get($key)["value"];
+            ->get($key)["value"]
+            ?? null;
         $liveResults = (new UncachedAuthor)
             ->get();
 

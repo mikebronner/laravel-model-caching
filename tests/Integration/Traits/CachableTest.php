@@ -31,11 +31,13 @@ class CachableTest extends IntegrationTestCase
             ->all();
         $defaultcacheResults = app('cache')
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
         $customCacheResults = app('cache')
             ->store('customCache')
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
         $liveResults = (new UncachedAuthor)
             ->all();
 

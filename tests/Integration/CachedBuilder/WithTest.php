@@ -8,6 +8,31 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WithTest extends IntegrationTestCase
 {
+    public function testWithLimitedQuery()
+    {
+        $authors = (new Author)
+            ->where("id", 1)
+            ->with([
+                'books' => function ($query) {
+                    $query->where("id", "<", 100)
+                        ->offset(5)
+                        ->limit(1);
+                }
+            ])
+            ->first();
+        $uncachedAuthor = (new UncachedAuthor)->with([
+                'books' => function ($query) {
+                    $query->where("id", "<", 100)
+                        ->offset(5)
+                        ->limit(1);
+                }
+            ])
+            ->first();
+
+        $this->assertEquals($uncachedAuthor->books()->pluck("id"), $authors->books()->pluck("id"));
+        $this->assertEquals($uncachedAuthor->id, $authors->id);
+    }
+
     public function testWithQuery()
     {
         $author = (new Author)

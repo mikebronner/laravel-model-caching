@@ -18,9 +18,18 @@ class BuilderCachingTest extends IntegrationTestCase
         $cachedAuthors = $this
             ->cache()
             ->tags($tags)
-            ->get($key)["value"];
+            ->get($key)["value"]
+            ?? null;
 
         $this->assertInstanceOf(Collection::class, $allAuthors);
         $this->assertNull($cachedAuthors);
+    }
+
+    public function testUsingTruncateInvalidatesCache()
+    {
+        (new Author)->get();
+        Author::truncate();
+
+        $this->assertTrue((new Author)->get()->isEmpty());
     }
 }

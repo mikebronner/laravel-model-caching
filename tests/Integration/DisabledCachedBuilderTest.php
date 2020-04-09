@@ -309,7 +309,8 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
 
         $cachedResults = $this->cache()
             ->tags($tags)
-            ->get($key)['value'];
+            ->get($key)['value']
+            ?? null;
         $liveResults = (new UncachedAuthor)
             ->paginate(3);
 
