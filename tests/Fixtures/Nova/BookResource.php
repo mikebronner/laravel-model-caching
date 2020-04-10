@@ -2,14 +2,15 @@
 
 namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova;
 
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 
-class AuthorResource extends Resource
+class BookResource extends Resource
 {
-    public static $model = Author::class;
+    public static $model = Book::class;
 
     public static $search = ['id'];
 
@@ -20,13 +21,13 @@ class AuthorResource extends Resource
     {
         return [
             ID::make('ID', 'id'),
-            Text::make('Name', 'name'),
-            Text::make('E-Mail', 'email'),
+            Text::make('Title', 'title'),
+            BelongsToMany::make('Stores', 'stores', StoreResource::class),
         ];
     }
 
     public static function uriKey()
     {
-        return 'authors';
+        return 'books';
     }
 }

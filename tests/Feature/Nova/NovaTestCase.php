@@ -4,6 +4,8 @@ namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
 use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\AuthorResource;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\BookResource;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\StoreResource;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers\NovaServiceProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Testing\TestResponse;
@@ -24,7 +26,9 @@ abstract class NovaTestCase extends FeatureTestCase
         Nova::$resources = [];
 
         Nova::resources([
-            AuthorResource::class
+            AuthorResource::class,
+            BookResource::class,
+            StoreResource::class,
         ]);
 
         Nova::auth(function () {
