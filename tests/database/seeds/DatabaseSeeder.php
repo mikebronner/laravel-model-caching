@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
                     "commentable_id" => $comment->commentable_id,
                     "commentable_type" => UncachedPost::class,
                     "description" => $comment->description,
-                    "subject" => $comment->subject,
+                    "subject" => $comment->subject . ' - uncached post',
                 ]);
             });
         $publishers = factory(Publisher::class, 10)->create();
