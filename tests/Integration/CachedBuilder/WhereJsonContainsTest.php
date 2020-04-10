@@ -25,6 +25,7 @@ class WhereJsonContainsTest extends IntegrationTestCase
         parent::setUp();
 
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        factory(Author::class, 10)->create();
     }
 
     public function testWithInUsingCollectionQuery()
@@ -37,6 +38,7 @@ class WhereJsonContainsTest extends IntegrationTestCase
         $authors = (new Author)
             ->whereJsonContains("finances->total", 5000)
             ->get();
+
         $liveResults = (new UncachedAuthor)
             ->whereJsonContains("finances->total", 5000)
             ->get();
@@ -46,6 +48,8 @@ class WhereJsonContainsTest extends IntegrationTestCase
             ->tags($tags)
             ->get($key)['value'];
 
+        $this->assertCount(10, $cachedResults);
+        $this->assertCount(10, $liveResults);
         $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
@@ -69,6 +73,8 @@ class WhereJsonContainsTest extends IntegrationTestCase
             ->tags($tags)
             ->get($key)['value'];
 
+        $this->assertCount(10, $liveResults);
+        $this->assertCount(10, $cachedResults);
         $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
