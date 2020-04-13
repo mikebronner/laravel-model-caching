@@ -234,7 +234,10 @@ class CacheKey
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
         $values = collect($this->query->bindings["where"][$this->currentBinding] ?? []);
-        $this->currentBinding += count($where["values"]);
+
+        if (Str::startsWith($subquery, $values->first())) {
+            $this->currentBinding += count($where["values"]);
+        }
 
         if (! is_numeric($subquery) && ! is_numeric(str_replace("_", "", $subquery))) {
             try {
