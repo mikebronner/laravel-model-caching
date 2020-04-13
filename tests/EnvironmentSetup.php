@@ -1,5 +1,10 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
+use Illuminate\Auth\Middleware\Authenticate;
+use Laravel\Nova\Http\Middleware\Authorize;
+use Laravel\Nova\Http\Middleware\BootTools;
+use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
+
 trait EnvironmentSetup
 {
     protected function getEnvironmentSetUp($app)
@@ -31,5 +36,19 @@ trait EnvironmentSetup
             'connection' => 'model-cache',
         ]);
         $app['config']->set('laravel-model-caching.store', 'model');
+        $app['config']->set("nova", [
+            'name' => 'Nova Site',
+            'url' => env('APP_URL', '/'),
+            'path' => '/nova',
+            'guard' => env('NOVA_GUARD', null),
+            'middleware' => [
+                'web',
+                Authenticate::class,
+                DispatchServingNovaEvent::class,
+                BootTools::class,
+                Authorize::class,
+            ],
+            'pagination' => 'simple',
+        ]);
     }
 }
