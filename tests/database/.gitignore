@@ -1,3 +1,1 @@
-# Created by .ignore support plugin (hsz.mobi)
-!/baseline.sqlite
-!/testing.sqlite
+*.sqlite
