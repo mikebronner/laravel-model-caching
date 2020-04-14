@@ -5,6 +5,7 @@ use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingServic
 trait CreatesApplication
 {
     use EnvironmentSetup;
+    use MigrateBaselineDatabase;
 
     protected $cache;
     protected $testingSqlitePath;
@@ -22,18 +23,16 @@ trait CreatesApplication
 
     public function setUp() : void
     {
+        parent::setUp();
+        $this->setUpBaseLineSqlLiteDatabase();
+
         $databasePath = __DIR__ . "/database";
         $this->testingSqlitePath = "{$databasePath}/";
         $baselinePath = "{$databasePath}/baseline.sqlite";
         $testingPath = "{$databasePath}/testing.sqlite";
 
-        if (file_exists($testingPath)) {
-            unlink($testingPath);
-        }
-
-        shell_exec("cp {$baselinePath} {$testingPath}");
-
-        parent::setUp();
+        ! file_exists($testingPath) ?: unlink($testingPath);
+        copy($baselinePath, $testingPath);
 
         require(__DIR__ . '/routes/web.php');
 

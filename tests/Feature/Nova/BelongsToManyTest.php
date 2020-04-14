@@ -56,6 +56,7 @@ class BelongsToManyTest extends NovaTestCase
             'resources' => [$beforeStore->id],
         ]);
 
+        $this->response->dump();
         $this->response->assertStatus(200);
 
         $store = Store::with(['books'])->all()->first();
