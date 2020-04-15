@@ -25,7 +25,7 @@ matrix:
 before_script:
   - travis_retry composer self-update;
   - travis_retry composer config --global github-protocols https;
-  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then travis_retry composer config http-basic.nova.laravel.com $NOVA_USERNAME $NOVA_PASSWORD; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then travis_retry composer config http-basic.nova.laravel.com $NOVA_USERNAME $NOVA_PASSWORD; fi'
   - travis_retry composer install --no-interaction --prefer-source;
   - if php -v | grep -q 'Xdebug'; then phpenv config-rm xdebug.ini; fi
   - pecl install pcov
