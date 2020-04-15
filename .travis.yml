@@ -6,10 +6,18 @@ services:
   - postgresql
   - redis-server
 
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+
 env:
   global:
-    - REDIS_HOST=127.0.0.1
-    - DB_HOST=127.0.0.1
+  - REDIS_HOST=127.0.0.1
+  - DB_HOST=127.0.0.1
+  - PGPORT=5433
 
 matrix:
   include:
