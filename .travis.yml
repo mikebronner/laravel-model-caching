@@ -6,9 +6,6 @@ services:
   - postgresql
   - redis-server
 
-addons:
-  postgresql: "11"
-
 env:
   global:
     - REDIS_HOST=127.0.0.1
