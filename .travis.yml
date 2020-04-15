@@ -16,7 +16,6 @@ addons:
 env:
   global:
   - REDIS_HOST=127.0.0.1
-  - PGPORT=5433
 
 matrix:
   include:
