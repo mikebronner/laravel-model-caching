@@ -3,9 +3,9 @@
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 
+/** @group nova */
 class BelongsToManyTest extends NovaTestCase
 {
-    /** @group test */
     public function testAttachRelationFlushesCache()
     {
         $beforeStore = Store::with(['books'])->get()->first();
@@ -35,7 +35,6 @@ class BelongsToManyTest extends NovaTestCase
         $this->assertSame('new foo', $book->title);
     }
 
-    /** @group test */
     public function testDetachRelationFlushesCache()
     {
         /** @var Store $store */
@@ -66,7 +65,6 @@ class BelongsToManyTest extends NovaTestCase
         $this->assertCount(1, $books);
     }
 
-    /** @group test */
     public function testUpdateRelationFlushesCache()
     {
         $beforeStore = Store::with(['books'])->get()->first();
@@ -86,7 +84,6 @@ class BelongsToManyTest extends NovaTestCase
         $this->assertSame('foo', $book->title);
     }
 
-    /** @group test */
     public function testDeleteRelationFlushesCache()
     {
         $beforeStore = Store::with(['books'])->get()->first();

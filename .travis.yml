@@ -23,10 +23,10 @@ matrix:
     - php: 7.4
 
 before_script:
-  - travis_retry composer self-update
-  - travis_retry composer config --global github-protocols https
-  - travis_retry composer config http-basic.nova.laravel.com $NOVA_USERNAME $NOVA_PASSWORD
-  - travis_retry composer install --no-interaction --prefer-source
+  - travis_retry composer self-update;
+  - travis_retry composer config --global github-protocols https;
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then travis_retry composer config http-basic.nova.laravel.com $NOVA_USERNAME $NOVA_PASSWORD; fi'
+  - travis_retry composer install --no-interaction --prefer-source;
   - if php -v | grep -q 'Xdebug'; then phpenv config-rm xdebug.ini; fi
   - pecl install pcov
   - psql -c "CREATE DATABASE testing;" -U postgres
@@ -34,7 +34,8 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist  --coverage-clover build/logs/clover.xml
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then php vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml --exclude-group nova; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then php vendor/bin/phpunit -c phpunit.xml.dist  --coverage-clover build/logs/clover.xml; fi'
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
