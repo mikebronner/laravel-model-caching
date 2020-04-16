@@ -2,6 +2,7 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 
+/** @group nova */
 class CreateTest extends NovaTestCase
 {
     public function testCreateFlushesCacheForModel()

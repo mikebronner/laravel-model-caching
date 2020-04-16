@@ -2,6 +2,7 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 
+/** @group nova */
 class DeleteTest extends NovaTestCase
 {
     public function testDeleteFlushesCacheForModel()
