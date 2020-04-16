@@ -1,20 +1,17 @@
 <?php
 
-namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
+namespace GeneaLabs\LaravelModelCaching\Tests;
 
-use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\BookResource;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\StoreResource;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers\NovaServiceProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Testing\TestResponse;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaCoreServiceProvider;
 
 abstract class NovaTestCase extends FeatureTestCase
 {
-    /** @var TestResponse */
     protected $response;
 
     protected $authenticatedAs;
@@ -22,6 +19,7 @@ abstract class NovaTestCase extends FeatureTestCase
     public function setUp(): void
     {
         parent::setUp();
+
         Nova::$tools = [];
         Nova::$resources = [];
 
@@ -50,10 +48,13 @@ abstract class NovaTestCase extends FeatureTestCase
 
     protected function getPackageProviders($app)
     {
-        return array_merge(parent::getPackageProviders($app), [
-            NovaCoreServiceProvider::class,
-            \Laravel\Nova\NovaServiceProvider::class,
-            NovaServiceProvider::class,
-        ]);
+        return array_merge(
+            parent::getPackageProviders($app),
+            [
+                NovaCoreServiceProvider::class,
+                \Laravel\Nova\NovaServiceProvider::class,
+                NovaServiceProvider::class,
+            ]
+        );
     }
 }

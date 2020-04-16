@@ -1,15 +1,13 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\NovaTestCase;
 
-/** @group nova */
 class UpdateTest extends NovaTestCase
 {
     public function testUpdateFlushesCacheForModel()
     {
         $beforeAuthors = (new Author)->get();
-
-        /** @var Author $author */
         $author = $beforeAuthors->first();
 
         $this->putJson('nova-api/authors/' . $author->id, [
@@ -23,7 +21,6 @@ class UpdateTest extends NovaTestCase
         $this->assertCount(10, $beforeAuthors);
         $this->assertCount(10, $authors);
 
-        /** @var Author $updatedAuthor */
         $updatedAuthor = $authors->first();
         $this->assertTrue($updatedAuthor->is($author));
         $this->assertSame('foo', $updatedAuthor->name);

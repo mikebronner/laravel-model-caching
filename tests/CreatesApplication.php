@@ -1,11 +1,15 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\Artisan;
+use Laravel\Nova\Http\Middleware\Authorize;
+use Laravel\Nova\Http\Middleware\BootTools;
+use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
 
 trait CreatesApplication
 {
-    use EnvironmentSetup;
-    use MigrateBaselineDatabase;
+    private static $baseLineDatabaseMigrated = false;
 
     protected $cache;
     protected $testingSqlitePath;
@@ -24,6 +28,7 @@ trait CreatesApplication
     public function setUp() : void
     {
         parent::setUp();
+
         $this->setUpBaseLineSqlLiteDatabase();
 
         $databasePath = __DIR__ . "/database";
@@ -31,17 +36,18 @@ trait CreatesApplication
         $baselinePath = "{$databasePath}/baseline.sqlite";
         $testingPath = "{$databasePath}/testing.sqlite";
 
-        ! file_exists($testingPath) ?: unlink($testingPath);
+        ! file_exists($testingPath)
+            ?: unlink($testingPath);
         copy($baselinePath, $testingPath);
 
         require(__DIR__ . '/routes/web.php');
 
         $this->withFactories(__DIR__ . '/database/factories');
+
         view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
         $this->cache = app('cache')
             ->store(config('laravel-model-caching.store'));
-
         $this->cache()->flush();
     }
 
@@ -53,5 +59,83 @@ trait CreatesApplication
         return [
             LaravelModelCachingService::class,
         ];
+    }
+
+    public function setUpBaseLineSqlLiteDatabase()
+    {
+        if (self::$baseLineDatabaseMigrated) {
+            return;
+        }
+
+        self::$baseLineDatabaseMigrated = true;
+
+        $file = __DIR__ . '/database/baseline.sqlite';
+        $this->app['config']->set('database.default', 'baseline');
+        $this->app['config']->set('database.connections.baseline', [
+            'driver' => 'sqlite',
+            "url" => null,
+            'database' => $file,
+            'prefix' => '',
+            "foreign_key_constraints" => false,
+        ]);
+
+        ! file_exists($file)
+            ?: unlink($file);
+        touch($file);
+
+        $this->withFactories(__DIR__ . '/database/factories');
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+
+        Artisan::call('db:seed', [
+            '--class' => 'DatabaseSeeder',
+            '--database' => 'baseline',
+        ]);
+
+        $this->app['config']->set('database.default', 'testing');
+    }
+
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => __DIR__ . '/database/testing.sqlite',
+            'prefix' => '',
+            "foreign_key_constraints" => false,
+        ]);
+        $app['config']->set('database.redis.client', "predis");
+        $app['config']->set('database.redis.cache', [
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'port' => env('REDIS_PORT', 6379),
+        ]);
+        $app['config']->set('database.redis.default', [
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'port' => env('REDIS_PORT', 6379),
+        ]);
+        $app['config']->set('database.redis.model-cache', [
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'password' => env('REDIS_PASSWORD', null),
+            'port' => env('REDIS_PORT', 6379),
+            'database' => 1,
+        ]);
+        $app['config']->set('cache.stores.model', [
+            'driver' => 'redis',
+            'connection' => 'model-cache',
+        ]);
+        $app['config']->set('laravel-model-caching.store', 'model');
+        $app['config']->set("nova", [
+            'name' => 'Nova Site',
+            'url' => env('APP_URL', '/'),
+            'path' => '/nova',
+            'guard' => env('NOVA_GUARD', null),
+            'middleware' => [
+                'web',
+                Authenticate::class,
+                DispatchServingNovaEvent::class,
+                BootTools::class,
+                Authorize::class,
+            ],
+            'pagination' => 'simple',
+        ]);
     }
 }
