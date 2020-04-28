@@ -27,7 +27,7 @@ before_script:
   - pecl install pcov
   - travis_retry composer self-update;
   - travis_retry composer config --global github-protocols https;
-  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then travis_retry composer config http-basic.nova.laravel.com $NOVA_USERNAME $NOVA_PASSWORD; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then travis_retry composer config http-basic.nova.laravel.com "$NOVA_USERNAME" "$NOVA_PASSWORD"; fi'
   - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then composer remove --dev laravel/nova --no-interaction --no-update; fi'
   - travis_retry composer install --no-interaction --prefer-source;
   - psql -c "CREATE DATABASE testing;" -U postgres
