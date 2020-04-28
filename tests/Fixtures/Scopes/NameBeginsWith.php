@@ -3,11 +3,13 @@
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class NameBeginsWith implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('name', 'LIKE', "A%");
+        $letter = (new Str)->substr(auth()->user()->name, 0, 1);
+        $builder->where('name', 'LIKE', "{$letter}%");
     }
 }
