@@ -67,7 +67,7 @@ class ScopeTest extends IntegrationTestCase
             ->first();
         $authors = (new AuthorBeginsWithScoped)
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped-name_like_A%");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped-name_like_A%0=A%25");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped"];
 
         $cachedResults = $this->cache()
@@ -89,7 +89,7 @@ class ScopeTest extends IntegrationTestCase
             ->first();
         $authors = (new AuthorWithInlineGlobalScope)
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorwithinlineglobalscope-authors.deleted_at_null-name_like_A%");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorwithinlineglobalscope-authors.deleted_at_null-name_like_A%0=A%25");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthorwithinlineglobalscope"];
 
         $cachedResults = $this->cache()
@@ -103,7 +103,33 @@ class ScopeTest extends IntegrationTestCase
         $this->assertTrue($liveResults->contains($author));
     }
 
-    public function testGlobalScopesWhenSwitchingContext()
+    public function testGlobalScopesWhenSwitchingContextUsingAllMethod()
+    {
+        factory(Author::class, 200)->create();
+        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        $this->actingAs($user);
+        $authorsA = (new AuthorBeginsWithScoped)
+            ->all()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $this->actingAs($user);
+        $authorsB = (new AuthorBeginsWithScoped)
+            ->all()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+
+        $this->assertCount(1, $authorsA);
+        $this->assertCount(1, $authorsB);
+        $this->assertEquals("A", $authorsA->first());
+        $this->assertEquals("B", $authorsB->first());
+    }
+
+    public function testGlobalScopesWhenSwitchingContextUsingGetMethod()
     {
         factory(Author::class, 200)->create();
         $user = factory(User::class)->create(["name" => "Anton Junior"]);

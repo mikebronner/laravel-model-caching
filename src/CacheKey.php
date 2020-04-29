@@ -44,6 +44,7 @@ class CacheKey
         $key .= $this->getOrderByClauses();
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
+        $key .= $this->getBindingsSlug();
         $key .= $keyDifferentiator;
         $key .= $this->macroKey;
 // dump($key);
@@ -351,5 +352,14 @@ class CacheKey
 
             return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
         });
+    }
+
+    protected function getBindingsSlug() : string
+    {
+        if (! method_exists($this->model, 'query')) {
+            return '';
+        }
+        
+        return Arr::query($this->model->query()->getBindings());
     }
 }
