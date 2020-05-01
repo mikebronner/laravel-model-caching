@@ -35,7 +35,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then php vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml --exclude-group nova; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then php vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml --testsuite Feature --testsuite Integration; fi'
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then php vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml; fi'
 
 after_success:
