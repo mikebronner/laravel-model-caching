@@ -42,7 +42,7 @@ It will not work with non-taggable drivers:
 ```
 
 ## Requirements
--   Laravel 6.0+
+-   Laravel 7.0+
     ```diff
     - Please note that prior Laravel versions are not supported and the package
     - versions that are compatible with prior versions of Laravel contain bugs.
