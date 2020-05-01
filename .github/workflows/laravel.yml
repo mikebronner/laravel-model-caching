@@ -13,6 +13,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
+    - uses: zhulik/redis-action@1.1.0
+      with:
+        redis version: '5'
+        number of databases: 100      
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
