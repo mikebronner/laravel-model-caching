@@ -37,7 +37,5 @@
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="REDIS_HOST" value="127.0.0.1"/>
         <env name="PGSQL_HOST" value="127.0.0.1"/>
-        <env name="DB_USER" value="postgres"/>
-        <env name="DB_PASSWORD" value="postgres"/>
     </php>
 </phpunit>
