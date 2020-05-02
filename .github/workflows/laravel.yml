@@ -11,23 +11,56 @@ jobs:
 
     runs-on: ubuntu-latest
     
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [7.3, 7.4]
+    
+    name: PHP ${{ matrix.php }}
+    
     steps:
     - uses: actions/checkout@v2
+      
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.composer/cache/files
+        key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
+    - name: Setup PHP ${{ matrix.php }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, pgsql, pdo_pgsql
+        coverage: none
+      
     - uses: zhulik/redis-action@1.1.0
       with:
         redis version: '5'
-        number of databases: 100      
+        number of databases: 100
+    
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
         postgresql db: 'testing'
         postgresql user: 'homestead'
         postgresql password: 'secret'    
+    
+    - name: Remove Nova on a pull request
+      if: github.event_name == 'pull_request'
+      run: composer remove laravel/nova --no-update --no-interaction --dev
+    
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+    
     - name: Install Dependencies
       run: |
         composer config "http-basic.nova.laravel.com" "${{ secrets.NOVA_USERNAME }}" "${{ secrets.NOVA_PASSWORD }}"
         composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      run: vendor/bin/phpunit --configuration phpunit.xml.dist
+    
+    - name: Execute Integration and Feature tests via PHPUnit
+      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature
+
+    - name: Execute Nova tests via PHPUnit
+      if: github.event_name != 'pull_request'
+      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Nova
