@@ -48,7 +48,7 @@ jobs:
     
     - name: Remove Nova on a pull request
       if: github.event_name == 'pull_request'
-      run: composer remove laravel/nova --no-update --no-interaction
+      run: composer remove laravel/nova --no-update --no-interaction --dev
     
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
