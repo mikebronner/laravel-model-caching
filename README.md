@@ -1,5 +1,5 @@
 # Model Caching for Laravel
-[![Laravel Package](https://github.com/GeneaLabs/laravel-model-caching/workflows/Laravel%20Package/badge.svg?branch=master)](https://github.com/GeneaLabs/laravel-model-caching/actions)
+[![Laravel Package](https://github.com/GeneaLabs/laravel-model-caching/workflows/Laravel%20Package/badge.svg?branch=master)](https://github.com/GeneaLabs/laravel-model-caching/actions?query=workflow%3A%22Laravel+Package%22)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching/master.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
 ![BCH Compliance](https://bettercodehub.com/edge/badge/GeneaLabs/laravel-model-caching?branch=master)
 [![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching/master.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
