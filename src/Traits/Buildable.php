@@ -220,7 +220,7 @@ trait Buildable
 
     public function cachedValue(array $arguments, string $cacheKey)
     {
-        $method = debug_backtrace()[1]['function'];
+        $method = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
         $cacheTags = $this->makeCacheTags();
         $hashedCacheKey = sha1($cacheKey);
         $result = $this->retrieveCachedValue(

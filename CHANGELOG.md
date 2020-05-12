@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.8.6] - 2020-05-12
+### Changed
+- implementation of `debug_backtrace()` to reduce memory consumption. Thanks @saernz!
+
 ## [0.8.5] - 2020-05-02
 ### Changed
 - PHP dependency version to ">=7.2.5" to be more inline with Laravel.
