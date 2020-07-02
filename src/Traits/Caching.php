@@ -32,6 +32,15 @@ trait Caching
         return $result;
     }
 
+    public function applyScopes() : self
+    {
+        if ($this->scopesAreApplied) {
+            return $this;
+        }
+        
+        return parent::applyScopes();
+    }
+
     protected function applyScopesToInstance()
     {
         if (! property_exists($this, "scopes")

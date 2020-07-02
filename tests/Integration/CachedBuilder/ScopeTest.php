@@ -178,14 +178,20 @@ class ScopeTest extends IntegrationTestCase
 
     public function testScopeNotAppliedTwice()
     {
-        factory(Author::class, 10)->create();
-        $user = factory(User::class)->create(["name" => "Anton Junior"]);
+        $user = factory(User::class)
+            ->create(["name" => "Anton Junior"]);
         $this->actingAs($user);
         DB::enableQueryLog();
-        $authorsA = (new AuthorBeginsWithScoped)
+        
+        (new AuthorBeginsWithScoped)
             ->get();
         $queryLog = DB::getQueryLog();
+
         $this->assertCount(1, $queryLog);
-        $this->assertCount(1, $queryLog[0]['bindings'], "There should only be 1 binding, scope is being applied more than once.");
+        $this->assertCount(
+            1,
+            $queryLog[0]['bindings'],
+            "There should only be 1 binding, scope is being applied more than once."
+        );
     }
 }
