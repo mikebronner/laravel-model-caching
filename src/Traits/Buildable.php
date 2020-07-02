@@ -292,4 +292,19 @@ trait Buildable
                 }
             );
     }
+
+    /**
+     * Apply the scopes if they haven't already been applied, if they have
+     * just return the builder. This prevents scopes from being applied twice.
+     *
+     * @return static
+     */
+    public function applyScopes()
+    {
+        if ($this->scopesAreApplied) {
+            return $this;
+        }
+        
+        return parent::applyScopes();
+    }
 }
