@@ -32,7 +32,7 @@ trait Caching
         return $result;
     }
 
-    public function applyScopes() : self
+    public function applyScopes()
     {
         if ($this->scopesAreApplied) {
             return $this;
