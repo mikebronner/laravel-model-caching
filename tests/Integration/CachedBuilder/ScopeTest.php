@@ -8,6 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithInlineGlobalScope;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthorWithInlineGlobalScope;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ScopeTest extends IntegrationTestCase
@@ -173,5 +174,18 @@ class ScopeTest extends IntegrationTestCase
 
         // $this->assertNotEquals($authors1, $authors2);
         $this->markTestSkipped();
+    }
+
+    public function testScopeNotAppliedTwice()
+    {
+        factory(Author::class, 10)->create();
+        $user = factory(User::class)->create(["name" => "Anton Junior"]);
+        $this->actingAs($user);
+        DB::enableQueryLog();
+        $authorsA = (new AuthorBeginsWithScoped)
+            ->get();
+        $queryLog = DB::getQueryLog();
+        $this->assertCount(1, $queryLog);
+        $this->assertCount(1, $queryLog[0]['bindings'], "There should only be 1 binding, scope is being applied more than once.");
     }
 }
