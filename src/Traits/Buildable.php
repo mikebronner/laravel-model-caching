@@ -114,8 +114,10 @@ trait Buildable
 
     public function insert(array $values)
     {
-        $this->checkCooldownAndFlushAfterPersisting($this->model);
-
+        if (property_exists($this, "model")) {
+            $this->checkCooldownAndFlushAfterPersisting($this->model);
+        }
+        
         return parent::insert($values);
     }
 
@@ -202,7 +204,9 @@ trait Buildable
 
     public function update(array $values)
     {
-        $this->checkCooldownAndFlushAfterPersisting($this->model);
+        if (property_exists($this, "model")) {
+            $this->checkCooldownAndFlushAfterPersisting($this->model);
+        }
 
         return parent::update($values);
     }
