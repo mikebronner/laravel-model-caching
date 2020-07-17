@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2020-07-17
+### Removed
+- support for PHP 7.2 due to incompatibility.
+
+## [0.8.10] - 2020-07-08
+### Fixed
+- update and insert methods when called on cached relations.
+
+## [0.8.9] - 2020-07-03
+### Added
+- changes meant for 0.8.8 that were inadvertently not committed.
+
 ## [0.8.8] - 2020-07-02
 ### Fixed
 - return type of `applyScopes` to match parent class.
