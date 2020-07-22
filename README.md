@@ -79,6 +79,14 @@ Be sure to not require a specific version of this package when requiring it:
 composer require genealabs/laravel-model-caching:*
 ```
 
+### Gotchas If Using With Lumen
+The following steps need to be figured out by you and implemented in your Lumen
+app. Googling for ways to do this provided various approaches to this.
+
+1. Make sure your Lumen app can load config files.
+2. Publish this package's config file to the location your app loads config
+   files from.
+
 ## Upgrade Notes
 ### 0.6.0
 The environment and config variables for disabling this package have changed.
