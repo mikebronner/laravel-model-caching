@@ -76,7 +76,7 @@ The following items currently do no work with this package:
 ## Installation
 Be sure to not require a specific version of this package when requiring it:
 ```
-composer require genealabs/laravel-model-caching:*
+composer require genealabs/laravel-model-caching
 ```
 
 ### Gotchas If Using With Lumen
