@@ -103,7 +103,7 @@ trait CreatesApplication
             'prefix' => '',
             "foreign_key_constraints" => false,
         ]);
-        $app['config']->set('database.redis.client', "predis");
+        $app['config']->set('database.redis.client', "phpredis");
         $app['config']->set('database.redis.cache', [
             'host' => env('REDIS_HOST', '127.0.0.1'),
             'port' => env('REDIS_PORT', 6379),
