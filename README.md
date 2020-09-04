@@ -50,13 +50,13 @@ It will not work with non-taggable drivers:
     - Please only use with the versions of Laravel noted above to be compatible.
     ```
 
-### Possible Conflicting Packages
+### Possible Package Conflicts
 Any packages that override `newEloquentModel()` from the `Model` class will
 likely conflict with this package. Of course, any packages that implement their
 own Querybuilder class effectively circumvent this package, rendering them
 incompatible.
 
-The following are packages we have identified as incompatible:
+The following are packages we have identified as conflicting:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
 - [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
 - [chelout/laravel-relationship-events](https://github.com/chelout/laravel-relationship-events)
