@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.10.2] - 2020-09-04
+### Added
+- functionality to inject custom builder class for handling conflicting packages.
+
 ## [0.10.1] - 2020-08-02
 ### Fixed
 - typos in test class.
@@ -307,7 +311,7 @@ Pushed changes intended for 0.5.1. Forgot to push changes to repo. 👀
 
 ## [0.3.3] - 10 Nov 2018
 ### Fixed
-- typo in method `checkCooldownAndFlushAfterPersiting()` to 
+- typo in method `checkCooldownAndFlushAfterPersiting()` to
   `checkCooldownAndFlushAfterPersisting()`; thanks @jacobzlogar!
 
 ## [0.3.2] - 3 Nov 2018

@@ -1,8 +1,11 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Providers;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Providers;
 
 use GeneaLabs\LaravelModelCaching\Console\Commands\Clear;
 use GeneaLabs\LaravelModelCaching\Console\Commands\Publish;
 use GeneaLabs\LaravelModelCaching\Helper;
+use GeneaLabs\LaravelModelCaching\ModelCaching;
 use Illuminate\Support\ServiceProvider;
 
 class Service extends ServiceProvider
@@ -24,6 +27,13 @@ class Service extends ServiceProvider
 
     public function register()
     {
+        if (! class_exists('GeneaLabs\LaravelModelCaching\EloquentBuilder')) {
+            class_alias(
+                ModelCaching::builder(),
+                'GeneaLabs\LaravelModelCaching\EloquentBuilder'
+            );
+        }
+
         $this->app->bind("model-cache", Helper::class);
     }
 }

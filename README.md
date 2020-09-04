@@ -62,7 +62,28 @@ The following are packages we have identified as incompatible:
 - [chelout/laravel-relationship-events](https://github.com/chelout/laravel-relationship-events)
 - [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
 - [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
-- [kalnoy/nestedset](https://github.com/kalnoy/nestedset)
+- [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
+
+#### Override
+It may be possible to insert the custom querybuilder of the conflicting package
+into this package by adding the following to your AppServiceProvider, in this
+example we are implementing the NestedSet QueryBuilder:
+```php
+//...
+use GeneaLabs\LaravelModelCaching\ModelCaching;
+use Kalnoy\Nestedset\QueryBuilder;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        ModelCaching::useBuilder(QueryBuilder::class);
+        //...
+    }
+
+    //...
+}
+```
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
