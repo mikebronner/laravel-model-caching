@@ -43,7 +43,7 @@ It will not work with non-taggable drivers:
 
 ## Requirements
 - PHP 7.3+
-- Laravel 7.0+
+- Laravel 8.0+
     ```diff
     - Please note that prior Laravel versions are not supported and the package
     - versions that are compatible with prior versions of Laravel contain bugs.
@@ -63,27 +63,6 @@ The following are packages we have identified as conflicting:
 - [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
 - [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
 - [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
-
-#### Override
-It may be possible to insert the custom querybuilder of the conflicting package
-into this package by adding the following to your AppServiceProvider, in this
-example we are implementing the NestedSet QueryBuilder:
-```php
-//...
-use GeneaLabs\LaravelModelCaching\ModelCaching;
-use Kalnoy\Nestedset\QueryBuilder;
-
-class AppServiceProvider extends ServiceProvider
-{
-    public function boot()
-    {
-        ModelCaching::useBuilder(QueryBuilder::class);
-        //...
-    }
-
-    //...
-}
-```
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
