@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\EloquentBuilder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
@@ -108,7 +109,7 @@ trait ModelCaching
     }
 
     protected function newBelongsToMany(
-        EloquentBuilder $query,
+        Builder $query,
         Model $parent,
         $table,
         $foreignPivotKey,
