@@ -27,9 +27,4 @@ class CreateBookStore extends Migration
                 ->onDelete('CASCADE');
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

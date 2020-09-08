@@ -1,13 +1,16 @@
-![pexels-photo-325229](https://user-images.githubusercontent.com/1791050/30768358-0df9d0f2-9fbb-11e7-9f10-ad40b83bbf59.jpg)
-
 # Model Caching for Laravel
-[![Gitter](https://badges.gitter.im/GeneaLabs/laravel-model-caching.svg)](https://gitter.im/GeneaLabs/laravel-model-caching?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
-[![Travis](https://img.shields.io/travis/GeneaLabs/laravel-model-caching/master.svg)](https://travis-ci.org/GeneaLabs/laravel-model-caching)
+[![Laravel Package](https://github.com/GeneaLabs/laravel-model-caching/workflows/Laravel%20Package/badge.svg?branch=master)](https://github.com/GeneaLabs/laravel-model-caching/actions?query=workflow%3A%22Laravel+Package%22)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching/master.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
+![BCH Compliance](https://bettercodehub.com/edge/badge/GeneaLabs/laravel-model-caching?branch=master)
 [![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching/master.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
 [![GitHub (pre-)release](https://img.shields.io/github/release/GeneaLabs/laravel-model-caching/all.svg)](https://github.com/GeneaLabs/laravel-model-caching)
 [![Packagist](https://img.shields.io/packagist/dt/GeneaLabs/laravel-model-caching.svg)](https://packagist.org/packages/genealabs/laravel-model-caching)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
+
+![Model Caching for Laravel masthead image](https://repository-images.githubusercontent.com/103836049/b0d89480-f1b1-11e9-8e13-a7055f008fe6)
+
+## Supporting This Package
+This is an MIT-licensed open source project with its ongoing development made possible by the support of the community. If you'd like to support this, and our other packages, please consider [becoming a sponsor](https://github.com/sponsors/mikebronner).
 
 ## Impetus
 I created this package in response to a client project that had complex, nested
@@ -22,21 +25,103 @@ relationships. This package is an attempt to address those requirements.
 -   automatic use of cache tags for cache providers that support them (will
     flush entire cache for providers that don't).
 
-## Requirements
--   PHP >= 7.1.3
--   Laravel 5.4 - 5.7
+## Cache Drivers
+This package is best suited for taggable cache drivers:
+```diff
++ Redis
++ MemCached
++ APC
++ Array
+```
 
-### Possible Conflicting Packages
-Any packages that also override `newEloquentModel()` from the `Model` class will
-likely conflict with this package. So far these may include the following:
+It will not work with non-taggable drivers:
+```diff
+- Database
+- File
+- DynamoDB
+```
+
+## Requirements
+- PHP 7.3+
+- Laravel 7.0+
+    ```diff
+    - Please note that prior Laravel versions are not supported and the package
+    - versions that are compatible with prior versions of Laravel contain bugs.
+    - Please only use with the versions of Laravel noted above to be compatible.
+    ```
+
+### Possible Package Conflicts
+Any packages that override `newEloquentModel()` from the `Model` class will
+likely conflict with this package. Of course, any packages that implement their
+own Querybuilder class effectively circumvent this package, rendering them
+incompatible.
+
+The following are packages we have identified as conflicting:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
+- [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
+- [chelout/laravel-relationship-events](https://github.com/chelout/laravel-relationship-events)
+- [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
+- [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
+- [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
+
+#### Override
+It may be possible to insert the custom querybuilder of the conflicting package
+into this package by adding the following to your AppServiceProvider, in this
+example we are implementing the NestedSet QueryBuilder:
+```php
+//...
+use GeneaLabs\LaravelModelCaching\ModelCaching;
+use Kalnoy\Nestedset\QueryBuilder;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        ModelCaching::useBuilder(QueryBuilder::class);
+        //...
+    }
+
+    //...
+}
+```
+
+### Things That Don't Work Currently
+The following items currently do no work with this package:
+```diff
+- caching of lazy-loaded relationships, see #127. Currently lazy-loaded belongs-to relationships are cached. Caching of other relationships is in the works.
+- using select() clauses in Eloquent queries, see #238 (work-around discussed in the issue)
+- using transactions. If you are using transactions, you will likely have to manually flush the cache, see [issue #305](https://github.com/GeneaLabs/laravel-model-caching/issues/305).
+```
 
 [![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
 
 ## Installation
+Be sure to not require a specific version of this package when requiring it:
 ```
 composer require genealabs/laravel-model-caching
 ```
+
+### Gotchas If Using With Lumen
+The following steps need to be figured out by you and implemented in your Lumen
+app. Googling for ways to do this provided various approaches to this.
+
+1. Make sure your Lumen app can load config files.
+2. Publish this package's config file to the location your app loads config
+   files from.
+
+## Upgrade Notes
+### 0.6.0
+The environment and config variables for disabling this package have changed.
+- If you have previously published the config file, publish it again, and adjust as necessary:
+  ```sh
+  php artisan modelCache:publish --config
+  ```
+
+- If you have disabled the package in your .env file, change the entry from `MODEL_CACHE_DISABLED=true` to `MODEL_CACHE_ENABLED=false`.
+
+### 0.5.0
+The following implementations have changed (see the respective sections below):
+- model-specific cache prefix
 
 ## Configuration
 ### Recommended (Optional) Custom Cache Store
@@ -72,6 +157,7 @@ abstract class BaseModel
     //
 }
 ```
+
 ### Multiple Database Connections
 __Thanks to @dtvmedia for suggestion this feature. This is actually a more robust
 solution than cache-prefixes.__
@@ -86,10 +172,6 @@ prefixing to keep cache entries separate for multi-tenant applications. For this
 it is recommended to add the Cachable trait to a base model, then set the cache
 key prefix config value there.
 
-**Note that the config setting is included before the parent method is called,
-so that the setting is available in the parent as well. If you are developing a
-multi-tenant application, see the note above.**
-
 Here's is an example:
 ```php
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
@@ -103,13 +185,14 @@ class BaseModel extends Model
 {
     use Cachable;
 
-    public function __construct($attributes = [])
-    {
-        config(['laravel-model-caching.cache-prefix' => 'test-prefix']);
-
-        parent::__construct($attributes);
-    }
+    protected $cachePrefix = "test-prefix";
 }
+```
+
+The cache prefix can also be set in the configuration to prefix all cached
+models across the board:
+```php
+    'cache-prefix' => 'test-prefix',
 ```
 
 ### Exception: User Model
@@ -124,17 +207,43 @@ For example you might have a busy site where comments are submitted at a high
 rate, and you don't want every comment submission to invalidate the cache. While
 I don't necessarily recommend this, you might experiment it's effectiveness.
 
-It can be implemented like so:
+To use it, it must be enabled in the model (or base model if you want to use it on multiple or all models):
+```php
+class MyModel extends Model
+{
+    use Cachable;
+
+    protected $cacheCooldownSeconds = 300; // 5 minutes
+
+    // ...
+}
+```
+
+After that it can be implemented in queries:
 ```php
 (new Comment)
-    ->withCacheCooldownSeconds(30)
+    ->withCacheCooldownSeconds(30) // override default cooldown seconds in model
+    ->get();
+```
+
+or:
+```php
+(new Comment)
+    ->withCacheCooldownSeconds() // use default cooldown seconds in model
     ->get();
 ```
 
 ### Disabling Caching of Queries
 There are two methods by which model-caching can be disabled:
 1. Use `->disableCache()` in a query-by-query instance.
-2. Set `MODEL_CACHE_DISABLED=TRUE` in your `.env` file.
+2. Set `MODEL_CACHE_ENABLED=false` in your `.env` file.
+3. If you only need to disable the cache for a block of code, or for non-
+    eloquent queries, this is probably the better option:
+    ```php
+    $result = app("model-cache")->runDisabled(function () {
+        return (new MyModel)->get(); // or any other stuff you need to run with model-caching disabled
+    });
+    ```
 
 **Recommendation: use option #1 in all your seeder queries to avoid pulling in
 cached information when reseeding multiple times.**
@@ -153,10 +262,6 @@ This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
 
-## Possible Future Improvements
-- [caching of lazy-loaded relationships, see #127](https://github.com/GeneaLabs/laravel-model-caching/issues/127).
-- [caching of global scopes, see #106](https://github.com/GeneaLabs/laravel-model-caching/issues/106).
-
 ## Summary
 **That's all you need to do. All model queries and relationships are now
 cached!**
@@ -173,7 +278,7 @@ be. My checklist for package development includes:
 -   ✅ Be fully PSR1, PSR2, and PSR4 compliant.
 -   ✅ Include comprehensive documentation in README.md.
 -   ✅ Provide an up-to-date CHANGELOG.md which adheres to the format outlined
-    at <http://keepachangelog.com>.
+    at <https://keepachangelog.com>.
 -   ✅ Have no PHPMD or PHPCS warnings throughout all code.
 
 ## Contributing
@@ -188,7 +293,7 @@ information included to be actionable.
 Please review the Contribution Guidelines <https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md>.
 Only PRs that meet all criterium will be accepted.
 
-## ❤️ Open-Source Software - Give ⭐️
+## If you ❤️ open-source software, give the repos you use a ⭐️.
 We have included the awesome `symfony/thanks` composer package as a dev
 dependency. Let your OS package maintainers know you appreciate them by starring
 the packages you use. Simply run composer thanks after installing this package.

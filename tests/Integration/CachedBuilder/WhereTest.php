@@ -2,23 +2,12 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class WhereTest extends IntegrationTestCase
 {
-
-
     public function testWithQuery()
     {
         $books = (new Book)
@@ -45,9 +34,8 @@ class WhereTest extends IntegrationTestCase
         $authors = (new Author)
             ->where('name', '=', $author->name)
             ->get();
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-name_=_' .
-            $author->name);
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_=_{$author->name}-authors.deleted_at_null");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = $this->cache()
             ->tags($tags)
@@ -67,14 +55,15 @@ class WhereTest extends IntegrationTestCase
             ->where('name', $operator, $author->name)
             ->get();
         $keyParts = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-name',
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name",
             '_',
             str_replace(' ', '_', strtolower($operator)),
             '_',
             $author->name,
+            "-authors.deleted_at_null"
         ];
         $key = sha1(implode('', $keyParts));
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = $this->cache()
             ->tags($tags)
@@ -100,8 +89,8 @@ class WhereTest extends IntegrationTestCase
 
     public function testTwoWhereClausesAfterEachOther()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor-id_>_-id_<_100');
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_0-id_<_100-authors.deleted_at_null");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $authors = (new Author)
             ->where("id", ">", 0)
@@ -117,5 +106,30 @@ class WhereTest extends IntegrationTestCase
 
         $this->assertEmpty($authors->diffKeys($cachedResults));
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
+    }
+
+    public function testWhereUsesCorrectBinding()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-nested-name_like_B%-name_like_G%-authors.deleted_at_null");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
+
+        $authors = (new Author)
+            ->where("name", "LIKE", "A%")
+            ->orWhere("name", "LIKE", "D%")
+            ->get();
+        $authors = (new Author)
+            ->where("name", "LIKE", "B%")
+            ->orWhere("name", "LIKE", "G%")
+            ->get();
+        $cachedResults = collect($this->cache()
+            ->tags($tags)
+            ->get($key)['value']);
+        $liveResults = (new UncachedAuthor)
+            ->where("name", "LIKE", "B%")
+            ->orWhere("name", "LIKE", "G%")
+            ->get();
+
+        $this->assertEquals($liveResults->toArray(), $authors->toArray());
+        $this->assertEquals($liveResults->toArray(), $cachedResults->toArray());
     }
 }

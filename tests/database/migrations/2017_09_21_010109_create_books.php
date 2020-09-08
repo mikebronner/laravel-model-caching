@@ -30,9 +30,4 @@ class CreateBooks extends Migration
                 ->onDelete('CASCADE');
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

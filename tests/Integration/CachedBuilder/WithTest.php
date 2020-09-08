@@ -2,21 +2,37 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class WithTest extends IntegrationTestCase
 {
+    public function testWithLimitedQuery()
+    {
+        $authors = (new Author)
+            ->where("id", 1)
+            ->with([
+                'books' => function ($query) {
+                    $query->where("id", "<", 100)
+                        ->offset(5)
+                        ->limit(1);
+                }
+            ])
+            ->first();
+        $uncachedAuthor = (new UncachedAuthor)->with([
+                'books' => function ($query) {
+                    $query->where("id", "<", 100)
+                        ->offset(5)
+                        ->limit(1);
+                }
+            ])
+            ->first();
+
+        $this->assertEquals($uncachedAuthor->books()->pluck("id"), $authors->books()->pluck("id"));
+        $this->assertEquals($uncachedAuthor->id, $authors->id);
+    }
+
     public function testWithQuery()
     {
         $author = (new Author)
@@ -63,10 +79,10 @@ class WithTest extends IntegrationTestCase
 
     public function testWithBelongsToManyRelationshipQuery()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook-books.id_=_3-stores-first');
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.id_=_3-testing:{$this->testingSqlitePath}testing.sqlite:stores-first");
         $tags = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesstore',
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
         ];
 
         $stores = (new Book)

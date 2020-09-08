@@ -2,26 +2,16 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class SelectTest extends IntegrationTestCase
 {
     public function testSelectWithRawColumns()
     {
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook_orderBy_author_id_asc');
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook_author_id_AVG(id) AS averageIds_orderBy_author_id_asc");
         $tags = [
-            'genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesbook',
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
         $selectArray = [
             app("db")->raw("author_id"),
@@ -48,5 +38,78 @@ class SelectTest extends IntegrationTestCase
 
         $this->assertEquals($liveResults, $books);
         $this->assertEquals($liveResults, $cachedResults);
+    }
+
+    public function testSelectFieldsAreCached()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_id_name-authors.deleted_at_null-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $authorFields = (new Author)
+            ->select("id", "name")
+            ->first()
+            ->getAttributes();
+        $uncachedFields = (new UncachedAuthor)
+            ->select("id", "name")
+            ->first()
+            ->getAttributes();
+        $cachedFields = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value']
+            ->getAttributes();
+
+        $this->assertEquals($cachedFields, $authorFields);
+        $this->assertEquals($cachedFields, $uncachedFields);
+    }
+
+    public function testAddSelectMethodOnModel()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_(SELECT id FROM authors WHERE id = 1)-authors.deleted_at_null-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $result = (new Author)
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->first();
+        $uncachedResult = (new UncachedAuthor)
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->first();
+        $uncachedResult = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEquals($uncachedResult, $result);
+        $this->assertEquals($uncachedResult, $uncachedResult);
+    }
+
+    public function testAddSelectMethodOnBuilder()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_(SELECT id FROM authors WHERE id = 1)_(SELECT id FROM authors WHERE id = 1)-id_=_1-authors.deleted_at_null-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $result = (new Author)
+            ->where("id", 1)
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->first();
+        $uncachedResult = (new UncachedAuthor)
+            ->where("id", 1)
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->first();
+        $uncachedResult = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+
+        $this->assertEquals($uncachedResult, $result);
+        $this->assertEquals($uncachedResult, $uncachedResult);
     }
 }

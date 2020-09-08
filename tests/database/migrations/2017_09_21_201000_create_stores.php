@@ -15,9 +15,4 @@ class CreateStores extends Migration
             $table->text('name');
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

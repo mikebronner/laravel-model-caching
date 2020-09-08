@@ -1,17 +1,18 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Observers\AuthorObserver;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
-use Orchestra\Database\ConsoleServiceProvider;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\Artisan;
+use Laravel\Nova\Http\Middleware\Authorize;
+use Laravel\Nova\Http\Middleware\BootTools;
+use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
 
 trait CreatesApplication
 {
+    private static $baseLineDatabaseMigrated = false;
+
     protected $cache;
+    protected $testingSqlitePath;
 
     protected function cache()
     {
@@ -24,40 +25,29 @@ trait CreatesApplication
         return $cache;
     }
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
+
+        $this->setUpBaseLineSqlLiteDatabase();
+
+        $databasePath = __DIR__ . "/database";
+        $this->testingSqlitePath = "{$databasePath}/";
+        $baselinePath = "{$databasePath}/baseline.sqlite";
+        $testingPath = "{$databasePath}/testing.sqlite";
+
+        ! file_exists($testingPath)
+            ?: unlink($testingPath);
+        copy($baselinePath, $testingPath);
 
         require(__DIR__ . '/routes/web.php');
 
         $this->withFactories(__DIR__ . '/database/factories');
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+
         view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
         $this->cache = app('cache')
             ->store(config('laravel-model-caching.store'));
-
-        $this->cache()->flush();
-        $publishers = factory(Publisher::class, 10)->create();
-        (new Author)->observe(AuthorObserver::class);
-        factory(Author::class, 10)->create()
-            ->each(function ($author) use ($publishers) {
-                factory(Book::class, random_int(5, 25))->make()
-                    ->each(function ($book) use ($author, $publishers) {
-                        $book->author()->associate($author);
-                        $book->publisher()->associate($publishers[rand(0, 9)]);
-                        $book->save();
-                    });
-                factory(Profile::class)->make([
-                    'author_id' => $author->id,
-                ]);
-            });
-
-        $bookIds = (new Book)->all()->pluck('id');
-        factory(Store::class, 10)->create()
-            ->each(function ($store) use ($bookIds) {
-                $store->books()->sync(rand($bookIds->min(), $bookIds->max()));
-            });
         $this->cache()->flush();
     }
 
@@ -68,26 +58,62 @@ trait CreatesApplication
     {
         return [
             LaravelModelCachingService::class,
-            ConsoleServiceProvider::class,
         ];
+    }
+
+    public function setUpBaseLineSqlLiteDatabase()
+    {
+        if (self::$baseLineDatabaseMigrated) {
+            return;
+        }
+
+        self::$baseLineDatabaseMigrated = true;
+
+        $file = __DIR__ . '/database/baseline.sqlite';
+        $this->app['config']->set('database.default', 'baseline');
+        $this->app['config']->set('database.connections.baseline', [
+            'driver' => 'sqlite',
+            "url" => null,
+            'database' => $file,
+            'prefix' => '',
+            "foreign_key_constraints" => false,
+        ]);
+
+        ! file_exists($file)
+            ?: unlink($file);
+        touch($file);
+
+        $this->withFactories(__DIR__ . '/database/factories');
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+
+        Artisan::call('db:seed', [
+            '--class' => 'DatabaseSeeder',
+            '--database' => 'baseline',
+        ]);
+
+        $this->app['config']->set('database.default', 'testing');
     }
 
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'testing');
-        $app['config']->set('database.connections.testbench', [
+        $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
-            'database' => ':memory:',
+            'database' => __DIR__ . '/database/testing.sqlite',
             'prefix' => '',
+            "foreign_key_constraints" => false,
         ]);
+        $app['config']->set('database.redis.client', "phpredis");
         $app['config']->set('database.redis.cache', [
-            'host' => env('REDIS_HOST', '192.168.10.10'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'port' => env('REDIS_PORT', 6379),
         ]);
         $app['config']->set('database.redis.default', [
-            'host' => env('REDIS_HOST', '192.168.10.10'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'port' => env('REDIS_PORT', 6379),
         ]);
         $app['config']->set('database.redis.model-cache', [
-            'host' => env('REDIS_HOST', '192.168.10.10'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', 6379),
             'database' => 1,
@@ -97,5 +123,19 @@ trait CreatesApplication
             'connection' => 'model-cache',
         ]);
         $app['config']->set('laravel-model-caching.store', 'model');
+        $app['config']->set("nova", [
+            'name' => 'Nova Site',
+            'url' => env('APP_URL', '/'),
+            'path' => '/nova',
+            'guard' => env('NOVA_GUARD', null),
+            'middleware' => [
+                'web',
+                Authenticate::class,
+                DispatchServingNovaEvent::class,
+                BootTools::class,
+                Authorize::class,
+            ],
+            'pagination' => 'simple',
+        ]);
     }
 }

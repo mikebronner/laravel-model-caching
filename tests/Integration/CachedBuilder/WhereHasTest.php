@@ -1,24 +1,12 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BookWithUncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class WhereHasTest extends IntegrationTestCase
 {
-    
-
     public function testWhereHasClause()
     {
         $authors = (new Author)
@@ -47,5 +35,27 @@ class WhereHasTest extends IntegrationTestCase
             ->get();
 
         $this->assertEquals($authors->pluck("id"), $uncachedAuthors->pluck("id"));
+    }
+
+    public function testNonCachedRelationshipPreventsCaching()
+    {
+        $book = (new BookWithUncachedStore)
+            ->with("uncachedStores")
+            ->whereHas("uncachedStores")
+            ->get()
+            ->first();
+        $store = $book->uncachedStores->first();
+        $store->name = "Waterstones";
+        $store->save();
+        $results = $this->cache()->tags([
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuncachedstore"
+            ])
+            ->get(sha1(
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-exists-" .
+                "and_books.id_=_book_store.book_id-testing:{$this->testingSqlitePath}testing.sqlite:uncachedStores"
+            ));
+
+        $this->assertNull($results);
     }
 }

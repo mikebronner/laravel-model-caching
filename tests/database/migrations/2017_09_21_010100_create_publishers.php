@@ -14,9 +14,4 @@ class CreatePublishers extends Migration
             $table->string('name');
         });
     }
-
-    public function down()
-    {
-        //
-    }
 }

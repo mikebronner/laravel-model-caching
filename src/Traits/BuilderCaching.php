@@ -12,4 +12,13 @@ trait BuilderCaching
 
         return $this->model->get($columns);
     }
+
+    public function truncate()
+    {
+        if ($this->isCachable()) {
+            $this->model->flushCache();
+        }
+
+        return parent::truncate();
+    }
 }

@@ -2,31 +2,20 @@
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Http\Resources\Author as AuthorResource;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class WhereRawTest extends IntegrationTestCase
 {
-    
-
     public function testRawWhereClauseParsing()
     {
         $authors = collect([(new Author)
             ->whereRaw('name <> \'\'')
             ->first()]);
 
-        $key = sha1('genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor_and_name-first');
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-_and_name_<>_''-authors.deleted_at_null-first");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
 
@@ -45,8 +34,8 @@ class WhereRawTest extends IntegrationTestCase
             ->whereRaw("name != 'test3'")
             ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthorname_!=_test_and_name_!=_'test3'_and_name_=_Guido_Feest__AND_name_!=_test2");
-        $tags = ['genealabs:laravel-model-caching:testing::memory::genealabslaravelmodelcachingtestsfixturesauthor'];
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_!=_test-_and_name_!=_'test3'-_and_name_=_" . str_replace(" ", "_", $authorName) . "__AND_name_!=_test2-authors.deleted_at_null");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
         $liveResults = (new UncachedAuthor)
@@ -103,5 +92,49 @@ class WhereRawTest extends IntegrationTestCase
             })->get();
 
         $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+    }
+
+    public function testWhereRawParametersCacheUniquely()
+    {
+        $book1 = (new UncachedBook)->first();
+        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+
+        $result1 = (new Book)
+            ->whereRaw("id = ?", [$book1->id])
+            ->get();
+        $result2 = (new Book)
+            ->whereRaw("id = ?", [$book2->id])
+            ->get();
+        $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book1->id}");
+        $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book2->id}");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook"];
+        $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
+        $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
+
+        $this->assertEquals($cachedBook1->first()->title, $result1->first()->title);
+        $this->assertEquals($cachedBook2->first()->title, $result2->first()->title);
+    }
+
+    public function testWhereRawParametersAfterWhereClause()
+    {
+        $book1 = (new UncachedBook)->first();
+        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+
+        $result1 = (new Book)
+            ->where("id", ">", 0)
+            ->whereRaw("id = ?", [$book1->id])
+            ->get();
+        $result2 = (new Book)
+            ->where("id", ">", 1)
+            ->whereRaw("id = ?", [$book2->id])
+            ->get();
+        $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_>_0-_and_id_=_{$book1->id}");
+        $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_>_1-_and_id_=_{$book2->id}");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook"];
+        $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
+        $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
+
+        $this->assertEquals($cachedBook1->first()->title, $result1->first()->title);
+        $this->assertEquals($cachedBook2->first()->title, $result2->first()->title);
     }
 }

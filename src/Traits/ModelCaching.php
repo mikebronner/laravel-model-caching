@@ -1,23 +1,51 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Carbon\Carbon;
+use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\EloquentBuilder;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 trait ModelCaching
 {
-    public static function all($columns = ['*'])
+    public function __get($key)
     {
-        if (config('laravel-model-caching.disabled')) {
-            return parent::all($columns);
+        if ($key === "cachePrefix") {
+            return $this->cachePrefix
+                ?? "";
         }
 
+        if ($key === "cacheCooldownSeconds") {
+            return $this->cacheCooldownSeconds
+                ?? 0;
+        }
+
+        return parent::__get($key);
+    }
+
+    public function __set($key, $value)
+    {
+        if ($key === "cachePrefix") {
+            $this->cachePrefix = $value;
+        }
+
+        if ($key === "cacheCooldownSeconds") {
+            $this->cacheCooldownSeconds = $value;
+        }
+
+        parent::__set($key, $value);
+    }
+
+    public static function all($columns = ['*'])
+    {
         $class = get_called_class();
         $instance = new $class;
+
+	    if (!$instance->isCachable()) {
+		    return parent::all($columns);
+	    }
+
         $tags = $instance->makeCacheTags();
         $key = $instance->makeCacheKey();
 
@@ -46,16 +74,16 @@ trait ModelCaching
         //     $instance->checkCooldownAndFlushAfterPersisting($instance);
         // });
 
-        static::pivotAttached(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersisting($instance);
+        static::pivotAttached(function ($instance, $secondInstance, $relationship) {
+            $instance->checkCooldownAndFlushAfterPersisting($instance, $relationship);
         });
 
-        static::pivotDetached(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersisting($instance);
+        static::pivotDetached(function ($instance, $secondInstance, $relationship) {
+            $instance->checkCooldownAndFlushAfterPersisting($instance, $relationship);
         });
 
-        static::pivotUpdated(function ($instance) {
-            $instance->checkCooldownAndFlushAfterPersisting($instance);
+        static::pivotUpdated(function ($instance, $secondInstance, $relationship) {
+            $instance->checkCooldownAndFlushAfterPersisting($instance, $relationship);
         });
     }
 
@@ -71,7 +99,7 @@ trait ModelCaching
     public function newEloquentBuilder($query)
     {
         if (! $this->isCachable()) {
-            $this->isCachable = true;
+            $this->isCachable = false;
 
             return new EloquentBuilder($query);
         }
@@ -80,7 +108,7 @@ trait ModelCaching
     }
 
     protected function newBelongsToMany(
-        Builder $query,
+        EloquentBuilder $query,
         Model $parent,
         $table,
         $foreignPivotKey,
@@ -127,8 +155,12 @@ trait ModelCaching
 
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
-        int $seconds
+        int $seconds = null
     ) : EloquentBuilder {
+        if (! $seconds) {
+            $seconds = $this->cacheCooldownSeconds;
+        }
+
         $cachePrefix = $this->getCachePrefix();
         $modelClassName = get_class($this);
         $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";

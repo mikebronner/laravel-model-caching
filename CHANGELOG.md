@@ -3,9 +3,315 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [0.10.2] - 2020-09-04
+### Added
+- functionality to inject custom builder class for handling conflicting packages.
+
+## [0.10.1] - 2020-08-02
+### Fixed
+- typos in test class.
+
+## [0.10.0] - 2020-08-02
+### Removed
+- PREDIS dependency. Going forward testing will be done against PHPREDIS, as
+    that is installed by default on Laravel Forge servers and the officially
+    recommended Redis client, since PREDIS is no longer maintained.
+
+## [0.9.0] - 2020-07-17
+### Removed
+- support for PHP 7.2 due to incompatibility.
+
+## [0.8.10] - 2020-07-08
+### Fixed
+- update and insert methods when called on cached relations.
+
+## [0.8.9] - 2020-07-03
+### Added
+- changes meant for 0.8.8 that were inadvertently not committed.
+
+## [0.8.8] - 2020-07-02
+### Fixed
+- return type of `applyScopes` to match parent class.
+
+## [0.8.7] - 2020-07-02
+### Added
+- check for scopes to avoid them being applied twice. Thanks @saernz!
+
+## [0.8.6] - 2020-05-12
+### Changed
+- implementation of `debug_backtrace()` to reduce memory consumption. Thanks @saernz!
+
+## [0.8.5] - 2020-05-02
+### Changed
+- PHP dependency version to ">=7.2.5" to be more inline with Laravel.
+
+## [0.8.4] - 2020-04-29
+### Added
+- additional unit tests.
+
+### Updated
+- key generation to be more explicit in details with global scopes. Thanks @Drewdan!
+
+## [0.8.3] - 2020-04-15
+### Added
+- initial tests for Nova integration. Thanks @dmason30!
+
+### Fixed
+- travis build process, tests on travis are now back to green!!!
+
+## [0.8.2] - 2020-04-13
+### Fixed
+- issue with incorrectly adding to currentBinding if item was not in query
+  binding. Thanks @irvine1231!
+
+## [0.8.1] - 2020-04-09
+### Fixed
+- `jsonContains()` with array values. Thanks @dmason30!
+- `truncate()` to flush cache. Thanks @dmason30!
+
+## [0.8.0] - 2020-02-29
+### Added
+- Laravel 7 compatibility.
+
+## [0.7.4] - 2019-12-22
+### Added
+- documentation to explain that database transactions are currently not supported.
+- compatibility with binary UUIDs. Thanks @padre!
+
+### Changed
+- detection if cache is enabled in the `$model->all()` method. Thanks @titrxw!
+
+## [0.7.2] - 2019-10-12
+### Fixed
+- improper caching of non-cachable eagerloaded relationships. Now any query with non-cachable eagerloaded relationships will not be cached in its entirety to prevent stale data. Special thanks to @Hornet-Wing for his help in this.
+
+## [0.7.1] - 2019-10-02
+### Fixed
+- dependency version constraints.
+### Added
+- various tests.
+
+## [0.7.0] - 2019-08-28
+### Added
+- Laravel 6.0 support.
+
+## [0.6.3] - 2019-08-27
+### Fixed
+- caching of methods that could pass field names as string or array.
+
+## [0.6.2] - 2019-07-26
+### Added
+- 'modelCache:publish' artisan command.
+- Spatie's QueryBuilder package to list of incompatible packages.
+
+### Fixed
+- registration of config file in service provider.
+- detection if cache is disabled.
+- flushing of cache for pivot events.
+
+## [0.6.1] - 2019-07-20
+### Added
+- config and environment variable to allow removal of database information from cache-key.
+
+## [0.6.0] - 2019-07-20
+### Changed
+- environment variable `MODEL_CACHE_DISABLED` to `MODEL_CACHE_ENABLED` to better conform to standards.
+
+### Fixed
+- how cache key is constructed for SQLite.
+
+## [0.5.6] - 2019-06-20
+### Removed
+- all use of helper methods to allow non-Laravel apps to use this package:
+  - app()
+  - config()
+  - cache()
+  - db()
+  - now()
+  - request()
+
+## [0.5.5] - 2019-05-27
+### Fixed
+- parsing of soft-deleted-related queries:
+  - withTrashed()
+  - onlyTrashed()
+  - withoutTrashed()
+
+## [0.5.4] - 2019-05-27
+### Fixed
+- parsing of global scopes. Rewrote how global scopes are analyzed to create appropriate cache key.
+
+## [0.5.3] - 2019-05-21
+### Fixed
+- calling `flushCache()` on non-cachable related models.
+
+## [0.5.2] - 21 May 2019
+Pushed changes intended for 0.5.1. Forgot to push changes to repo. 👀
+
+## [0.5.1] - 21 May 2019
+### Fixed
+- caching of where clauses using DateTime instead of Carbon.
+
+## [0.5.0] - 20 May 2019
+### Changed
+- implementation of model-based cache prefix.
+- the way tests are run to be MUCH more performant.
+
+### Removed
+- dead code.
+
+## [0.4.24] - 18 May 2019
+### Fixed
+- BelongsToMany relationship to not cache if the target model is not also cachable.
+
+## [0.4.23] - 18 May 2019
+### Added
+- tests for lazy-loading the following relationships:
+    - BelongsTo
+    - BelongsToMany
+    - HasMany
+    - HasOne
+
+### Fixed
+- BelongsToMany relationship cache not being automatically invalidated.
+
+## [0.4.22] - 17 May 2019
+### Fixed
+- issue introduce in previous release related to cache cooldown and prefixes.
+
+## [0.4.21] - 17 May 2019
+### Added
+- my own implementation of laravel pivot events, based on `fico7489/laravel-pivot`.
+
+### Fixed
+- Laravel Telescope compatibility.
+
+### Removed
+- dependency on `fico7489/laravel-pivot`.
+
+## [0.4.20] - 17 May 2019
+### Added
+- caching lazy-loading of belongs-to relationships. Thanks @tmishutin for leading the way forward on this effort! Hopefully this solution will work as a template for lazy-loading other relationship types going forward.
+
+### Fixed
+- an issue with prefixing found during testing.
+
+### Removed
+- unused code.
+
+## [0.4.19] - 16 May 2019
+### Added
+- work-around for Laravel Telescope compatibility to README.
+
+## [0.4.18] - 14 May 2019
+### Fixed
+- polymorphic relationship caching, as well as other queries using `InRaw`.
+
+## [0.4.17] - 12 May 2019
+### Fixed
+- generation of cache key where clauses.
+
+## [0.4.16] - 10 May 2019
+### Changed
+- the way the database name is determined when creating the cache prefix.
+
+## [0.4.15] - 9 May 2019
+### Fixed
+- bindings used in `whereIn` clauses.
+
+## [0.4.14] - 21 Apr 2019
+### Fixed
+- where `first()` didn't pass an array parameter.
+
+## [0.4.13] - 4 Apr 2019
+### Added
+- helper function to run closure with model-caching disabled. Thanks for the suggestion, @mycarrysun
+
+## [0.4.12] - 3 Apr 2019
+### Updated
+- string and array helpers to use the `Str` and `Arr` classes directly, in preparation for helper deprecations in Laravel 5.9. Thanks @mycarrysun
+
+### Fixed
+- disabling of model caching on relationship queries if model caching was disabled on the model. Thanks @mycarrysun
+- error that occurred if `whereIn` was given an empty array. Thanks @Ben52
+
+## [0.4.11] - 25 Mar 2019
+### Changed
+- `useCacheCooldown` to `cacheCooldownSeconds` in models.
+
+## [0.4.10] - 24 Mar 2019
+### Updated
+- cache cool down functionality to not trigger if it is not set on the model. This should hopefully improve performance. Thanks @mycarrysun for implementing the PR, and thanks @yemenifree for alerting me to the issue!
+
+## [0.4.9] - 6 Mar 2019
+### Changed
+- `laravel-pivot` dependency back to that of the original owner, as Laravel 5.8 compatibility has been restored.
+
+## [0.4.8] - 4 Mar 2019
+### Changed
+- to rely on temporarily published `mikebronner/laravel-pivot` package on packagist.
+
+## [0.4.7] - 1 Mar 2019
+### Fixed
+- installation of patched laravel-pivot dependency.
+
+## [0.4.6] - 28 Feb 2019
+### Fixed
+- dependency constraints from 5.8 to 5.8.*.
+
+## [0.4.5] - 28 Feb 2019
+### Fixed
+- using `find()` to get multiple items via an array. Thanks @cluebattery !
+
+## [0.4.4] - 28 Feb 2019
+### Added
+- functionality for caching of model relationships across different connections and databases. Thanks @PokeGuys for starting the conversation around this problem.
+
+## [0.4.3] - 28 Feb 2019
+### Fixed
+- cache cooldown flush when cool-down seconds option was used.
+
+## [0.4.2] - 28 Feb 2019
+### Fixed
+- `laravel-pivot` package compatibility temporarily with Laravel 5.8 patch of my own until they provide compatibility.
+
+## [0.4.1] - 28 Feb 2019
+### Fixed
+- version requirements in composer.json.
+
+## [0.4.0] - 28 Feb 2019
+### Added
+- Laravel 5.8 compatibility.
+
+### Removed
+- compatibility with previous versions of Laravel, as it was no longer sustainable with all the changes required.
+
+## [0.3.7] - 6 Feb 2019
+### Updated
+- depency laravel-pivot to next major release version, from a dev-version.
+
+### Changed
+- reference to `request()` helper to `app("request")` for Lumen compatibility. Thanks @PokeGuys
+
+## [0.3.6] - 8 Dec 2018
+### Added
+- functionality to invalidate cache after running `increment()` and `decrement()` queries.
+
+## [0.3.5] - 30 Nov 2018
+### Added
+- tracking of model table in cache key for those using dynamic table names in models.
+
+### Updated
+- dependency of `laravel-pivot` package to use the new code branch which includes a fix for Laravel Telescope compatibility.
+
+## [0.3.5] - 28 Nov 2018
+### Fixed
+- relationship queries breaking on new where clause type `InRaw`.
+
 ## [0.3.3] - 10 Nov 2018
 ### Fixed
-- typo in method `checkCooldownAndFlushAfterPersiting()` to 
+- typo in method `checkCooldownAndFlushAfterPersiting()` to
   `checkCooldownAndFlushAfterPersisting()`; thanks @jacobzlogar!
 
 ## [0.3.2] - 3 Nov 2018

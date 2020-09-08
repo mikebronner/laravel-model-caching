@@ -1,24 +1,41 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use Illuminate\Container\Container;
+
 trait CachePrefixing
 {
     protected function getCachePrefix() : string
     {
-        return "genealabs:laravel-model-caching:"
-            . $this->getDatabaseConnectionName() . ":"
-            . $this->getDatabaseName() . ":"
-            . (config("laravel-model-caching.cache-prefix")
-                ? config("laravel-model-caching.cache-prefix", "") . ":"
-                : "");
-    }
+        $cachePrefix = "genealabs:laravel-model-caching:";
+        $useDatabaseKeying = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.use-database-keying");
 
-    protected function getDatabaseConnectionName() : string
-    {
-        return $this->query->connection->getName();
+        if ($useDatabaseKeying) {
+            $cachePrefix .= $this->getConnectionName() . ":";
+            $cachePrefix .= $this->getDatabaseName() . ":";
+        }
+
+        $cachePrefix .= Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.cache-prefix", "");
+
+        if ($this->model
+            && property_exists($this->model, "cachePrefix")
+        ) {
+            $cachePrefix .= $this->model->cachePrefix . ":";
+        }
+
+        return $cachePrefix;
     }
 
     protected function getDatabaseName() : string
     {
-        return $this->query->connection->getDatabaseName();
+        return $this->model->getConnection()->getDatabaseName();
+    }
+
+    protected function getConnectionName() : string
+    {
+        return $this->model->getConnection()->getName();
     }
 }
