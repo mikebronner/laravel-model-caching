@@ -7,6 +7,12 @@ class PaginationTest extends FeatureTestCase
 {
     public function testPaginationProvidesDifferentLinksOnDifferentPages()
     {
+        // Checking the version start with 8.0.
+        if (preg_match("/^(8\.)/", app()->version())) {
+            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
+            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
+        }
+
         // Checking the version start with 5.6, 5.7, 5.8 or 6.
         if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
@@ -33,6 +39,12 @@ class PaginationTest extends FeatureTestCase
 
     public function testAdvancedPagination()
     {
+        // Checking the version start with 8.0.
+        if (preg_match("/^(8\.)/", app()->version())) {
+            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
+            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
+        }
+
         if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
@@ -50,6 +62,12 @@ class PaginationTest extends FeatureTestCase
 
     public function testCustomPagination()
     {
+        // Checking the version start with 8.0.
+        if (preg_match("/^(8\.)/", app()->version())) {
+            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
+            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
+        }
+
         if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
