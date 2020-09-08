@@ -11,6 +11,24 @@ class Service extends ServiceProvider
     {
         $configPath = __DIR__ . '/../../config/laravel-model-caching.php';
         $this->mergeConfigFrom($configPath, 'laravel-model-caching');
-        $this->commands(Clear::class);
+        $this->commands([
+            Clear::class,
+            Publish::class,
+        ]);
+        $this->publishes([
+            $configPath => config_path('laravel-model-caching.php'),
+        ], "config");
+
+        if (! class_exists('GeneaLabs\LaravelModelCaching\EloquentBuilder')) {
+            class_alias(
+                ModelCaching::builder(),
+                'GeneaLabs\LaravelModelCaching\EloquentBuilder'
+            );
+        }
+    }
+
+    public function register()
+    {
+        $this->app->bind("model-cache", Helper::class);
     }
 }

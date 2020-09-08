@@ -284,6 +284,25 @@ class CacheKey
             return "";
         }
 
-        return "-" . implode("-", $eagerLoads->keys()->toArray());
+        return $eagerLoads->keys()->reduce(function ($carry, $related) {
+            if (! method_exists($this->model, $related)) {
+                return "{$carry}-{$related}";
+            }
+
+            $relatedModel = $this->model->$related()->getRelated();
+            $relatedConnection = $relatedModel->getConnection()->getName();
+            $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
+
+            return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
+        });
+    }
+
+    protected function getBindingsSlug() : string
+    {
+        if (! method_exists($this->model, 'query')) {
+            return '';
+        }
+
+        return Arr::query($this->model->query()->getBindings());
     }
 }
