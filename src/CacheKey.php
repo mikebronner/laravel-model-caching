@@ -359,7 +359,7 @@ class CacheKey
         if (! method_exists($this->model, 'query')) {
             return '';
         }
-        
+
         return Arr::query($this->model->query()->getBindings());
     }
 }
