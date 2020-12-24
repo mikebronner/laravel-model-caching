@@ -84,8 +84,12 @@ composer require genealabs/laravel-model-caching
 The following steps need to be figured out by you and implemented in your Lumen
 app. Googling for ways to do this provided various approaches to this.
 
-1. Make sure your Lumen app can load config files.
-2. Publish this package's config file to the location your app loads config
+1. Register the package to load in Lumen:
+    ```php
+    $app->register(GeneaLabs\LaravelModelCaching\Providers\Service::class);
+    ```
+2. Make sure your Lumen app can load config files.
+3. Publish this package's config file to the location your app loads config
    files from.
 
 ## Upgrade Notes
