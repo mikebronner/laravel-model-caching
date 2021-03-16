@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.10.3] - 2021-03-16
+### Changed
+- The from part of the query ($query->from) instead of the table name of the model ($model->table)
+  is now used for determining the table part caching key fragment
+
 ## [0.10.2] - 2020-09-04
 ### Added
 - functionality to inject custom builder class for handling conflicting packages.
