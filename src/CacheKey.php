@@ -69,7 +69,7 @@ class CacheKey
 
     protected function getTableSlug() : string
     {
-        return (new Str)->slug($this->model->getTable())
+        return (new Str)->slug($this->query->from)
             . ":";
     }
 
