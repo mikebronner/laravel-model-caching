@@ -1,4 +1,8 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+declare(strict_types=1);
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BookWithUncachedStore;
@@ -8,7 +12,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class BelongsToManyTest extends IntegrationTestCase
 {
-    public function testLazyLoadingRelationship()
+    public function testLazyLoadingRelationship(): void
     {
         $bookId = (new Store)
             ->disableModelCaching()
@@ -17,7 +21,7 @@ class BelongsToManyTest extends IntegrationTestCase
             ->books
             ->first()
             ->id;
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
         ];
