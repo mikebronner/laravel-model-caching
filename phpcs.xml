@@ -1,64 +1,11 @@
 <?xml version="1.0"?>
-<ruleset
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    name="PHP_CodeSniffer"
-    xsi:noNamespaceSchemaLocation="phpcs.xsd"
->
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer" xsi:noNamespaceSchemaLocation="phpcs.xsd">
     <description>GeneaLabs coding standards.</description>
 
-    <file>app</file>
-    <file>bootstrap</file>
-    <file>config</file>
-    <file>database</file>
-    <file>resources</file>
-    <file>routes</file>
-    <file>storage</file>
-    <file>tests</file>
-
-    <exclude-pattern>*/*.css</exclude-pattern>
-    <exclude-pattern>*/*.js</exclude-pattern>
-    <exclude-pattern>*/*.xml</exclude-pattern>
-    <exclude-pattern>*/cache/*</exclude-pattern>
-    <exclude-pattern>*/docker/*</exclude-pattern>
-    <exclude-pattern>*/public/*</exclude-pattern>
-    <exclude-pattern>*/reference/*</exclude-pattern>
-    <exclude-pattern>*/storage/debugbar/*</exclude-pattern>
-    <exclude-pattern>*/storage/framework/*</exclude-pattern>
-    <exclude-pattern>*/storage/logs/*</exclude-pattern>
-    <exclude-pattern>*/tools/*</exclude-pattern>
-    <exclude-pattern>*/vendor/*</exclude-pattern>
-    <exclude-pattern>bootstrap/autoload.php</exclude-pattern>
-    <exclude-pattern>bootstrap/cache/*</exclude-pattern>
-
-    <arg name="tab-width" value="4"/>
-    <arg value="p"/>
-
-    <rule ref="GeneaLabs">
-        <exclude name="GeneaLabs.TypeHinting.ReturnType.MissingReturnType"/>
-        <exclude name="GeneaLabs.Whitespace.EmptyLineBeforeReturn.EmptyLineBeforeReturn"/>
-        <exclude name="GeneaLabs.Whitespace.EmptyLineAroundControlStructure.EmptyLineBeforeControlStructure"/>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard">
-        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification"/>
-        <exclude name="SlevomatCodingStandard.Files.TypeNameMatchesFileName.NoMatchBetweenTypeNameAndFileName"/>
-        <exclude name="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.NoEmptyLineAfterOpeningBrace"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.UseOnlyWhitelistedNamespaces.NonFullyQualified"/>
-        <exclude name="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition.RequiredSingleLineCondition"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions.NonFullyQualified"/>
-        <exclude name="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces.NoEmptyLineBeforeClosingBrace"/>
-        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.IncorrectWhitespaceBetweenOpenTagAndDeclare"/>
-        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.IncorrectStrictTypesFormat"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedExceptions.NonFullyQualifiedException"/>
-        <exclude name="SlevomatCodingStandard.ControlStructures.NewWithParentheses.MissingParentheses"/>
-        <exclude name="SlevomatCodingStandard.ControlStructures.RequireYodaComparison.RequiredYodaComparison"/>
-        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
-        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification"/>
-        <exclude name="SlevomatCodingStandard.Functions.StaticClosure.ClosureNotStatic"/>
-        <exclude name="SlevomatCodingStandard.Functions.RequireArrowFunction.RequiredArrowFunction"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalConstants.NonFullyQualified"/>
-        <exclude name="SlevomatCodingStandard.Functions.RequireSingleLineCall.RequiredSingleLineCall"/>
-        <exclude name="SlevomatCodingStandard.Operators.DisallowIncrementAndDecrementOperators.DisallowedPostIncrementOperator"/>
-        <exclude name="SlevomatCodingStandard.ControlStructures.DisallowShortTernaryOperator.DisallowedShortTernaryOperator)phpcs"/>
+    <rule ref="PSR1"></rule>
+    <rule ref="PSR2"></rule>
+    <rule ref="PSR12">
+        <exclude name="PSR12.Classes.ClassInstantiation.MissingParentheses"/>
+        <exclude name="PSR12.Functions.ReturnTypeDeclaration.SpaceBeforeColon"/>
     </rule>
 </ruleset>
