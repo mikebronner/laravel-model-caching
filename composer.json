@@ -34,7 +34,7 @@
         "php-coveralls/php-coveralls" : "^2.2",
         "phpmd/phpmd": "^2.7",
         "phpunit/phpunit": "^9.0",
-        "slevomat/coding-standard": "^6.4",
+        "slevomat/coding-standard": "^7.0",
         "squizlabs/php_codesniffer": "^3.4",
         "symfony/thanks": "^1.2",
         "laravel/legacy-factories": "^1.0"
