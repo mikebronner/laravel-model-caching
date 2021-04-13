@@ -23,8 +23,7 @@
         "illuminate/container": "^8.0",
         "illuminate/database": "^8.0",
         "illuminate/http": "^8.0",
-        "illuminate/support": "^8.0",
-        "slevomat/coding-standard": "^6.4"
+        "illuminate/support": "^8.0"
     },
     "require-dev": {
         "doctrine/dbal": "^2.10",
@@ -35,6 +34,7 @@
         "php-coveralls/php-coveralls" : "^2.2",
         "phpmd/phpmd": "^2.7",
         "phpunit/phpunit": "^9.0",
+        "slevomat/coding-standard": "^6.4",
         "squizlabs/php_codesniffer": "^3.4",
         "symfony/thanks": "^1.2",
         "laravel/legacy-factories": "^1.0"
