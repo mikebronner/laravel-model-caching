@@ -1,0 +1,17 @@
+version: 2
+registries:
+  git-nova-laravel-com:
+    type: git
+    url: https://nova.laravel.com
+    username: mike@genealabs.com
+    password: "${{secrets.GIT_NOVA_LARAVEL_COM_PASSWORD}}"
+
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "13:00"
+  open-pull-requests-limit: 10
+  registries:
+  - git-nova-laravel-com
