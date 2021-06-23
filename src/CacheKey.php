@@ -40,6 +40,7 @@ class CacheKey
         $key .= $this->getIdColumn($idColumn ?: "");
         $key .= $this->getQueryColumns($columns);
         $key .= $this->getWhereClauses();
+        $key .= $this->getHavingClauses();
         $key .= $this->getWithModels();
         $key .= $this->getOrderByClauses();
         $key .= $this->getOffsetClause();
@@ -47,8 +48,29 @@ class CacheKey
         $key .= $this->getBindingsSlug();
         $key .= $keyDifferentiator;
         $key .= $this->macroKey;
-// dump($key);
+
         return $key;
+    }
+
+    protected function getHavingClauses()
+    {
+        return Collection::make($this->query->havings)->reduce(function ($carry, $having) {
+            $value = $carry;
+            $value .= $this->getHavingClause($having);
+
+            return $value;
+        });
+    }
+
+    protected function getHavingClause(array $having): string
+    {
+        $return = '-having';
+
+        foreach ($having as $key => $value) {
+            $return .= '_' . $key . '_' . str_replace(' ', '_', $value);
+        }
+
+        return $return;
     }
 
     protected function getIdColumn(string $idColumn) : string
