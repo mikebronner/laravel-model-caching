@@ -29,6 +29,17 @@ trait Buildable
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
+    public function exists()
+    {
+        if (! $this->isCachable()) {
+            return parent::exists();
+        }
+
+        $cacheKey = $this->makeCacheKey(['*'], null, "-exists");
+
+        return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
     public function decrement($column, $amount = 1, array $extra = [])
     {
         $this->cache($this->makeCacheTags())
@@ -117,7 +128,7 @@ trait Buildable
         if (property_exists($this, "model")) {
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
-        
+
         return parent::insert($values);
     }
 
