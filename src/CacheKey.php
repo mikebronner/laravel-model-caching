@@ -4,6 +4,7 @@ use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 
@@ -45,6 +46,7 @@ class CacheKey
         $key .= $this->getOffsetClause();
         $key .= $this->getLimitClause();
         $key .= $this->getBindingsSlug();
+        $key .= $this->getPathSlug();
         $key .= $keyDifferentiator;
         $key .= $this->macroKey;
 // dump($key);
@@ -361,5 +363,10 @@ class CacheKey
         }
 
         return Arr::query($this->model->query()->getBindings());
+    }
+
+    protected function getPathSlug() : string
+    {
+    	return ':' . strtolower(URL::to('/'));
     }
 }

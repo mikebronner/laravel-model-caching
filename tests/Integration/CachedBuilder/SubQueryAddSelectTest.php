@@ -11,7 +11,7 @@ class SubQueryAddSelectTest extends IntegrationTestCase
 {
     public function testAddSelect()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook_books.*_(select \"name\" from \"publishers\" where \"id\" = \"books\".\"publisher_id\" order by \"published_at\" desc limit 1) as \"publisher_name\"-publisher_id_in_11_12_13_14_15");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook_books.*_(select \"name\" from \"publishers\" where \"id\" = \"books\".\"publisher_id\" order by \"published_at\" desc limit 1) as \"publisher_name\"-publisher_id_in_11_12_13_14_15:http://localhost");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];

@@ -11,7 +11,7 @@ class SubQueryOrderByTest extends IntegrationTestCase
 {
     public function testOrderByDesc()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-publisher_id_in_11_12_13_14_15_orderBy_(select \"name\" from \"publishers\" where \"id\" = \"books\".\"publisher_id\" limit 1)_desc");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-publisher_id_in_11_12_13_14_15_orderBy_(select \"name\" from \"publishers\" where \"id\" = \"books\".\"publisher_id\" limit 1)_desc:http://localhost");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];

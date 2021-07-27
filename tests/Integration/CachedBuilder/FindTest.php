@@ -26,7 +26,7 @@ class FindTest extends IntegrationTestCase
     {
         $authors = (new Author)
             ->find([1, 2, 3]);
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-find_list_1_2_3");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null:http://localhost-find_list_1_2_3");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
@@ -66,7 +66,7 @@ class FindTest extends IntegrationTestCase
             ->find(1);
         $author2 = (new Author)
             ->find([1]);
-        
+
         $this->assertNotEquals($author1, $author2);
         $this->assertIsIterable($author2);
         $this->assertEquals(Author::class, get_class($author1));

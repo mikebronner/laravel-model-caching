@@ -12,7 +12,7 @@ class LazyLoadTest extends IntegrationTestCase
 {
     public function testBelongsToRelationship()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-authors.deleted_at_null-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-authors.deleted_at_null:http://localhost-first");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
@@ -42,7 +42,7 @@ class LazyLoadTest extends IntegrationTestCase
 
     public function testHasManyRelationship()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull:http://localhost");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
@@ -73,7 +73,7 @@ class LazyLoadTest extends IntegrationTestCase
         $authorId = (new UncachedProfile)
             ->first()
             ->author_id;
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:profiles:genealabslaravelmodelcachingtestsfixturesprofile-profiles.author_id_=_{$authorId}-profiles.author_id_notnull-first");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:profiles:genealabslaravelmodelcachingtestsfixturesprofile-profiles.author_id_=_{$authorId}-profiles.author_id_notnull:http://localhost-first");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesprofile",
         ];

@@ -1,5 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature;
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Artisan;
 use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 
@@ -81,5 +85,18 @@ class PaginationTest extends FeatureTestCase
         $response = $this->visit("pagination-test2?custom-page=2");
 
         $response->see($page2ActiveLink);
+    }
+
+    public function testPaginationUrlIsCorrect() {
+    	$this->baseUrl = 'https://test.local';
+
+    	$this->visit("pagination-test2?custom-page=2")
+		    ->see('https://test.local/pagination-test2?custom-page=1');
+
+    	$this->baseUrl = 'https://changed.local';
+
+    	$this->visit("pagination-test2?custom-page=2")
+	        ->see('https://changed.local/pagination-test2?custom-page=1');
+
     }
 }
