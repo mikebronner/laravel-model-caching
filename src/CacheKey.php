@@ -174,7 +174,10 @@ class CacheKey
 
     protected function getValuesFromBindings(array $where, string $values) : string
     {
-        if (($this->query->bindings["where"][$this->currentBinding] ?? false) !== false) {
+        // Fallback to this when the current binding does not exist in the bindings array
+        $bindingFallback = __CLASS__ . ':UNKNOWN_BINDING';
+
+        if (($this->query->bindings["where"][$this->currentBinding] ?? $bindingFallback) !== $bindingFallback) {
             $values = $this->query->bindings["where"][$this->currentBinding];
             $this->currentBinding++;
 
