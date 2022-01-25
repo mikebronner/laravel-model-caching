@@ -1,6 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Illuminate\Container\Container;
+use Illuminate\Pagination\Paginator;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -153,11 +153,7 @@ trait Buildable
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = Container::getInstance()
-            ->make("request")
-            ->input($pageName)
-            ?: $page
-            ?: 1;
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
 
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
