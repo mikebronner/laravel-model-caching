@@ -87,7 +87,7 @@ class CacheKey
 
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
-        $values = collect($this->getCurrentBinding('where') ?? []);
+        $values = collect($this->getCurrentBinding('where', []));
 
         if (Str::startsWith($subquery, $values->first())) {
             $this->currentBinding += count($where["values"]);
@@ -210,7 +210,7 @@ class CacheKey
 
         while (count($queryParts) > 1) {
             $clause .= "_" . array_shift($queryParts);
-            $clause .= $this->getCurrentBinding('where');
+            $clause .= $this->getCurrentBinding("where", "");
             $this->currentBinding++;
         }
 
@@ -275,14 +275,14 @@ class CacheKey
     protected function getValuesFromBindings(array $where, string $values) : string
     {
         $bindingFallback = __CLASS__ . ':UNKNOWN_BINDING';
-        $currentBinding = $this->getCurrentBinding('where', $bindingFallback);
+        $currentBinding = $this->getCurrentBinding("where", $bindingFallback);
 
         if ($currentBinding !== $bindingFallback) {
             $values = $currentBinding;
             $this->currentBinding++;
 
             if ($where["type"] === "between") {
-                $values .= "_" . $this->getCurrentBinding('where');
+                $values .= "_" . $this->getCurrentBinding("where", "");
                 $this->currentBinding++;
             }
         }
