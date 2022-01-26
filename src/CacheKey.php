@@ -69,7 +69,7 @@ class CacheKey
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
-    protected function getCurrentBinding(string $type, mixed $bindingFallback = null): mixed
+    protected function getCurrentBinding(string $type, $bindingFallback = null)
     {
         return data_get($this->query->bindings, "{$type}.{$this->currentBinding}", $bindingFallback);
     }
