@@ -87,7 +87,7 @@ class CacheKey
 
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
-        $values = collect($this->getCurrentBinding('where', []));
+        $values = collect($this->getCurrentBinding('where', ""));
 
         if (Str::startsWith($subquery, $values->first())) {
             $this->currentBinding += count($where["values"]);
