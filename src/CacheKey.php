@@ -69,7 +69,7 @@ class CacheKey
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
-    protected function getCurrentBinding(string $type, string $bindingFallback): string
+    protected function getCurrentBinding(string $type, mixed $bindingFallback = null): mixed
     {
         return data_get($this->query->bindings, "{$type}.{$this->currentBinding}", $bindingFallback);
     }
@@ -87,7 +87,7 @@ class CacheKey
 
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
-        $values = collect($this->getCurrentBinding('where', ""));
+        $values = collect($this->getCurrentBinding('where', []));
 
         if (Str::startsWith($subquery, $values->first())) {
             $this->currentBinding += count($where["values"]);
@@ -210,7 +210,7 @@ class CacheKey
 
         while (count($queryParts) > 1) {
             $clause .= "_" . array_shift($queryParts);
-            $clause .= $this->getCurrentBinding("where", "");
+            $clause .= $this->getCurrentBinding("where");
             $this->currentBinding++;
         }
 
@@ -282,7 +282,7 @@ class CacheKey
             $this->currentBinding++;
 
             if ($where["type"] === "between") {
-                $values .= "_" . $this->getCurrentBinding("where", "");
+                $values .= "_" . $this->getCurrentBinding("where");
                 $this->currentBinding++;
             }
         }
