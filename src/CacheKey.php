@@ -176,13 +176,14 @@ class CacheKey
     {
         // Fallback to this when the current binding does not exist in the bindings array
         $bindingFallback = __CLASS__ . ':UNKNOWN_BINDING';
+        $currentBinding = $this->getCurrentBinding('where') ?? $bindingFallback;
 
-        if (($this->query->bindings["where"][$this->currentBinding] ?? $bindingFallback) !== $bindingFallback) {
-            $values = $this->query->bindings["where"][$this->currentBinding];
+        if ($currentBinding !== $bindingFallback) {
+            $values = $currentBinding;
             $this->currentBinding++;
 
             if ($where["type"] === "between") {
-                $values .= "_" . $this->query->bindings["where"][$this->currentBinding];
+                $values .= "_" . $this->getCurrentBinding('where');
                 $this->currentBinding++;
             }
         }
@@ -237,7 +238,7 @@ class CacheKey
 
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
-        $values = collect($this->query->bindings["where"][$this->currentBinding] ?? []);
+        $values = collect($this->getCurrentBinding('where') ?? []);
 
         if (Str::startsWith($subquery, $values->first())) {
             $this->currentBinding += count($where["values"]);
@@ -298,7 +299,7 @@ class CacheKey
 
         while (count($queryParts) > 1) {
             $clause .= "_" . array_shift($queryParts);
-            $clause .= $this->query->bindings["where"][$this->currentBinding];
+            $clause .= $this->getCurrentBinding('where');
             $this->currentBinding++;
         }
 
@@ -364,5 +365,11 @@ class CacheKey
         }
 
         return Arr::query($this->model->query()->getBindings());
+    }
+
+
+    private function getCurrentBinding(string $type)
+    {
+        return data_get($this->query->bindings, "$type.$this->currentBinding");
     }
 }
