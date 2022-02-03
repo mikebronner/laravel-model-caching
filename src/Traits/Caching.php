@@ -291,7 +291,7 @@ trait Caching
                 ->eagerLoad)
                 ->keys()
                 ->reduce(function ($carry, $related) {
-                    if (! method_exists($this, $related)
+                    if (! method_exists($this->model, $related)
                         || $carry === false
                     ) {
                         return $carry;
