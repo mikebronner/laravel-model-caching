@@ -12,6 +12,10 @@
 ## Supporting This Package
 This is an MIT-licensed open source project with its ongoing development made possible by the support of the community. If you'd like to support this, and our other packages, please consider [becoming a sponsor](https://github.com/sponsors/mikebronner).
 
+We thank the following sponsors for their generosity, please take a moment to check them out:
+
+- [LIX](https://lix-it.com)
+
 ## Impetus
 I created this package in response to a client project that had complex, nested
 forms with many `<select>`'s that resulted in over 700 database queries on one
