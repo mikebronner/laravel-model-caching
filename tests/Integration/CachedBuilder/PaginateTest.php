@@ -36,7 +36,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationReturnsCorrectLinks()
     {
-        if (preg_match("/^(8\.)/", app()->version())) {
+        if (preg_match("/^([8|9]\.)/", app()->version())) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
             $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
@@ -71,7 +71,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationWithOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^(8\.)/", app()->version())) {
+        if (preg_match("/^([8|9]\.)/", app()->version())) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
             $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
@@ -106,7 +106,7 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationWithCustomOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^(8\.)/", app()->version())) {
+        if (preg_match("/^([8|9]\.)/", app()->version())) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
             $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
