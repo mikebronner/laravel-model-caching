@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.0",
         "genealabs/laravel-pivot-events": "^9.0",
         "illuminate/cache": "^9.0",
         "illuminate/config": "^9.0",
