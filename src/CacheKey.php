@@ -177,7 +177,11 @@ class CacheKey
         $value = $this->getTypeClause($where);
         $value .= $this->getValuesClause($where);
 
-        return "-{$where["column"]}_{$value}";
+        $column = "";
+        $column .= isset($where["column"]) ? $where["column"] : "";
+        $column .= isset($where["columns"]) ? implode("-", $where["columns"]) : "";
+
+        return "-{$column}_{$value}";
     }
 
     protected function getQueryColumns(array $columns) : string
@@ -231,7 +235,7 @@ class CacheKey
 
     protected function getTypeClause($where) : string
     {
-        $type = in_array($where["type"], ["InRaw", "In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub", "JsonContains"])
+        $type = in_array($where["type"], ["InRaw", "In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub", "JsonContains", "Fulltext"])
             ? strtolower($where["type"])
             : strtolower($where["operator"]);
 
