@@ -21,4 +21,16 @@ trait BuilderCaching
 
         return parent::truncate();
     }
+
+    public function withoutGlobalScopes(array $scopes = null)
+    {
+        $this->scopesAreApplied = true;
+        $this->withoutScopes = $scopes;
+
+        if ($scopes == null || ($scopes != null && count($scopes) == 0)) {
+            $this->withoutAllScopes = true;
+        }
+
+        return parent::withoutGlobalScopes($scopes);
+    }
 }

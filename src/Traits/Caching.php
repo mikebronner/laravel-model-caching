@@ -16,6 +16,8 @@ trait Caching
     protected $isCachable = true;
     protected $scopesAreApplied = false;
     protected $macroKey = "";
+    protected $withoutScopes = null;
+    protected $withoutAllScopes = false;
 
     public function __call($method, $parameters)
     {
@@ -166,7 +168,7 @@ trait Caching
             $query = $this->query->getQuery();
         }
 
-        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey))
+        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey, $this->withoutScopes, $this->withoutAllScopes))
             ->make($columns, $idColumn, $keyDifferentiator);
     }
 
