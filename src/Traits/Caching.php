@@ -43,41 +43,17 @@ trait Caching
         return parent::applyScopes();
     }
 
-    public function withoutGlobalScope($scope)
-    {
-        $this->scopesAreApplied = true;
-        if ($this->withoutScopes == null) {
-            $this->withoutScopes = [];
-        }
-
-        array_push($this->withoutScopes[], $scope);
-        $this->withoutAllScopes = false;
-
-        return parent::withoutGlobalScope($scope);
-    }
-
-    public function withoutGlobalScopes(array $scopes = null)
-    {
-        $this->scopesAreApplied = true;
-        $this->withoutScopes = $scopes;
-
-        if ($scopes == null || ($scopes != null && count($scopes) == 0)) {
-            $this->withoutAllScopes = true;
-        }
-
-        return parent::withoutGlobalScopes($scopes);
-    }
-
     protected function applyScopesToInstance()
     {
         if (! property_exists($this, "scopes")
             || $this->scopesAreApplied
+            || $this->withoutAllScopes
         ) {
             return;
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (! isset($this->scopes[$identifier])) {
+            if (! isset($this->scopes[$identifier]) || isset($this->withoutScopes[$identifier])) {
                 continue;
             }
 
