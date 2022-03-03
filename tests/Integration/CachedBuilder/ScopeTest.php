@@ -156,6 +156,32 @@ class ScopeTest extends IntegrationTestCase
         $this->assertEquals("B", $authorsB->first());
     }
 
+    public function testWithoutGlobalScopes()
+    {
+        factory(Author::class, 200)->create();
+        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        $this->actingAs($user);
+        $authorsA = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScopes()
+            ->get()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $this->actingAs($user);
+        $authorsB = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScopes()
+            ->get()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+
+        $this->assertGreaterThan(1, count($authorsA));
+        $this->assertGreaterThan(1, count($authorsB));
+    }
+
     public function testLocalScopesInRelationship()
     {
         $first = "A";

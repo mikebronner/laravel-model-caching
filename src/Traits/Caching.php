@@ -16,7 +16,7 @@ trait Caching
     protected $isCachable = true;
     protected $scopesAreApplied = false;
     protected $macroKey = "";
-    protected $withoutScopes = null;
+    protected $withoutScopes = [];
     protected $withoutAllScopes = false;
 
     public function __call($method, $parameters)

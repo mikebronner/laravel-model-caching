@@ -24,7 +24,7 @@ class CacheKey
         $model,
         $query,
         $macroKey,
-        $withoutScopes,
+        array $withoutScopes,
         $withoutAllScopes
     ) {
         $this->eagerLoad = $eagerLoad;
