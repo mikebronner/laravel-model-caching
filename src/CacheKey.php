@@ -63,7 +63,11 @@ class CacheKey
             return '';
         }
 
-        if ($this->withoutAllScopes || ($this->withoutScopes != null && count($this->withoutScopes) == 0)) {
+        if ($this->withoutAllScopes) {
+            return Arr::query($this->model->query()->withoutGlobalScopes()->getBindings());
+        }
+
+        if (count($this->withoutScopes) > 0) {
             return Arr::query($this->model->query()->withoutGlobalScopes($this->withoutScopes)->getBindings());
         }
 
