@@ -156,6 +156,31 @@ class ScopeTest extends IntegrationTestCase
         $this->assertEquals("B", $authorsB->first());
     }
 
+    public function testGlobalScopesAreNotCachedWhenUsingWithoutGlobalScopes()
+    {
+        $user = factory(User::class)->create(["name" => "Abernathy Kings"]);
+        $this->actingAs($user);
+        $author = factory(UncachedAuthor::class, 1)
+            ->create(['name' => 'Alois'])
+            ->first();
+        $authors = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScopes()
+            ->get();
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped"];
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->nameStartsWith("A")
+            ->get();
+
+        $this->assertTrue($authors->contains($author));
+        $this->assertTrue($cachedResults->contains($author));
+        $this->assertTrue($liveResults->contains($author));
+    }
+
     public function testWithoutGlobalScopes()
     {
         factory(Author::class, 200)->create();
