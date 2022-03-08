@@ -16,6 +16,8 @@ trait Caching
     protected $isCachable = true;
     protected $scopesAreApplied = false;
     protected $macroKey = "";
+    protected $withoutGlobalScopes = [];
+    protected $withoutAllGlobalScopes = false;
 
     public function __call($method, $parameters)
     {
@@ -45,12 +47,13 @@ trait Caching
     {
         if (! property_exists($this, "scopes")
             || $this->scopesAreApplied
+            || $this->withoutAllGlobalScopes
         ) {
             return;
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (! isset($this->scopes[$identifier])) {
+            if (! isset($this->scopes[$identifier]) || isset($this->withoutGlobalScopes[$identifier])) {
                 continue;
             }
 
@@ -166,7 +169,7 @@ trait Caching
             $query = $this->query->getQuery();
         }
 
-        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey))
+        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey, $this->withoutGlobalScopes, $this->withoutAllGlobalScopes))
             ->make($columns, $idColumn, $keyDifferentiator);
     }
 

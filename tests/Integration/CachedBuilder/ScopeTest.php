@@ -156,6 +156,83 @@ class ScopeTest extends IntegrationTestCase
         $this->assertEquals("B", $authorsB->first());
     }
 
+    public function testGlobalScopesAreNotCachedWhenUsingWithoutGlobalScopes()
+    {
+        $user = factory(User::class)->create(["name" => "Abernathy Kings"]);
+        $this->actingAs($user);
+        $author = factory(UncachedAuthor::class, 1)
+            ->create(['name' => 'Alois'])
+            ->first();
+        $authors = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScopes()
+            ->get();
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped");
+        $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthorbeginswithscoped"];
+
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->nameStartsWith("A")
+            ->get();
+
+        $this->assertTrue($authors->contains($author));
+        $this->assertTrue($cachedResults->contains($author));
+        $this->assertTrue($liveResults->contains($author));
+    }
+
+    public function testWithoutGlobalScopes()
+    {
+        factory(Author::class, 200)->create();
+        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        $this->actingAs($user);
+        $authorsA = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScopes()
+            ->get()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $this->actingAs($user);
+        $authorsB = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScopes(['GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith'])
+            ->get()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+
+        $this->assertGreaterThan(1, count($authorsA));
+        $this->assertGreaterThan(1, count($authorsB));
+    }
+
+    public function testWithoutGlobalScope()
+    {
+        factory(Author::class, 200)->create();
+        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        $this->actingAs($user);
+        $authorsA = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScope('GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith')
+            ->get()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $this->actingAs($user);
+        $authorsB = (new AuthorBeginsWithScoped)
+            ->withoutGlobalScope('GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith')
+            ->get()
+            ->map(function ($author) {
+                return (new Str)->substr($author->name, 0, 1);
+            })
+            ->unique();
+
+        $this->assertGreaterThan(1, count($authorsA));
+        $this->assertGreaterThan(1, count($authorsB));
+    }
+
     public function testLocalScopesInRelationship()
     {
         $first = "A";

@@ -16,17 +16,23 @@ class CacheKey
     protected $macroKey;
     protected $model;
     protected $query;
+    protected $withoutGlobalScopes = [];
+    protected $withoutAllGlobalScopes = false;
 
     public function __construct(
         array $eagerLoad,
         $model,
         $query,
-        $macroKey
+        $macroKey,
+        array $withoutGlobalScopes,
+        $withoutAllGlobalScopes
     ) {
         $this->eagerLoad = $eagerLoad;
         $this->macroKey = $macroKey;
         $this->model = $model;
         $this->query = $query;
+        $this->withoutGlobalScopes = $withoutGlobalScopes;
+        $this->withoutAllGlobalScopes = $withoutAllGlobalScopes;
     }
 
     public function make(
@@ -55,6 +61,14 @@ class CacheKey
     {
         if (! method_exists($this->model, 'query')) {
             return '';
+        }
+
+        if ($this->withoutAllGlobalScopes) {
+            return Arr::query($this->model->query()->withoutGlobalScopes()->getBindings());
+        }
+
+        if (count($this->withoutGlobalScopes) > 0) {
+            return Arr::query($this->model->query()->withoutGlobalScopes($this->withoutGlobalScopes)->getBindings());
         }
 
         return Arr::query($this->model->query()->getBindings());
