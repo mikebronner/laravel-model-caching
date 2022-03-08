@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Closure;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
@@ -45,7 +47,8 @@ trait Caching
 
     protected function applyScopesToInstance()
     {
-        if (! property_exists($this, "scopes")
+        if (
+            ! property_exists($this, "scopes")
             || $this->scopesAreApplied
             || $this->withoutAllGlobalScopes
         ) {
@@ -53,7 +56,10 @@ trait Caching
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (! isset($this->scopes[$identifier]) || isset($this->withoutGlobalScopes[$identifier])) {
+            if (
+                ! isset($this->scopes[$identifier])
+                || isset($this->withoutGlobalScopes[$identifier])
+            ) {
                 continue;
             }
 
@@ -62,7 +68,8 @@ trait Caching
                     $scope($this);
                 }
 
-                if ($scope instanceof Scope
+                if (
+                    $scope instanceof Scope
                     && $this instanceof CachedBuilder
                 ) {
                     $scope->apply($this, $this->getModel());
@@ -127,7 +134,8 @@ trait Caching
             ->make("config")
             ->get("laravel-model-caching.cache-prefix", "");
 
-        if ($this->model
+        if (
+            $this->model
             && property_exists($this->model, "cachePrefix")
         ) {
             $cachePrefix = $this->model->cachePrefix;
@@ -163,7 +171,8 @@ trait Caching
                 ->make("db")
                 ->query();
         
-        if ($this->query
+        if (
+            $this->query
             && method_exists($this->query, "getQuery")
         ) {
             $query = $this->query->getQuery();
@@ -230,7 +239,8 @@ trait Caching
     {
         [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
-        if (! $cacheCooldown
+        if (
+            ! $cacheCooldown
             || (new Carbon)->now()->diffInSeconds($invalidatedAt) < $cacheCooldown
         ) {
             return;
@@ -287,14 +297,16 @@ trait Caching
             ->get("laravel-model-caching.enabled");
         $allRelationshipsAreCachable = true;
 
-        if (property_exists($this, "eagerLoad")
+        if (
+            property_exists($this, "eagerLoad")
             && $this->eagerLoad
         ) {
             $allRelationshipsAreCachable = collect($this
                 ->eagerLoad)
                 ->keys()
                 ->reduce(function ($carry, $related) {
-                    if (! method_exists($this->model, $related)
+                    if (
+                        ! method_exists($this->model, $related)
                         || $carry === false
                     ) {
                         return $carry;
@@ -302,7 +314,8 @@ trait Caching
         
                     $relatedModel = $this->model->$related()->getRelated();
 
-                    if (! method_exists($relatedModel, "isCachable")
+                    if (
+                        ! method_exists($relatedModel, "isCachable")
                         || ! $relatedModel->isCachable()
                     ) {
                         return false;

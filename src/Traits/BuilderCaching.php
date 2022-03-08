@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 
@@ -31,15 +33,20 @@ trait BuilderCaching
 
     public function withoutGlobalScopes(array $scopes = null)
     {
-        if ($scopes != null) {
+        if ($scopes !== null) {
             $this->withoutGlobalScopes = $scopes;
         }
 
-        if ($scopes == null || ($scopes != null && count($scopes) == 0)) {
+        if (
+            $scopes == null
+            || (
+                $scopes !== null
+                && count($scopes) === 0
+            )
+        ) {
             $this->withoutAllGlobalScopes = true;
         }
 
         return parent::withoutGlobalScopes($scopes);
     }
-
 }
