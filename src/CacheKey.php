@@ -287,7 +287,15 @@ class CacheKey
             return implode("_", collect($where["value"])->flatten()->toArray());
         }
 
-        return (new Arr)->get($where, "value", "");
+        $value = (new Arr)->get($where, "value", "");
+
+        if ($value instanceof \BackedEnum) {
+            return $value->value;
+        } elseif ($value instanceof \UnitEnum) {
+            return $value->name;
+        }
+
+        return $value;
     }
 
     protected function getValuesFromBindings(array $where, string $values) : string
