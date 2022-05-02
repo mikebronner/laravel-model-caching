@@ -280,22 +280,18 @@ class CacheKey
         }
 
         if (is_array((new Arr)->get($where, "values"))) {
-            return implode("_", collect($where["values"])->flatten()->toArray());
+            $values = collect($where["values"])->flatten()->toArray();
+            return implode("_", $this->processEnums($values));
         }
 
         if (is_array((new Arr)->get($where, "value"))) {
-            return implode("_", collect($where["value"])->flatten()->toArray());
+            $values = collect($where["value"])->flatten()->toArray();
+            return implode("_", $this->processEnums($values));
         }
 
         $value = (new Arr)->get($where, "value", "");
 
-        if ($value instanceof \BackedEnum) {
-            return $value->value;
-        } elseif ($value instanceof \UnitEnum) {
-            return $value->name;
-        }
-
-        return $value;
+        return $this->processEnum($value);
     }
 
     protected function getValuesFromBindings(array $where, string $values) : string
@@ -395,5 +391,21 @@ class CacheKey
         }
 
         return $result;
+    }
+
+    private function processEnum(\BackedEnum|\UnitEnum|string $value): string
+    {
+        if ($value instanceof \BackedEnum) {
+            return $value->value;
+        } elseif ($value instanceof \UnitEnum) {
+            return $value->name;
+        }
+
+        return $value;
+    }
+
+    private function processEnums(array $values): array
+    {
+        return array_map(fn($value) => $this->processEnum($value), $values);
     }
 }
