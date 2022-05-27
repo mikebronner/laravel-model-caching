@@ -1,6 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Illuminate\Container\Container;
+use Illuminate\Pagination\Paginator;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -25,6 +25,17 @@ trait Buildable
         }
 
         $cacheKey = $this->makeCacheKey([$columns], null, "-count");
+
+        return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    public function exists()
+    {
+        if (! $this->isCachable()) {
+            return parent::exists();
+        }
+
+        $cacheKey = $this->makeCacheKey(['*'], null, "-exists");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
@@ -117,7 +128,7 @@ trait Buildable
         if (property_exists($this, "model")) {
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
-        
+
         return parent::insert($values);
     }
 
@@ -153,11 +164,7 @@ trait Buildable
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = Container::getInstance()
-            ->make("request")
-            ->input($pageName)
-            ?: $page
-            ?: 1;
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
 
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
