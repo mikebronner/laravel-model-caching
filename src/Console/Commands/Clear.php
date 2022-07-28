@@ -38,6 +38,10 @@ class Clear extends Command
 
     protected function flushModelCache(string $option) : int
     {
+        if (substr($option, 0, 9) == 'AppModels') {
+          $option = 'App\Models\\' . substr($option, 9);
+        }
+
         $model = new $option;
         $usesCachableTrait = $this->getAllTraitsUsedByClass($option)
             ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
