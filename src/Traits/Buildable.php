@@ -292,6 +292,22 @@ trait Buildable
             $this->checkCooldownAndRemoveIfExpired($this->getModel());
         }
 
+        $seconds = $this->getCachingTime();
+
+        if ($seconds > 0) {
+          return $this->cache($cacheTags)
+          ->remember(
+              $hashedCacheKey,
+              $seconds,
+              function () use ($arguments, $cacheKey, $method) {
+                  return [
+                      "key" => $cacheKey,
+                      "value" => parent::{$method}(...$arguments),
+                  ];
+              }
+          );
+        }
+
         return $this->cache($cacheTags)
             ->rememberForever(
                 $hashedCacheKey,

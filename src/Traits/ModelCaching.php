@@ -10,6 +10,9 @@ use Illuminate\Support\Carbon;
 
 trait ModelCaching
 {
+    /**
+     *
+     */
     public function __get($key)
     {
         if ($key === "cachePrefix") {
@@ -25,6 +28,9 @@ trait ModelCaching
         return parent::__get($key);
     }
 
+    /**
+     *
+     */
     public function __set($key, $value)
     {
         if ($key === "cachePrefix") {
@@ -38,10 +44,15 @@ trait ModelCaching
         parent::__set($key, $value);
     }
 
+    /**
+     *
+     */
     public static function all($columns = ['*'])
     {
         $class = get_called_class();
         $instance = new $class;
+
+		    return parent::all($columns);
 
 	    if (!$instance->isCachable()) {
 		    return parent::all($columns);
@@ -49,6 +60,14 @@ trait ModelCaching
 
         $tags = $instance->makeCacheTags();
         $key = $instance->makeCacheKey();
+        $seconds = $instance->getCachingTime();
+
+        if ($seconds > 0) {
+            return $instance->cache($tags)
+                ->remember($key, $seconds, function () use ($columns) {
+                    return parent::all($columns);
+                });
+        }
 
         return $instance->cache($tags)
             ->rememberForever($key, function () use ($columns) {
@@ -56,6 +75,9 @@ trait ModelCaching
             });
     }
 
+    /**
+     *
+     */
     public static function bootCachable()
     {
         static::created(function ($instance) {
@@ -88,6 +110,9 @@ trait ModelCaching
         });
     }
 
+    /**
+     *
+     */
     public static function destroy($ids)
     {
         $class = get_called_class();
@@ -97,6 +122,9 @@ trait ModelCaching
         return parent::destroy($ids);
     }
 
+    /**
+     *
+     */
     public function newEloquentBuilder($query)
     {
         if (! $this->isCachable()) {
@@ -108,6 +136,9 @@ trait ModelCaching
         return new CachedBuilder($query);
     }
 
+    /**
+     *
+     */
     protected function newBelongsToMany(
         Builder $query,
         Model $parent,
@@ -145,6 +176,9 @@ trait ModelCaching
         );
     }
 
+    /**
+     *
+     */
     public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
     {
         if ($this->isCachable()) {
@@ -154,6 +188,9 @@ trait ModelCaching
         return $query;
     }
 
+    /**
+     *
+     */
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
         int $seconds = null

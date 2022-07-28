@@ -15,12 +15,24 @@ use Illuminate\Support\Carbon;
 
 trait Caching
 {
+    /** @var boolean */
     protected $isCachable = true;
+    
+    /** @var boolean */
     protected $scopesAreApplied = false;
+
+    /** @var string */
     protected $macroKey = "";
+    
+    /** @var array */
     protected $withoutGlobalScopes = [];
+    
+    /** @var boolean */
     protected $withoutAllGlobalScopes = false;
 
+    /**
+     * 
+     */
     public function __call($method, $parameters)
     {
         $result = parent::__call($method, $parameters);
@@ -36,15 +48,21 @@ trait Caching
         return $result;
     }
 
+    /**
+     *
+     */
     public function applyScopes()
     {
         if ($this->scopesAreApplied) {
             return $this;
         }
-        
+
         return parent::applyScopes();
     }
 
+    /**
+     *
+     */
     protected function applyScopesToInstance()
     {
         if (
@@ -80,6 +98,9 @@ trait Caching
         $this->scopesAreApplied = true;
     }
 
+    /**
+     *
+     */
     public function cache(array $tags = [])
     {
         $cache = Container::getInstance()
@@ -99,6 +120,9 @@ trait Caching
         return $cache;
     }
 
+    /**
+     *
+     */
     public function disableModelCaching()
     {
         $this->isCachable = false;
@@ -106,6 +130,9 @@ trait Caching
         return $this;
     }
 
+    /**
+     *
+     */
     public function flushCache(array $tags = [])
     {
         if (count($tags) === 0) {
@@ -128,6 +155,9 @@ trait Caching
         }
     }
 
+    /**
+     *
+     */
     protected function getCachePrefix() : string
     {
         $cachePrefix = Container::getInstance()
@@ -149,6 +179,9 @@ trait Caching
             . $cachePrefix;
     }
 
+    /**
+     *
+     */
     protected function makeCacheKey(
         array $columns = ['*'],
         $idColumn = null,
@@ -170,7 +203,7 @@ trait Caching
             ?? Container::getInstance()
                 ->make("db")
                 ->query();
-        
+
         if (
             $this->query
             && method_exists($this->query, "getQuery")
@@ -182,6 +215,9 @@ trait Caching
             ->make($columns, $idColumn, $keyDifferentiator);
     }
 
+    /**
+     *
+     */
     protected function makeCacheTags() : array
     {
         $eagerLoad = $this->eagerLoad ?? [];
@@ -199,6 +235,9 @@ trait Caching
         return $tags;
     }
 
+    /**
+     *
+     */
     public function getModelCacheCooldown(Model $instance) : array
     {
         if (! $instance->cacheCooldownSeconds) {
@@ -217,6 +256,9 @@ trait Caching
         return [$cacheCooldown, $invalidatedAt, $savedAt];
     }
 
+    /**
+     *
+     */
     protected function getCacheCooldownDetails(
         Model $instance,
         string $cachePrefix,
@@ -235,6 +277,9 @@ trait Caching
         ];
     }
 
+    /**
+     *
+     */
     protected function checkCooldownAndRemoveIfExpired(Model $instance)
     {
         [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
@@ -261,6 +306,9 @@ trait Caching
         $instance->flushCache();
     }
 
+    /**
+     *
+     */
     protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
     {
         [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
@@ -290,6 +338,9 @@ trait Caching
         }
     }
 
+    /**
+     *
+     */
     public function isCachable() : bool
     {
         $isCacheDisabled = ! Container::getInstance()
@@ -311,7 +362,7 @@ trait Caching
                     ) {
                         return $carry;
                     }
-        
+
                     $relatedModel = $this->model->$related()->getRelated();
 
                     if (
@@ -331,6 +382,9 @@ trait Caching
             && $allRelationshipsAreCachable;
     }
 
+    /**
+     *
+     */
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
     {
         $cachePrefix = $this->getCachePrefix();
@@ -342,4 +396,23 @@ trait Caching
                 return (new Carbon)->now();
             });
     }
+
+    /**
+     * Get caching time from model or global config
+     */
+    protected function getCachingTime() : int
+    {
+        $model = $this->getModel();
+
+        if ($model && $model->caching_time && $model->caching_time > 0) {
+          return $model->caching_time;
+        }
+
+        $cachingTime = Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.caching_time", null);
+
+        return $cachingTime;
+    }
+
 }
