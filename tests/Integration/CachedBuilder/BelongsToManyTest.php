@@ -182,106 +182,28 @@ class BelongsToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
         ];
-
         $newStores = factory(Store::class, 2)
             ->create();
-
         $result = Book::find($bookId)
             ->stores;
 
         Book::find($bookId)
             ->stores()
             ->attach($newStores[0]->id);
-        
         Book::find($bookId)
             ->stores()
             ->sync($newStores->pluck('id'));
-
-        $this->assertEmpty(array_diff(
-            Book::find($bookId)->stores()->pluck((new Store)->getTable() . '.id')->toArray(),
-            $newStores->pluck('id')->toArray()
-        ));
-
         $cachedResult = $this
             ->cache()
             ->tags($tags)
             ->get($key)['value']
             ?? null;
 
+        $this->assertEmpty(array_diff(
+            Book::find($bookId)->stores()->pluck((new Store)->getTable() . '.id')->toArray(),
+            $newStores->pluck('id')->toArray()
+        ));
         $this->assertNotEmpty($result);
         $this->assertNull($cachedResult);
     }
-
-    // /** @group test */
-    // public function testUncachedDetachesFromCached()
-    // {
-    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
-    //     // $tags = [
-    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
-    //     // ];
-
-    //     $store = (new StoreWithUncachedBooks)
-    //         ->with("books")
-    //         ->has("books")
-    //         ->first();
-    //     $store->books()
-    //         ->detach();
-    //     // $store->delete();
-    //     // dd($results);
-    //     // $cachedResult = $this
-    //     //     ->cache()
-    //     //     ->tags($tags)
-    //     //     ->get($key)['value'];
-
-    //     // $this->assertNotEmpty($result);
-    //     // $this->assertNull($cachedResult);
-    // }
-
-    // /** @group test */
-    // public function testCachedDetachesFromUncached()
-    // {
-    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
-    //     // $tags = [
-    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
-    //     // ];
-    //     $book = (new UncachedBookWithStores)
-    //         ->with("stores")
-    //         ->has("stores")
-    //         ->first();
-    //     $book->stores()
-    //         ->detach();
-    //     // $book->delete();
-    //     // dd($results);
-    //     // $cachedResult = $this
-    //     //     ->cache()
-    //     //     ->tags($tags)
-    //     //     ->get($key)['value'];
-
-    //     // $this->assertNotEmpty($result);
-    //     // $this->assertNull($cachedResult);
-    // }
-
-    // public function testDetachingFiresEvent()
-    // {
-    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
-    //     // $tags = [
-    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
-    //     // ];
-
-    //     $store = (new Store)
-    //         ->with("books")
-    //         ->has("books")
-    //         ->first();
-    //     $store->books()
-    //         ->detach();
-    //     $store->delete();
-    //     // dd($results);
-    //     // $cachedResult = $this
-    //     //     ->cache()
-    //     //     ->tags($tags)
-    //     //     ->get($key)['value'];
-
-    //     // $this->assertNotEmpty($result);
-    //     // $this->assertNull($cachedResult);
-    // }
 }
