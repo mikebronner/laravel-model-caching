@@ -169,6 +169,49 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNotNull($uncachedResult);
     }
 
+    public function testInvalidatingCacheWhenSyncing()
+    {
+        $bookId = (new Store)
+            ->disableModelCaching()
+            ->with("books")
+            ->first()
+            ->books
+            ->first()
+            ->id;
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores:genealabslaravelmodelcachingtestsfixturesstore-testing:{$this->testingSqlitePath}testing.sqlite:books-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+        ];
+
+        $newStores = factory(Store::class, 2)
+            ->create();
+
+        $result = Book::find($bookId)
+            ->stores;
+
+        Book::find($bookId)
+            ->stores()
+            ->attach($newStores[0]->id);
+        
+        Book::find($bookId)
+            ->stores()
+            ->sync($newStores->pluck('id'));
+
+        $this->assertEmpty(array_diff(
+            Book::find($bookId)->stores()->pluck((new Store)->getTable() . '.id')->toArray(),
+            $newStores->pluck('id')->toArray()
+        ));
+
+        $cachedResult = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value']
+            ?? null;
+
+        $this->assertNotEmpty($result);
+        $this->assertNull($cachedResult);
+    }
+
     // /** @group test */
     // public function testUncachedDetachesFromCached()
     // {
