@@ -10,15 +10,15 @@ class UncachedBook extends Model
 {
     protected $casts = [
         'price' => 'float',
+        'published_at' => 'datetime',
     ];
-    protected $dates = [
-        'published_at',
-    ];
+
     protected $fillable = [
         'description',
         'published_at',
         'title',
     ];
+
     protected $table = 'books';
 
     public function author() : BelongsTo

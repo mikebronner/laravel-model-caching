@@ -138,4 +138,19 @@ trait CreatesApplication
             'pagination' => 'simple',
         ]);
     }
+
+    public function appVersionEightAndUp(): bool
+    {
+        return version_compare(app()->version(), '8.0.0', '>=');
+    }
+
+    public function appVersionFiveBetweenSeven(): bool
+    {
+        return version_compare(app()->version(), '5.6.0', '>=') && version_compare(app()->version(), '8.0.0', '<');
+    }
+
+    public function appVersionOld(): bool
+    {
+        return version_compare(app()->version(), '5.4.0', '>=') && version_compare(app()->version(), '5.6.0', '<');
+    }
 }
