@@ -36,19 +36,19 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationReturnsCorrectLinks()
     {
-        if (preg_match("/^([8|9]\.)/", app()->version())) {
+        if ($this->appVersionEightAndUp()) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
             $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
         }
 
-        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
+        if ($this->appVersionFiveBetweenSeven()) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
             $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
         }
 
-        if (preg_match("/^5\.[4-5]/", app()->version())) {
+        if ($this->appVersionOld()) {
             $page1ActiveLink = '<li class="active"><span>1</span></li>';
             $page2ActiveLink = '<li class="active"><span>2</span></li>';
             $page24ActiveLink = '<li class="active"><span>24</span></li>';
@@ -71,19 +71,19 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationWithOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^([8|9]\.)/", app()->version())) {
+        if ($this->appVersionEightAndUp()) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
             $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
         }
 
-        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
+        if ($this->appVersionFiveBetweenSeven()) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
             $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
         }
 
-        if (preg_match("/^5\.[4-5]/", app()->version())) {
+        if ($this->appVersionOld()) {
             $page1ActiveLink = '<li class="active"><span>1</span></li>';
             $page2ActiveLink = '<li class="active"><span>2</span></li>';
             $page24ActiveLink = '<li class="active"><span>24</span></li>';
@@ -106,19 +106,19 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationWithCustomOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^([8|9]\.)/", app()->version())) {
+        if ($this->appVersionEightAndUp()) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
             $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
         }
 
-        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
+        if ($this->appVersionFiveBetweenSeven()) {
             $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
             $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
             $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
         }
 
-        if (preg_match("/^5\.[4-5]/", app()->version())) {
+        if ($this->appVersionOld()) {
             $page1ActiveLink = '<li class="active"><span>1</span></li>';
             $page2ActiveLink = '<li class="active"><span>2</span></li>';
             $page24ActiveLink = '<li class="active"><span>24</span></li>';

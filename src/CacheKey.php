@@ -2,6 +2,7 @@
 
 use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -170,14 +171,19 @@ class CacheKey
         }
 
         $orders = collect($this->query->orders);
-
+        
         return $orders
             ->reduce(function ($carry, $order) {
                 if (($order["type"] ?? "") === "Raw") {
                     return $carry . "_orderByRaw_" . (new Str)->slug($order["sql"]);
                 }
 
-                return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
+                return sprintf(
+                    '%s_orderBy_%s_%s',
+                    $carry,
+                    $this->expressionToString($order["column"]),
+                    $order["direction"]
+                );
             })
             ?: "";
     }
@@ -211,7 +217,11 @@ class CacheKey
         if (property_exists($this->query, "columns")
             && $this->query->columns
         ) {
-            return "_" . implode("_", $this->query->columns);
+            $columns = array_map(function ($column) {                
+                return $this->expressionToString($column);
+            }, $this->query->columns);
+
+            return "_" . implode("_", $columns);
         }
 
         return "_" . implode("_", $columns);
@@ -393,12 +403,14 @@ class CacheKey
         return $result;
     }
 
-    private function processEnum(\BackedEnum|\UnitEnum|string $value): string
+    private function processEnum(\BackedEnum|\UnitEnum|Expression|string $value): string
     {
         if ($value instanceof \BackedEnum) {
             return $value->value;
         } elseif ($value instanceof \UnitEnum) {
             return $value->name;
+        } elseif ($value instanceof Expression) {
+            return $this->expressionToString($value);
         }
 
         return $value;
@@ -407,5 +419,14 @@ class CacheKey
     private function processEnums(array $values): array
     {
         return array_map(fn($value) => $this->processEnum($value), $values);
+    }
+
+    private function expressionToString(Expression|string $value): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        return $value->getValue($this->query->getConnection()->getQueryGrammar());
     }
 }
