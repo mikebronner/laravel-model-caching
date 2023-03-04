@@ -1,5 +1,5 @@
 {
-    "name": "vheins/laravel-model-caching",
+    "name": "genealabs/laravel-model-caching",
     "description": "Automatic caching for Eloquent models.",
     "license": "MIT",
     "authors": [
