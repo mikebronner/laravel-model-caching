@@ -14,10 +14,9 @@ class BookWithUncachedStore extends Model
 
     protected $casts = [
         'price' => 'float',
+        'published_at' => 'datetime',
     ];
-    protected $dates = [
-        'published_at',
-    ];
+    
     protected $fillable = [
         "author_id",
         'description',
