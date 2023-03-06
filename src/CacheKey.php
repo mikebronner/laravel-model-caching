@@ -80,6 +80,7 @@ class CacheKey
         if ($where["type"] !== "Column") {
             return "";
         }
+        
         if ($where["first"] instanceof Expression) {
             $where["first"] = $this->expressionToString($where["first"]);
         }
