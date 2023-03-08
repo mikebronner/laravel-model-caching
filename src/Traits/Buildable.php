@@ -158,7 +158,8 @@ trait Buildable
         $perPage = null,
         $columns = ["*"],
         $pageName = "page",
-        $page = null
+        $page = null,
+        $total = null
     ) {
         if (! $this->isCachable()) {
             return parent::paginate($perPage, $columns, $pageName, $page);
@@ -170,7 +171,17 @@ trait Buildable
             $page = $this->recursiveImplodeWithKey($page);
         }
         $columns = collect($columns)->toArray();
-        $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
+
+        $keyDifferentiator = "-paginate_by_{$perPage}_{$pageName}_{$page}";
+
+        if ($total !== null) {
+            $total = value($total);
+            if ($total !== null) {
+                $keyDifferentiator .= "_{$total}";
+            }
+        }
+
+        $cacheKey = $this->makeCacheKey($columns, null, $keyDifferentiator);
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
