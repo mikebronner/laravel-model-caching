@@ -170,15 +170,15 @@ trait Buildable
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
+        
         $columns = collect($columns)->toArray();
-
         $keyDifferentiator = "-paginate_by_{$perPage}_{$pageName}_{$page}";
 
         if ($total !== null) {
             $total = value($total);
-            if ($total !== null) {
-                $keyDifferentiator .= "_{$total}";
-            }
+            $keyDifferentiator .= $total !== null
+                ? "_{$total}"
+                : "";
         }
 
         $cacheKey = $this->makeCacheKey($columns, null, $keyDifferentiator);
