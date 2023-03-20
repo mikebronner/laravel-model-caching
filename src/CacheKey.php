@@ -84,11 +84,11 @@ class CacheKey
         if ($where["first"] instanceof Expression) {
             $where["first"] = $this->expressionToString($where["first"]);
         }
-        
-		if ($where["second"] instanceof Expression) {
-			$where["second"] = $this->expressionToString($where["second"]);
-		}
-        
+
+        if ($where["second"] instanceof Expression) {
+	    $where["second"] = $this->expressionToString($where["second"]);
+        }
+
         return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
     }
 
