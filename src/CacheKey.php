@@ -207,8 +207,8 @@ class CacheKey
 
         $column = "";
 
-	if (isset($where["column"]) && $where["column"] instanceof Expression) {
-            $where["column"] = $this->expressionToString($where["column"]);
+	if (data_get($where, "column") instanceof Expression) {
+            $where["column"] = $this->expressionToString(data_get($where, "column"));
         }    
 
         $column .= isset($where["column"]) ? $where["column"] : "";
