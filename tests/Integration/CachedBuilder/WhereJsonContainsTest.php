@@ -14,9 +14,9 @@ class WhereJsonContainsTest extends IntegrationTestCase
         parent::getEnvironmentSetUp($app);
 
         $app['config']->set('database.default', 'pgsql');
-        $app['config']->set('database.connections.pgsql.host', env("PGSQL_HOST", "127.0.0.1"));
+        $app['config']->set('database.connections.pgsql.host', env("PGSQL_HOST", "pgsql"));
         $app['config']->set('database.connections.pgsql.database', env("PGSQL_DATABASE", "testing"));
-        $app['config']->set('database.connections.pgsql.username', env("PGSQL_USERNAME", "homestead"));
+        $app['config']->set('database.connections.pgsql.username', env("PGSQL_USERNAME", "forge"));
         $app['config']->set('database.connections.pgsql.password', env("PGSQL_PASSWORD", "secret"));
     }
 
