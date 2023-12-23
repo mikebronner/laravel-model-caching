@@ -210,6 +210,11 @@ class CacheKey
         $value .= $this->getValuesClause($where);
 
         $column = "";
+
+	if (data_get($where, "column") instanceof Expression) {
+            $where["column"] = $this->expressionToString(data_get($where, "column"));
+        }    
+
         $column .= isset($where["column"]) ? $where["column"] : "";
         $column .= isset($where["columns"]) ? implode("-", $where["columns"]) : "";
 
