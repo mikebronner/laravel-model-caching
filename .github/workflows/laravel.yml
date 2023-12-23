@@ -42,7 +42,7 @@ jobs:
 
     - uses: harmon758/postgresql-action@v1
       with:
-        postgresql version: '11'
+        postgresql version: '15'
         postgresql db: 'testing'
         postgresql user: 'homestead'
         postgresql password: 'secret'

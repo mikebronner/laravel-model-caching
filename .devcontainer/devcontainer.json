@@ -29,7 +29,6 @@
                 "davidanson.vscode-markdownlint",
                 "davidbwaters.macos-modern-theme",
                 "eamodio.gitlens",
-                "ecodes.vscode-phpmd@1.2.0",
                 "editorconfig.editorconfig",
                 "ericcheng.codesongclear",
                 "faelv.composer-companion",
@@ -82,10 +81,18 @@
     },
     "remoteUser": "sail",
     "postCreateCommand": "sudo chown -R 1000:1000 /var/www/html",
-    // "forwardPorts": [
-    // ],
-    // "portsAttributes": {
-    // },
+    "forwardPorts": [
+        5432,
+        6379
+    ],
+    "portsAttributes": {
+        "5432": {
+            "label": "Postgres"
+        },
+        "6379": {
+            "label": "Redis"
+        }
+    },
     "mounts": [
         "source=${localEnv:HOME}/.wakatime.cfg,target=/home/sail/.wakatime.cfg,type=bind,consistency=delegated"
     ]

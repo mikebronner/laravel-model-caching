@@ -145,7 +145,7 @@
     "editor.suggest.localityBonus": true,
     "editor.suggest.showValues": false,
     "editor.trimAutoWhitespace": true,
-    "editor.wordBasedSuggestions": false,
+    "editor.wordBasedSuggestions": "off",
     "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
     "editor.wordWrapColumn": 100,
     "editor.wrappingIndent": "none",
@@ -270,9 +270,6 @@
     "php.validate.run": "onType",
     "phpcs.executablePath": "vendor/bin/phpcs",
     "phpcs.showSources": true,
-    "phpmd.rules": "phpmd.xml",
-    "phpmd.command": "vendor/bin/phpmd",
-    "phpmd.verbose": true,
     "phpunit.args": [
         "--coverage-clover=coverage.xml",
     ],
@@ -301,7 +298,7 @@
     "window.commandCenter": true,
     "workbench.editor.enablePreview": false,
     "workbench.editor.showIcons": false,
-    "workbench.editor.showTabs": false,
+    "workbench.editor.showTabs": "single",
     "workbench.editor.tabCloseButton": "left",
     "workbench.fontAliasing": "auto",
     "workbench.iconTheme": "file-icons",
@@ -316,5 +313,6 @@
     "[php]": {
         "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
     },
-    "window.title": "totality"
+    "window.title": "totality",
+    "workbench.editor.tabActionLocation": "left"
 }
