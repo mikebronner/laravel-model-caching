@@ -1,5 +1,8 @@
-<?php namespace GeneaLabs\LaravelModelCaching;
+<?php
 
+namespace GeneaLabs\LaravelModelCaching;
+
+use BackedEnum;
 use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Query\Expression;
@@ -7,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
+use UnitEnum;
 
 class CacheKey
 {
@@ -80,7 +84,7 @@ class CacheKey
         if ($where["type"] !== "Column") {
             return "";
         }
-        
+
         if ($where["first"] instanceof Expression) {
             $where["first"] = $this->expressionToString($where["first"]);
         }
@@ -179,7 +183,7 @@ class CacheKey
         }
 
         $orders = collect($this->query->orders);
-        
+
         return $orders
             ->reduce(function ($carry, $order) {
                 if (($order["type"] ?? "") === "Raw") {
@@ -225,7 +229,7 @@ class CacheKey
         if (property_exists($this->query, "columns")
             && $this->query->columns
         ) {
-            $columns = array_map(function ($column) {                
+            $columns = array_map(function ($column) {
                 return $this->expressionToString($column);
             }, $this->query->columns);
 
@@ -350,7 +354,7 @@ class CacheKey
                 return $value;
             });
     }
-    
+
     protected function getWheres(array $wheres) : Collection
     {
         $wheres = collect($wheres);
@@ -384,7 +388,7 @@ class CacheKey
             return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
         });
     }
-   
+
     protected function recursiveImplode(array $items, string $glue = ",") : string
     {
         $result = "";
@@ -411,11 +415,11 @@ class CacheKey
         return $result;
     }
 
-    private function processEnum(\BackedEnum|\UnitEnum|Expression|string $value): string
+    private function processEnum(BackedEnum|UnitEnum|Expression|string|null $value): ?string
     {
-        if ($value instanceof \BackedEnum) {
+        if ($value instanceof BackedEnum) {
             return $value->value;
-        } elseif ($value instanceof \UnitEnum) {
+        } elseif ($value instanceof UnitEnum) {
             return $value->name;
         } elseif ($value instanceof Expression) {
             return $this->expressionToString($value);
