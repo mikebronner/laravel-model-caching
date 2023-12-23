@@ -411,7 +411,7 @@ class CacheKey
         return $result;
     }
 
-    private function processEnum(\BackedEnum|\UnitEnum|Expression|string $value): string
+    private function processEnum(\BackedEnum|\UnitEnum|Expression|string|null $value): string|null
     {
         if ($value instanceof \BackedEnum) {
             return $value->value;
