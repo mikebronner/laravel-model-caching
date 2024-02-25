@@ -263,6 +263,10 @@ trait Caching
 
     protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
     {
+        if (!$this->isCachable()) {
+            return;
+        }
+
         [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown) {
@@ -295,6 +299,10 @@ trait Caching
         $isCacheDisabled = ! Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.enabled");
+        if ($isCacheDisabled) {
+            return false;
+        }
+
         $allRelationshipsAreCachable = true;
 
         if (
@@ -327,7 +335,6 @@ trait Caching
         }
 
         return $this->isCachable
-            && ! $isCacheDisabled
             && $allRelationshipsAreCachable;
     }
 
