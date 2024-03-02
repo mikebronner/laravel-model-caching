@@ -22,18 +22,18 @@
         </testsuite>
     </testsuites>
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="APP_KEY" value="base64:Xgs1LQt1GdVHhD6qyYCXnyq61DE3UKqJ5k2SJc+Nw2g="/>
-        <env name="APP_URL" value="http://localhost"/>
-        <env name="CACHE_DRIVER" value="redis"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
-        <env name="DB_PASSWORD" value="secret"/>
-        <env name="DB_USERNAME" value="homestead"/>
-        <env name="PGSQL_HOST" value="127.0.0.1"/>
-        <env name="QUEUE_DRIVER" value="sync"/>
-        <env name="REDIS_HOST" value="127.0.0.1"/>
-        <env name="SESSION_DRIVER" value="array"/>
+        <server name="APP_ENV" value="testing"/>
+        <server name="APP_KEY" value="base64:Xgs1LQt1GdVHhD6qyYCXnyq61DE3UKqJ5k2SJc+Nw2g="/>
+        <server name="APP_URL" value="http://localhost"/>
+        <server name="CACHE_DRIVER" value="redis"/>
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+        <server name="DB_PASSWORD" value="secret"/>
+        <server name="DB_USERNAME" value="homestead"/>
+        <server name="PGSQL_HOST" value="127.0.0.1"/>
+        <server name="QUEUE_DRIVER" value="sync"/>
+        <server name="REDIS_HOST" value="127.0.0.1"/>
+        <server name="SESSION_DRIVER" value="array"/>
     </php>
     <source>
         <include>
