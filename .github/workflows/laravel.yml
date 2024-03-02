@@ -44,7 +44,7 @@ jobs:
       with:
         postgresql version: '15'
         postgresql db: 'testing'
-        postgresql user: 'homestead'
+        postgresql user: 'forge'
         postgresql password: 'secret'
 
     - name: Remove Nova on a pull request
