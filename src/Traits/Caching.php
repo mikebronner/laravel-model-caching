@@ -41,7 +41,7 @@ trait Caching
         if ($this->scopesAreApplied) {
             return $this;
         }
-        
+
         return parent::applyScopes();
     }
 
@@ -170,7 +170,7 @@ trait Caching
             ?? Container::getInstance()
                 ->make("db")
                 ->query();
-        
+
         if (
             $this->query
             && method_exists($this->query, "getQuery")
@@ -263,7 +263,7 @@ trait Caching
 
     protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
     {
-        if (!$this->isCachable()) {
+        if (! $this->isCachable()) {
             return;
         }
 
@@ -299,6 +299,7 @@ trait Caching
         $isCacheDisabled = ! Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.enabled");
+
         if ($isCacheDisabled) {
             return false;
         }
@@ -319,7 +320,7 @@ trait Caching
                     ) {
                         return $carry;
                     }
-        
+
                     $relatedModel = $this->model->$related()->getRelated();
 
                     if (
