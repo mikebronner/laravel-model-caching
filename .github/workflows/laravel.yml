@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.2]
+        php: [8.2, 8.1]
 
     name: PHP ${{ matrix.php }}
 
@@ -60,8 +60,8 @@ jobs:
         composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
     - name: Execute Integration and Feature tests via PHPUnit
-      run: vendor/bin/phpunit --configuration phpunit.xml --testsuite Integration,Feature
+      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature
 
     - name: Execute Nova tests via PHPUnit
       if: github.event_name != 'pull_request'
-      run: vendor/bin/phpunit --configuration phpunit.xml --testsuite Nova
+      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Nova
