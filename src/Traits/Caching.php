@@ -299,7 +299,7 @@ trait Caching
         $isCacheDisabled = ! Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.enabled");
-
+a
         if ($isCacheDisabled) {
             return false;
         }
