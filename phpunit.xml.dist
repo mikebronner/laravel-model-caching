@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    backupGlobals="false"
+    backupStaticProperties="false"
+    bootstrap="vendor/autoload.php"
+    cacheDirectory=".phpunit.cache"
+    colors="true"
+    processIsolation="false"
+    stopOnFailure="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+>
+    <testsuites>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Nova">
+            <directory suffix="Test.php">./tests/Nova</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <server name="APP_ENV" value="testing"/>
+        <server name="APP_KEY" value="base64:Xgs1LQt1GdVHhD6qyYCXnyq61DE3UKqJ5k2SJc+Nw2g="/>
+        <server name="APP_URL" value="http://localhost"/>
+        <server name="CACHE_DRIVER" value="redis"/>
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+        <server name="DB_PASSWORD" value="secret"/>
+        <server name="DB_USERNAME" value="homestead"/>
+        <server name="PGSQL_HOST" value="127.0.0.1"/>
+        <server name="QUEUE_DRIVER" value="sync"/>
+        <server name="REDIS_HOST" value="127.0.0.1"/>
+        <server name="SESSION_DRIVER" value="array"/>
+    </php>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
+</phpunit>

@@ -7,8 +7,14 @@ class PaginationTest extends FeatureTestCase
 {
     public function testPaginationProvidesDifferentLinksOnDifferentPages()
     {
+        // Checking the version start with 10.0.
+        if ($this->appVersionTen()) {
+            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">1</span>';
+            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">2</span>';
+        }
+
         // Checking the version start with 8.0.
-        if ($this->appVersionEightAndUp()) {
+        if ($this->appVersionEightAndNine()) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
         }
@@ -39,8 +45,14 @@ class PaginationTest extends FeatureTestCase
 
     public function testAdvancedPagination()
     {
+        // Checking the version start with 10.0.
+        if ($this->appVersionTen()) {
+            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">1</span>';
+            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">2</span>';
+        }
+
         // Checking the version start with 8.0.
-        if ($this->appVersionEightAndUp()) {
+        if ($this->appVersionEightAndNine()) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
         }
@@ -62,8 +74,14 @@ class PaginationTest extends FeatureTestCase
 
     public function testCustomPagination()
     {
+        // Checking the version start with 10.0.
+        if ($this->appVersionTen()) {
+            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">1</span>';
+            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">2</span>';
+        }
+
         // Checking the version start with 8.0.
-        if ($this->appVersionEightAndUp()) {
+        if ($this->appVersionEightAndNine()) {
             $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
             $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
         }
