@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use UnitEnum;
+use DateTime;
 
 class CacheKey
 {
@@ -99,7 +100,12 @@ class CacheKey
 
     protected function getCurrentBinding(string $type, $bindingFallback = null)
     {
-        return data_get($this->query->bindings, "{$type}.{$this->currentBinding}", $bindingFallback);
+        $binding = data_get($this->query->bindings, "{$type}.{$this->currentBinding}", $bindingFallback);
+        if ($binding instanceof DateTime) {
+            return $binding->format("Y-m-d-H-i-s");
+        }
+
+        return $binding;
     }
 
     protected function getHavingClauses()
@@ -321,10 +327,7 @@ class CacheKey
 
     protected function getValuesFromWhere(array $where) : string
     {
-        if (array_key_exists("value", $where)
-            && is_object($where["value"])
-            && get_class($where["value"]) === "DateTime"
-        ) {
+        if (array_key_exists("value", $where) && $where["value"] instanceof DateTime) {
             return $where["value"]->format("Y-m-d-H-i-s");
         }
 
@@ -442,12 +445,14 @@ class CacheKey
         return $result;
     }
 
-    private function processEnum(BackedEnum|UnitEnum|Expression|string|null $value): ?string
+    private function processEnum(BackedEnum|UnitEnum|Expression|DateTime|string|null $value): ?string
     {
         if ($value instanceof BackedEnum) {
             return $value->value;
         } elseif ($value instanceof UnitEnum) {
             return $value->name;
+        } elseif ($value instanceof DateTime) {
+            return $value->format("Y-m-d-H-i-s");
         } elseif ($value instanceof Expression) {
             return $this->expressionToString($value);
         }
