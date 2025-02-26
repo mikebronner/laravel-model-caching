@@ -22,6 +22,11 @@ trait ModelCaching
                 ?? 0;
         }
 
+        if ($key === "query") {
+            return $this->query
+                ?? $this->newModelQuery();
+        }
+
         return parent::__get($key);
     }
 
@@ -160,7 +165,7 @@ trait ModelCaching
 
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
-        int $seconds = null
+        ?int $seconds = null
     ) : EloquentBuilder {
         if (! $seconds) {
             $seconds = $this->cacheCooldownSeconds;
