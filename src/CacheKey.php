@@ -263,6 +263,10 @@ class CacheKey
             return "_" . implode("_", $columns);
         }
 
+        $columns = array_map(function ($column) {
+            return $this->expressionToString($column);
+        }, $columns);
+        
         return "_" . implode("_", $columns);
     }
 
