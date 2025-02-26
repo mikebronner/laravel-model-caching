@@ -22,7 +22,7 @@ trait ModelCaching
                 ?? 0;
         }
 
-        if ($key === 'query') {
+        if ($key === "query") {
             return $this->query
                 ?? $this->newModelQuery();
         }
