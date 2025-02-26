@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": ">=8.1",
-        "genealabs/laravel-pivot-events": "^10.0|^11.0",
+        "mikebronner/laravel-pivot-events": "^10.0|^11.0|^12.0",
         "illuminate/cache": "^10.0|^11.0|^12.0",
         "illuminate/config": "^10.0|^11.0|^12.0",
         "illuminate/console": "^10.0|^11.0|^12.0",
@@ -28,7 +28,7 @@
     "require-dev": {
         "doctrine/dbal": "^3.3|^4.2",
         "fakerphp/faker": "^1.11",
-        "laravel/nova": "^4.0",
+        "laravel/nova": "^5.0",
         "orchestra/testbench-browser-kit": "^9.0|^10.0",
         "orchestra/testbench": "^9.0|^10.0",
         "php-coveralls/php-coveralls": "^2.2",
