@@ -1,11 +1,11 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
 use ReflectionClass;
 
 class CachedModelTest extends IntegrationTestCase
@@ -169,7 +169,7 @@ class CachedModelTest extends IntegrationTestCase
         $author = (new AuthorWithCooldown)
             ->withCacheCooldownSeconds(1)
             ->first();
-        
+
         [$usesCacheCooldown, $expiresAt, $savedAt] = $method->invokeArgs($author, [$author]);
 
         $this->assertEquals($usesCacheCooldown, 1);
@@ -188,7 +188,7 @@ class CachedModelTest extends IntegrationTestCase
             ->get();
         $uncachedAuthors = (new UncachedAuthor)
             ->get();
-        sleep(2);
+        sleep(3);
         $authorsAfterCooldown = (new AuthorWithCooldown)
             ->get();
 
