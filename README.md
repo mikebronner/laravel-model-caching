@@ -67,6 +67,7 @@ The following are packages we have identified as conflicting:
 - [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
 - [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
 - [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
+- [laravel-adjacency-list](https://github.com/staudenmeir/laravel-adjacency-list)
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
