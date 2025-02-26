@@ -160,7 +160,7 @@ trait ModelCaching
 
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
-        int $seconds = null
+        ?int $seconds = null
     ) : EloquentBuilder {
         if (! $seconds) {
             $seconds = $this->cacheCooldownSeconds;
