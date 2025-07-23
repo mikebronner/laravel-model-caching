@@ -68,6 +68,7 @@ The following are packages we have identified as conflicting:
 - [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
 - [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
 - [laravel-adjacency-list](https://github.com/staudenmeir/laravel-adjacency-list)
+- [archtechx/virtualcolumn](https://github.com/archtechx/virtualcolumn)
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
