@@ -8,21 +8,8 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Regression tests for issue #295:
- * Constrained eager loading does not detect change to where constraint.
- *
- * Root cause: CacheKey::getWithModels() only included the relation name in
- * the cache key, ignoring any closure constraints applied via ->with().
- * Two sequential queries with different constraints returned the first
- * cached result regardless of the constraint change.
- */
 class ConstrainedEagerLoadTest extends IntegrationTestCase
 {
-    /**
-     * AC: Regression test from the issue — two queries with different `where`
-     * constraints on the same relationship each return correct results.
-     */
     public function testConstrainedEagerLoadsProduceDifferentResults(): void
     {
         $publisher = factory(Publisher::class)->create();
@@ -41,21 +28,17 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
         }])->get()->pluck('books')->flatten();
 
         $this->assertCount(1, $basonJournBooks);
-        $this->assertEquals('Bason Journe', $basonJournBooks->first()->title,
-            'Second constrained eager load should return different results than the first.');
+        $this->assertEquals(
+                'Bason Journe',
+                $basonJournBooks->first()->title,
+                'Second constrained eager load should return different results than the first.',
+            );
     }
 
-    /**
-     * AC: Cache key generation includes the constraint closure's effect.
-     * Verify the cache keys produced are distinct when constraints differ.
-     */
     public function testConstrainedEagerLoadsProduceDistinctCacheKeys(): void
     {
         $publisher = factory(Publisher::class)->create(['name' => 'ZZZUNIQUE-Publisher']);
-
-        // Build the cache keys manually by inspecting what the model generates.
-        // The point is: with different constraints, the two queries should not share a cache key.
-        $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:publishers:" .
+        sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:publishers:" .
             (new \GeneaLabs\LaravelModelCaching\CacheKey(
                 ['books' => function ($q) { $q->where('title', 'Jason Bourne'); }],
                 new Publisher,
@@ -63,10 +46,9 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
                 '',
                 [],
                 false
-            ))->make(['*']));
+            ))
+            ->make(['*']));
 
-        // We don't need the exact key strings; we just need them to differ.
-        // Run both queries and verify we get distinct, correct results.
         factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Jason Bourne 2']);
         factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Bason Journe 2']);
 
@@ -83,9 +65,6 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
         $this->assertNotEquals($jasonResult->first()->id, $basonResult->first()->id);
     }
 
-    /**
-     * AC: No constraint on eager load — should still work exactly as before.
-     */
     public function testUnconstrainedEagerLoadStillWorks(): void
     {
         $publisher = factory(Publisher::class)->create();
@@ -100,10 +79,6 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
         );
     }
 
-    /**
-     * AC: Three sequential calls with rotating constraints all return correct data.
-     * Proves the fix is not limited to two-constraint scenarios.
-     */
     public function testThreeDistinctConstraintsReturnDistinctResults(): void
     {
         $publisher = factory(Publisher::class)->create();
@@ -129,10 +104,6 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
         $this->assertEquals('Gamma Title', $gamma->first()->title);
     }
 
-    /**
-     * AC: Cache invalidation — modifying a related record flushes the constrained
-     * eager load cache, so subsequent queries see fresh data.
-     */
     public function testConstrainedEagerLoadCacheIsInvalidatedOnRelationChange(): void
     {
         $publisher = factory(Publisher::class)->create();
@@ -141,18 +112,15 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
             'title' => 'Original Title',
         ]);
 
-        // Prime the cache
         $first = Publisher::where('id', $publisher->id)
             ->with(['books' => fn($q) => $q->where('title', 'Original Title')])
             ->get()
             ->pluck('books')
             ->flatten();
 
-        // Modify the related model (triggers cache flush on Book)
         $book->title = 'Updated Title';
         $book->save();
 
-        // A new constrained query for the updated title should return fresh data
         $second = Publisher::where('id', $publisher->id)
             ->with(['books' => fn($q) => $q->where('title', 'Updated Title')])
             ->get()
@@ -164,10 +132,6 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
         $this->assertEquals('Updated Title', $second->first()->title);
     }
 
-    /**
-     * AC: Dynamic local scopes inside with() closures also produce distinct keys.
-     * Regression for issue #291 (dynamic scope parameter not captured in key).
-     */
     public function testDynamicLocalScopeInWithClosureProducesDistinctCacheKeys(): void
     {
         $authorA = factory(Author::class)->create(['name' => 'Author A']);
@@ -188,7 +152,10 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
         $this->assertCount(1, $booksA);
         $this->assertCount(1, $booksB);
         $this->assertEquals('Book for A', $booksA->first()->title);
-        $this->assertEquals('Book for B', $booksB->first()->title,
-            'Changing the scope parameter should return different cached results.');
+        $this->assertEquals(
+                'Book for B',
+                $booksB->first()->title,
+                'Changing the scope parameter should return different cached results.',
+            );
     }
 }

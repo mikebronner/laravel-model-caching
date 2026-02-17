@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 use UnitEnum;
 
 class CacheKey
@@ -236,7 +237,7 @@ class CacheKey
 
 	if (data_get($where, "column") instanceof Expression) {
             $where["column"] = $this->expressionToString(data_get($where, "column"));
-        }    
+        }
 
         $column .= isset($where["column"]) ? $where["column"] : "";
         $column .= isset($where["columns"]) ? implode("-", $where["columns"]) : "";
@@ -267,7 +268,7 @@ class CacheKey
         $columns = array_map(function ($column) {
             return $this->expressionToString($column);
         }, $columns);
-        
+
         return "_" . implode("_", $columns);
     }
 
@@ -419,27 +420,12 @@ class CacheKey
                 $carry .= "-{$relatedConnection}:{$relatedDatabase}:{$related}";
             }
 
-            // If the eager load has a closure constraint, apply it to a fresh
-            // query builder for the related model and include the resulting
-            // where clauses in the cache key. This ensures that two calls with
-            // different constraint closures (e.g. different `where` values)
-            // produce distinct cache keys.
             $carry .= $this->getEagerLoadConstraintKey($related, $constraint);
 
             return $carry;
         }, "");
     }
 
-    /**
-     * Apply the eager load constraint closure to the relation instance created
-     * on a fresh (unsaved) model, then capture and hash only the where clauses
-     * added by the constraint. Returns an empty string when the constraint adds
-     * no wheres (e.g. the default no-op closure Eloquent always sets).
-     *
-     * Eloquent passes the Relation object (e.g. HasMany) — not a bare builder —
-     * to the constraint closure. We recreate that exact calling convention so
-     * type-hinted closures (fn(HasMany $q) => ...) work correctly.
-     */
     protected function getEagerLoadConstraintKey(string $related, $constraint) : string
     {
         if (! ($constraint instanceof \Closure)) {
@@ -451,23 +437,13 @@ class CacheKey
         }
 
         try {
-            // Create the relation on a fresh (not persisted) instance of the
-            // parent model so we do not pick up any instance-specific bindings.
             $freshModel = (new \ReflectionClass($this->model))->newInstanceWithoutConstructor();
             $relation = $freshModel->$related();
-
-            // Snapshot query state BEFORE the constraint is applied.
             $baseWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
             $baseBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
-
-            // Apply the constraint closure (same as Eloquent's eagerLoadRelation).
             $constraint($relation);
-
-            // Capture query state AFTER the constraint is applied.
             $afterWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
             $afterBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
-
-            // Only the wheres/bindings ADDED by the constraint matter.
             $addedWheres   = array_slice($afterWheres,   count($baseWheres));
             $addedBindings = array_slice($afterBindings, count($baseBindings));
 
@@ -476,7 +452,7 @@ class CacheKey
             }
 
             return "=" . sha1(json_encode($addedWheres) . json_encode($addedBindings));
-        } catch (\Throwable $e) {
+        } catch (Throwable) {
             return "";
         }
     }
