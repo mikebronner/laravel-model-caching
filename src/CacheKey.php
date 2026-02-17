@@ -408,17 +408,77 @@ class CacheKey
             return "";
         }
 
-        return $eagerLoads->keys()->reduce(function ($carry, $related) {
+        return $eagerLoads->reduce(function ($carry, $constraint, $related) {
             if (! method_exists($this->model, $related)) {
-                return "{$carry}-{$related}";
+                $carry .= "-{$related}";
+            } else {
+                $relatedModel = $this->model->$related()->getRelated();
+                $relatedConnection = $relatedModel->getConnection()->getName();
+                $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
+
+                $carry .= "-{$relatedConnection}:{$relatedDatabase}:{$related}";
             }
 
-            $relatedModel = $this->model->$related()->getRelated();
-            $relatedConnection = $relatedModel->getConnection()->getName();
-            $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
+            // If the eager load has a closure constraint, apply it to a fresh
+            // query builder for the related model and include the resulting
+            // where clauses in the cache key. This ensures that two calls with
+            // different constraint closures (e.g. different `where` values)
+            // produce distinct cache keys.
+            $carry .= $this->getEagerLoadConstraintKey($related, $constraint);
 
-            return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
-        });
+            return $carry;
+        }, "");
+    }
+
+    /**
+     * Apply the eager load constraint closure to the relation instance created
+     * on a fresh (unsaved) model, then capture and hash only the where clauses
+     * added by the constraint. Returns an empty string when the constraint adds
+     * no wheres (e.g. the default no-op closure Eloquent always sets).
+     *
+     * Eloquent passes the Relation object (e.g. HasMany) — not a bare builder —
+     * to the constraint closure. We recreate that exact calling convention so
+     * type-hinted closures (fn(HasMany $q) => ...) work correctly.
+     */
+    protected function getEagerLoadConstraintKey(string $related, $constraint) : string
+    {
+        if (! ($constraint instanceof \Closure)) {
+            return "";
+        }
+
+        if (! method_exists($this->model, $related)) {
+            return "";
+        }
+
+        try {
+            // Create the relation on a fresh (not persisted) instance of the
+            // parent model so we do not pick up any instance-specific bindings.
+            $freshModel = (new \ReflectionClass($this->model))->newInstanceWithoutConstructor();
+            $relation = $freshModel->$related();
+
+            // Snapshot query state BEFORE the constraint is applied.
+            $baseWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $baseBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
+
+            // Apply the constraint closure (same as Eloquent's eagerLoadRelation).
+            $constraint($relation);
+
+            // Capture query state AFTER the constraint is applied.
+            $afterWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $afterBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
+
+            // Only the wheres/bindings ADDED by the constraint matter.
+            $addedWheres   = array_slice($afterWheres,   count($baseWheres));
+            $addedBindings = array_slice($afterBindings, count($baseBindings));
+
+            if (empty($addedWheres)) {
+                return "";
+            }
+
+            return "=" . sha1(json_encode($addedWheres) . json_encode($addedBindings));
+        } catch (\Throwable $e) {
+            return "";
+        }
     }
 
     protected function recursiveImplode(array $items, string $glue = ",") : string
