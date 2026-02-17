@@ -10,6 +10,7 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Role;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Tag;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPost;
@@ -21,8 +22,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
+        $roles = factory(Role::class, 3)->create();
         factory(History::class)->create();
         $user = factory(User::class)->create();
+        $user->roles()->sync($roles->pluck('id'));
         $image = factory(Image::class)->create([
             "imagable_id" => $user->id,
             "imagable_type" => User::class,

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class UncachedUser extends Model
@@ -11,6 +12,11 @@ class UncachedUser extends Model
         "supplier_id",
     ];
     protected $table = "users";
+
+    public function roles() : BelongsToMany
+    {
+        return $this->belongsToMany(UncachedRole::class, 'role_user', 'user_id', 'role_id');
+    }
 
     public function supplier() : BelongsTo
     {
