@@ -25,8 +25,10 @@ trait Caching
     {
         $result = parent::__call($method, $parameters);
 
-        if (isset($this->localMacros[$method])
-            || (method_exists(static::class, 'hasGlobalMacro') && static::hasGlobalMacro($method))) {
+        if (
+            isset($this->localMacros[$method])
+            || (method_exists(static::class, 'hasGlobalMacro') && static::hasGlobalMacro($method))
+        ) {
             $this->macroKey .= "-{$method}";
 
             if ($parameters) {
