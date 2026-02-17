@@ -1,4 +1,8 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+declare(strict_types=1);
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Illuminate\Pagination\Paginator;
 
@@ -45,7 +49,7 @@ trait Buildable
         $this->cache($this->makeCacheTags())
             ->flush();
 
-        return parent::decrement($column, $amount, $extra);
+        return $this->executeOnInnerOrParent('decrement', [$column, $amount, $extra]);
     }
 
     public function delete()
@@ -53,7 +57,7 @@ trait Buildable
         $this->cache($this->makeCacheTags())
             ->flush();
 
-        return parent::delete();
+        return $this->executeOnInnerOrParent('delete', []);
     }
 
     /**
@@ -93,7 +97,7 @@ trait Buildable
         $this->cache($this->makeCacheTags())
             ->flush();
 
-        return parent::forceDelete();
+        return $this->executeOnInnerOrParent('forceDelete', []);
     }
 
     public function get($columns = ["*"])
@@ -113,7 +117,7 @@ trait Buildable
         $this->cache($this->makeCacheTags())
             ->flush();
 
-        return parent::increment($column, $amount, $extra);
+        return $this->executeOnInnerOrParent('increment', [$column, $amount, $extra]);
     }
 
     public function inRandomOrder($seed = '')
@@ -129,7 +133,7 @@ trait Buildable
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
 
-        return parent::insert($values);
+        return $this->executeOnInnerOrParent('insert', [$values]);
     }
 
     public function max($column)
@@ -170,7 +174,7 @@ trait Buildable
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
-        
+
         $columns = collect($columns)->toArray();
         $keyDifferentiator = "-paginate_by_{$perPage}_{$pageName}_{$page}";
 
@@ -226,7 +230,7 @@ trait Buildable
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
 
-        return parent::update($values);
+        return $this->executeOnInnerOrParent('update', [$values]);
     }
 
     public function value($column)
@@ -309,9 +313,20 @@ trait Buildable
                 function () use ($arguments, $cacheKey, $method) {
                     return [
                         "key" => $cacheKey,
-                        "value" => parent::{$method}(...$arguments),
+                        "value" => $this->executeOnInnerOrParent($method, $arguments),
                     ];
                 }
             );
+    }
+
+    protected function executeOnInnerOrParent(string $method, array $arguments)
+    {
+        if (property_exists($this, 'innerBuilder') && $this->innerBuilder) {
+            $this->syncStateToInner();
+
+            return $this->innerBuilder->{$method}(...$arguments);
+        }
+
+        return parent::{$method}(...$arguments);
     }
 }

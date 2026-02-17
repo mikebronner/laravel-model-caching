@@ -86,10 +86,10 @@ class CustomBuilderTest extends IntegrationTestCase
 
     /**
      * AC 3: When caching is enabled but the model's custom builder does NOT extend
-     *       CachedBuilder, the package falls back to CachedBuilder so caching is
-     *       never silently dropped.
+     *       CachedBuilder, the package wraps it inside a CachedBuilder so caching
+     *       is never silently dropped.
      */
-    public function testCachableModelWithNonCachedBuilderFallsBackToCachedBuilder()
+    public function testCachableModelWithNonCachedBuilderWrapsToCachedBuilder()
     {
         $builder = (new AuthorWithCustomBuilder)->newQuery();
 
@@ -99,18 +99,28 @@ class CustomBuilderTest extends IntegrationTestCase
             'When custom builder does not extend CachedBuilder, newQuery() must return CachedBuilder'
         );
 
-        // The non-CachedBuilder custom builder must NOT be returned for a cachable model
-        $this->assertNotInstanceOf(
+        // The inner builder should be the custom builder
+        $this->assertInstanceOf(
             AuthorQueryBuilder::class,
-            $builder,
-            'CachedBuilder fallback must not be the plain custom builder'
+            $builder->getInnerBuilder(),
+            'The inner builder must be the custom AuthorQueryBuilder'
         );
     }
 
-    /**
-     * AC 3 continued: the CachedBuilder fallback must still produce correct results.
-     */
-    public function testCachedBuilderFallbackStillCachesResults()
+    public function testWrappedCustomBuilderMethodsAreCallable()
+    {
+        $builder = (new AuthorWithCustomBuilder)->newQuery();
+
+        $result = $builder->famous();
+
+        $this->assertInstanceOf(
+            CachedBuilder::class,
+            $result,
+            'Fluent custom method must return the outer CachedBuilder for chaining'
+        );
+    }
+
+    public function testWrappedBuilderStillCachesResults()
     {
         $results = (new AuthorWithCustomBuilder)->get();
 
@@ -126,10 +136,34 @@ class CustomBuilderTest extends IntegrationTestCase
 
         $cached = $this->cache()->tags($tags)->get($cacheKey);
 
-        $this->assertNotNull($cached, 'CachedBuilder fallback must store results in cache');
+        $this->assertNotNull($cached, 'Wrapped CachedBuilder must store results in cache');
         $this->assertEquals(
             $results->count(),
             $cached['value']->count()
+        );
+    }
+
+    public function testCustomMethodThenGetIsCachedEndToEnd()
+    {
+        $results = (new AuthorWithCustomBuilder)->famous()->get();
+
+        $cacheKey = sha1(
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
+            ":authors:genealabslaravelmodelcachingtestsfixturesauthorwithcustombuilder" .
+            "-is_famous_=_1-authors.deleted_at_null"
+        );
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
+            ":genealabslaravelmodelcachingtestsfixturesauthorwithcustombuilder",
+        ];
+
+        $cached = $this->cache()->tags($tags)->get($cacheKey);
+
+        $this->assertNotNull($cached, 'Custom method + get() must store results in cache');
+        $this->assertEquals(
+            $results->count(),
+            $cached['value']->count(),
+            'Cached count must match the live result count'
         );
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Closure;
@@ -23,6 +25,16 @@ trait Caching
 
     public function __call($method, $parameters)
     {
+        if (
+            property_exists($this, 'innerBuilder')
+            && $this->innerBuilder
+            && method_exists($this->innerBuilder, $method)
+        ) {
+            $result = $this->innerBuilder->{$method}(...$parameters);
+
+            return $result === $this->innerBuilder ? $this : $result;
+        }
+
         $result = parent::__call($method, $parameters);
 
         if (isset($this->localMacros[$method])) {

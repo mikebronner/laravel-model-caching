@@ -1,0 +1,12 @@
+name: Sync Developer Settings
+
+on:
+  push:
+    branches: [main,develop,production]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    uses: mikebronner/development-settings/.github/workflows/reusable-sync.yml@main
+    secrets:
+      DEVELOPER_SETTINGS_TOKEN: ${{ secrets.DEVELOPER_SETTINGS_TOKEN }}
