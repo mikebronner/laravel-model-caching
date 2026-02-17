@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [12.0.2] - 2025-02-26
+### Fixed
+- Fixed query attribute not found (#480).
+
+## [12.0.1] - 2025-02-26
+### Fixed
+- Fixed `whereIn` values with `%` not being escaped before `vsprintf` (#516).
+
+## [12.0.0] - 2025-02-26
+### Added
+- Laravel 12 and PHP 8.4+ support (#478).
+### Fixed
+- Fixed `query` attribute not existing under strict mode (#465).
+- Fixed nullable function argument deprecations in PHP 8.4 (#477).
+- Fixed Carbon v3 method default-parameter compatibility (#469).
+- Fixed cache key issues (#471).
+
+## [11.0.1] - 2024-07-01
+### Fixed
+- Ensured `isCacheable` is checked inside `checkCooldownAndFlushAfterPersisting` (#458).
+
+## [11.0.0] - 2024-03-02
+### Added
+- Laravel 11 support (#459).
+
+## [0.13.9] - 2024-01-15
+### Fixed
+- `checkCooldownAndFlushAfterPersisting` now respects the `isCacheable` flag (#458).
+
+## [0.13.8] - 2023-12-01
+### Fixed
+- Correctly convert `Expression` objects to strings in `getOtherClauses` (#451).
+- Support for `JsonContainsKey` clause type in cache key generation (#454).
+
+## [0.13.5] - 2023-09-01
+### Fixed
+- Cache key generation fixes for edge-case query structures.
+
+## [0.13.0] - 2023-02-17
+### Added
+- Laravel 10 support.
+
+## [0.12.5] - 2022-07-30
+
 ## [0.12.5] - 2022-07-30
 ### Added
 - pivotSynced event listener to flush cache when performing BelongsToMany::sync
