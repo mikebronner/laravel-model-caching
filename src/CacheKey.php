@@ -154,6 +154,7 @@ class CacheKey
         }
 
         $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
+        $subquery = str_replace('%', '%%', $subquery);
         $subquery = collect(vsprintf(str_replace("_??_", "%s", $subquery), $values->toArray()));
         $values = $this->recursiveImplode($subquery->toArray(), "_");
 
