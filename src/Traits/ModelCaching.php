@@ -111,7 +111,21 @@ trait ModelCaching
         if (! $this->isCachable()) {
             $this->isCachable = false;
 
-            return new EloquentBuilder($query);
+            // Respect any custom builder the model declares via #[UseEloquentBuilder]
+            // attribute or the static $builder property rather than always returning
+            // the plain EloquentBuilder.
+            return parent::newEloquentBuilder($query);
+        }
+
+        // When caching is enabled, check whether the model declares a custom builder
+        // that already extends CachedBuilder.  If so, honour it so the user's custom
+        // query methods are available alongside full caching support.  If the custom
+        // builder does not extend CachedBuilder we fall back to CachedBuilder itself
+        // to guarantee that caching is never silently dropped.
+        $customBuilder = parent::newEloquentBuilder($query);
+
+        if ($customBuilder instanceof CachedBuilder) {
+            return $customBuilder;
         }
 
         return new CachedBuilder($query);
