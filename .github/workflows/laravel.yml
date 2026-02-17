@@ -12,21 +12,40 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        php: [8.4, 8.3, 8.2]
+        php: [8.3, 8.4, 8.5]
 
     name: PHP ${{ matrix.php }}
 
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: forge
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Cache dependencies
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
-        path: ~/.composer/cache/files
+        path: ~/.composer/cache
         key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+        restore-keys: |
+          dependencies-php-${{ matrix.php }}-composer-
 
     - name: Setup PHP ${{ matrix.php }}
       uses: shivammathur/setup-php@v2
@@ -34,18 +53,6 @@ jobs:
         php-version: ${{ matrix.php }}
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, pgsql, pdo_pgsql
         coverage: none
-
-    - uses: zhulik/redis-action@1.1.0
-      with:
-        redis version: '5'
-        number of databases: 100
-
-    - uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '15'
-        postgresql db: 'testing'
-        postgresql user: 'forge'
-        postgresql password: 'secret'
 
     - name: Remove Nova on a pull request
       if: github.event_name == 'pull_request'
@@ -57,7 +64,7 @@ jobs:
     - name: Install Dependencies
       run: |
         composer config "http-basic.nova.laravel.com" "${{ secrets.NOVA_USERNAME }}" "${{ secrets.NOVA_LICENSE_KEY }}"
-        composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Execute Integration and Feature tests via PHPUnit
       run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature

@@ -6,9 +6,8 @@
     cacheDirectory=".phpunit.cache"
     colors="true"
     processIsolation="false"
-    stopOnFailure="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
 >
     <testsuites>
         <testsuite name="Feature">
