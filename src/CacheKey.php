@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 use UnitEnum;
 
 class CacheKey
@@ -236,7 +237,7 @@ class CacheKey
 
 	if (data_get($where, "column") instanceof Expression) {
             $where["column"] = $this->expressionToString(data_get($where, "column"));
-        }    
+        }
 
         $column .= isset($where["column"]) ? $where["column"] : "";
         $column .= isset($where["columns"]) ? implode("-", $where["columns"]) : "";
@@ -267,7 +268,7 @@ class CacheKey
         $columns = array_map(function ($column) {
             return $this->expressionToString($column);
         }, $columns);
-        
+
         return "_" . implode("_", $columns);
     }
 
@@ -408,17 +409,52 @@ class CacheKey
             return "";
         }
 
-        return $eagerLoads->keys()->reduce(function ($carry, $related) {
+        return $eagerLoads->reduce(function ($carry, $constraint, $related) {
             if (! method_exists($this->model, $related)) {
-                return "{$carry}-{$related}";
+                $carry .= "-{$related}";
+            } else {
+                $relatedModel = $this->model->$related()->getRelated();
+                $relatedConnection = $relatedModel->getConnection()->getName();
+                $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
+
+                $carry .= "-{$relatedConnection}:{$relatedDatabase}:{$related}";
             }
 
-            $relatedModel = $this->model->$related()->getRelated();
-            $relatedConnection = $relatedModel->getConnection()->getName();
-            $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
+            $carry .= $this->getEagerLoadConstraintKey($related, $constraint);
 
-            return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
-        });
+            return $carry;
+        }, "");
+    }
+
+    protected function getEagerLoadConstraintKey(string $related, $constraint) : string
+    {
+        if (! ($constraint instanceof \Closure)) {
+            return "";
+        }
+
+        if (! method_exists($this->model, $related)) {
+            return "";
+        }
+
+        try {
+            $freshModel = (new \ReflectionClass($this->model))->newInstanceWithoutConstructor();
+            $relation = $freshModel->$related();
+            $baseWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $baseBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
+            $constraint($relation);
+            $afterWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $afterBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
+            $addedWheres   = array_slice($afterWheres,   count($baseWheres));
+            $addedBindings = array_slice($afterBindings, count($baseBindings));
+
+            if (empty($addedWheres)) {
+                return "";
+            }
+
+            return "=" . sha1(json_encode($addedWheres) . json_encode($addedBindings));
+        } catch (Throwable) {
+            return "";
+        }
     }
 
     protected function recursiveImplode(array $items, string $glue = ",") : string
