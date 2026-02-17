@@ -80,7 +80,7 @@ _ide_helper*.php
 
 
 # ignore all the ai configuration files, have laravel boost manage them and the developer choose their setup
-!.ai
+.ai
 .agentic-tools-mcp
 .claude
 .codex
