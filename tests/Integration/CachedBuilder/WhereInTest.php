@@ -99,4 +99,26 @@ class WhereInTest extends IntegrationTestCase
         $this->assertEmpty($authors->diffKeys($cachedResults));
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
+
+    public function testWhereInWithPercentCharacterInValueDoesNotThrow()
+    {
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_in_10%_20%-authors.deleted_at_null");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $authors = (new Author)
+            ->whereIn('name', ['10%', '20%'])
+            ->get();
+        $cachedResults = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedAuthor)
+            ->whereIn('name', ['10%', '20%'])
+            ->get();
+
+        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
+        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+    }
 }
