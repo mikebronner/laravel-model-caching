@@ -22,6 +22,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
+    public function rolesWithCustomPivot() : BelongsToMany
+    {
+        return $this->belongsToMany(Role::class)->using(RoleUser::class);
+    }
+
     public function supplier() : BelongsTo
     {
         return $this->belongsTo(Supplier::class);
