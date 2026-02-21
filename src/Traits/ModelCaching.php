@@ -111,7 +111,17 @@ trait ModelCaching
         if (! $this->isCachable()) {
             $this->isCachable = false;
 
-            return new EloquentBuilder($query);
+            return parent::newEloquentBuilder($query);
+        }
+
+        $customBuilder = parent::newEloquentBuilder($query);
+
+        if ($customBuilder instanceof CachedBuilder) {
+            return $customBuilder;
+        }
+
+        if ($customBuilder::class !== Builder::class) {
+            return (new CachedBuilder($query))->setInnerBuilder($customBuilder);
         }
 
         return new CachedBuilder($query);

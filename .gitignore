@@ -1,7 +1,14 @@
-.idea
+# -----------------
+# Laravel Artifacts
+# -----------------
+/.phpunit.cache
 .phpunit.result.cache
-/.phpunit*
-/build
+/.laravel-lsp
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
 /vendor
 composer.lock
 .ai
