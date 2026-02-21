@@ -137,11 +137,6 @@ class CacheKey
 
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
-        $values = collect($this->getCurrentBinding('where', []));
-
-        if (Str::startsWith($subquery, $values->first())) {
-            $this->currentBinding += count($where["values"]);
-        }
 
         if (! is_numeric($subquery) && ! is_numeric(str_replace("_", "", $subquery))) {
             try {
@@ -153,6 +148,23 @@ class CacheKey
                 // do nothing
             }
         }
+
+        // Count ? placeholders in the subquery (outside of quoted strings)
+        $placeholderCount = preg_match_all('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', $subquery);
+
+        if ($placeholderCount === 0) {
+            if (is_array($where["values"] ?? null)) {
+                $this->currentBinding += count($where["values"]);
+            }
+
+            $values = $this->recursiveImplode([$subquery], "_");
+            return "-{$where["column"]}_{$type}{$values}";
+        }
+
+        // Slice the correct number of bindings for this subquery
+        $allBindings = collect($this->query->bindings['where'] ?? []);
+        $values = $allBindings->slice($this->currentBinding, $placeholderCount)->values();
+        $this->currentBinding += $placeholderCount;
 
         $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
         $subquery = str_replace('%', '%%', $subquery);
