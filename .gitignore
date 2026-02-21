@@ -5,3 +5,4 @@
 /vendor
 composer.lock
 .ai
+/tests/database/*.sqlite-journal

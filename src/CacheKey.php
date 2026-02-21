@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GeneaLabs\LaravelModelCaching;
 
 use BackedEnum;
+use DateTimeInterface;
 use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Query\Expression;
@@ -149,21 +152,21 @@ class CacheKey
             }
         }
 
-        // Count ? placeholders in the subquery (outside of quoted strings)
         $placeholderCount = preg_match_all('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', $subquery);
 
         if ($placeholderCount === 0) {
-            if (is_array($where["values"] ?? null)) {
-                $this->currentBinding += count($where["values"]);
+            if (data_get($where, "values")) {
+                $this->currentBinding += count(data_get($where, "values"));
             }
 
             $values = $this->recursiveImplode([$subquery], "_");
+
             return "-{$where["column"]}_{$type}{$values}";
         }
 
-        // Slice the correct number of bindings for this subquery
-        $allBindings = collect($this->query->bindings['where'] ?? []);
-        $values = $allBindings->slice($this->currentBinding, $placeholderCount)->values();
+        $values = collect(data_get($this->query->bindings, "where"))
+            ->slice($this->currentBinding, $placeholderCount)
+            ->values();
         $this->currentBinding += $placeholderCount;
 
         $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
@@ -382,7 +385,7 @@ class CacheKey
             $values = $values->format("Y-m-d-H-i-s");
         }
 
-        return $values;
+        return (string) $values;
     }
 
     protected function getWhereClauses(array $wheres = []) : string
@@ -495,17 +498,20 @@ class CacheKey
         return $result;
     }
 
-    private function processEnum(BackedEnum|UnitEnum|Expression|string|null $value): ?string
-    {
+    private function processEnum(
+        BackedEnum|UnitEnum|Expression|DateTimeInterface|int|float|bool|string|null $value,
+    ): string {
         if ($value instanceof BackedEnum) {
             return $value->value;
         } elseif ($value instanceof UnitEnum) {
             return $value->name;
         } elseif ($value instanceof Expression) {
             return $this->expressionToString($value);
+        } elseif ($value instanceof DateTimeInterface) {
+            return $value->format("Y-m-d-H-i-s");
         }
 
-        return $value;
+        return "{$value}";
     }
 
     private function processEnums(array $values): array
