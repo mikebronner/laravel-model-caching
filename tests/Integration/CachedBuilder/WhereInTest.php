@@ -121,4 +121,48 @@ class WhereInTest extends IntegrationTestCase
         $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
         $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
     }
+
+    public function testWhereInWithSubqueryContainingSingleWhereClause()
+    {
+        $books = (new Book)
+            ->whereIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "John");
+            })
+            ->get();
+
+        $liveResults = (new UncachedBook)
+            ->whereIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "John");
+            })
+            ->get();
+
+        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
+    }
+
+    public function testWhereInWithSubqueryContainingMultipleWhereClauses()
+    {
+        $books = (new Book)
+            ->whereIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "John")
+                    ->where("id", ">", 0);
+            })
+            ->get();
+
+        $liveResults = (new UncachedBook)
+            ->whereIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "John")
+                    ->where("id", ">", 0);
+            })
+            ->get();
+
+        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
+    }
 }
