@@ -20,6 +20,19 @@ class CachedBelongsToMany extends BelongsToMany
 
     protected $isSyncing = false;
 
+    protected function flushCacheForPivotOperation(): void
+    {
+        if (method_exists($this->parent, 'flushCache')) {
+            $this->parent->flushCache();
+        }
+
+        $relatedModel = $this->getRelated();
+
+        if (method_exists($relatedModel, 'flushCache')) {
+            $relatedModel->flushCache();
+        }
+    }
+
     public function sync($ids, $detaching = true)
     {
         $this->isCachable = false;
@@ -32,7 +45,7 @@ class CachedBelongsToMany extends BelongsToMany
             $this->isCachable = true;
         }
 
-        $this->flushCache();
+        $this->flushCacheForPivotOperation();
 
         return $result;
     }
@@ -49,7 +62,7 @@ class CachedBelongsToMany extends BelongsToMany
         }
 
         if (! $this->isSyncing) {
-            $this->flushCache();
+            $this->flushCacheForPivotOperation();
         }
 
         return $result;
@@ -67,7 +80,7 @@ class CachedBelongsToMany extends BelongsToMany
         }
 
         if (! $this->isSyncing) {
-            $this->flushCache();
+            $this->flushCacheForPivotOperation();
         }
 
         return $result;
@@ -85,7 +98,7 @@ class CachedBelongsToMany extends BelongsToMany
         }
 
         if (! $this->isSyncing) {
-            $this->flushCache();
+            $this->flushCacheForPivotOperation();
         }
 
         return $result;
