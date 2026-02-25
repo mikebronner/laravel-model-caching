@@ -28,7 +28,6 @@
     "require-dev": {
         "doctrine/dbal": "^3.3|^4.2",
         "fakerphp/faker": "^1.11",
-        "laravel/nova": "^5.0",
         "orchestra/testbench-browser-kit": "^9.0|^10.0",
         "orchestra/testbench": "^9.0|^10.0",
         "php-coveralls/php-coveralls": "^2.2",

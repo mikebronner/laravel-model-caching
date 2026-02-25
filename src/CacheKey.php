@@ -239,9 +239,29 @@ class CacheKey
             ?: "";
     }
 
+    protected function getRowValuesClauses(array $where) : string
+    {
+        if ($where["type"] !== "RowValues") {
+            return "";
+        }
+
+        $columns = implode("_", $where["columns"]);
+        $operator = str_replace(" ", "_", $where["operator"]);
+        $values = implode("_", array_map(function ($value) {
+            return $this->processEnum($value);
+        }, $where["values"]));
+
+        // Advance binding pointer for each value in the RowValues clause
+        foreach ($where["values"] as $ignored) {
+            $this->currentBinding++;
+        }
+
+        return "-{$where["boolean"]}_{$columns}_{$operator}_{$values}";
+    }
+
     protected function getOtherClauses(array $where) : string
     {
-        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn", "InRaw"])) {
+        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn", "InRaw", "RowValues"])) {
             return "";
         }
 
@@ -397,6 +417,7 @@ class CacheKey
                 $value .= $this->getColumnClauses($where);
                 $value .= $this->getRawClauses($where);
                 $value .= $this->getInAndNotInClauses($where);
+                $value .= $this->getRowValuesClauses($where);
                 $value .= $this->getOtherClauses($where);
 
                 return $value;
