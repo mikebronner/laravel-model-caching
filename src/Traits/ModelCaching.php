@@ -106,7 +106,42 @@ trait ModelCaching
         return parent::destroy($ids);
     }
 
+    /**
+     * Create a new Eloquent builder with model caching support.
+     *
+     * If your model uses another trait that also defines newEloquentBuilder
+     * (e.g. Kalnoy\Nestedset\NodeTrait), you will encounter a PHP fatal
+     * trait collision. To resolve this, define newEloquentBuilder on your
+     * model class directly, and call this helper method:
+     *
+     *     use Cachable, NodeTrait {
+     *         Cachable::newEloquentBuilder insteadof NodeTrait;
+     *     }
+     *
+     * Or, if you need to combine both builders:
+     *
+     *     use Cachable, NodeTrait {
+     *         Cachable::newEloquentBuilder as newCachableEloquentBuilder;
+     *         NodeTrait::newEloquentBuilder as newNodeTraitEloquentBuilder;
+     *     }
+     *
+     *     public function newEloquentBuilder($query)
+     *     {
+     *         return $this->newModelCachingEloquentBuilder($query);
+     *     }
+     */
     public function newEloquentBuilder($query)
+    {
+        return $this->newModelCachingEloquentBuilder($query);
+    }
+
+    /**
+     * Build a caching-aware Eloquent builder instance.
+     *
+     * This method contains the actual implementation logic and can be called
+     * from a custom newEloquentBuilder() when resolving trait collisions.
+     */
+    public function newModelCachingEloquentBuilder($query)
     {
         if (! $this->isCachable()) {
             $this->isCachable = false;
