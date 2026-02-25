@@ -190,6 +190,36 @@ extends `Illuminate\Foundation\Auth\User`. Overriding that would break functiona
 Not only that, but it probably isn't a good idea to cache the user model anyway,
 since you always want to pull the most up-to-date info on it.
 
+### Resolving Trait Collisions
+If your model uses `Cachable` alongside another trait that also defines
+`newEloquentBuilder` (e.g., `Kalnoy\Nestedset\NodeTrait`), PHP will throw a
+fatal trait collision error. There are two ways to resolve this:
+
+**Option 1: Use `insteadof` to pick the Cachable builder (recommended)**
+```php
+use Cachable, NodeTrait {
+    Cachable::newEloquentBuilder insteadof NodeTrait;
+}
+```
+
+**Option 2: Define `newEloquentBuilder` on your model and delegate to the helper**
+```php
+use Cachable, NodeTrait {
+    Cachable::newEloquentBuilder as newCachableEloquentBuilder;
+    NodeTrait::newEloquentBuilder as newNodeTraitEloquentBuilder;
+}
+
+public function newEloquentBuilder($query)
+{
+    // Use the caching builder; call newNodeTraitEloquentBuilder()
+    // if you need to combine behaviors.
+    return $this->newModelCachingEloquentBuilder($query);
+}
+```
+
+The `newModelCachingEloquentBuilder()` method contains the caching builder logic
+and is always available on any model using `Cachable`.
+
 ### Experimental: Cache Cool-down In Specific Models
 In some instances, you may want to add a cache invalidation cool-down period.
 For example you might have a busy site where comments are submitted at a high
