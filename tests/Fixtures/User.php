@@ -27,6 +27,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class)->using(RoleUser::class);
     }
 
+    public function uncachedRolesWithCustomPivot() : BelongsToMany
+    {
+        return $this->belongsToMany(UncachedRole::class, 'role_user', 'user_id', 'role_id')
+            ->using(RoleUser::class);
+    }
+
     public function supplier() : BelongsTo
     {
         return $this->belongsTo(Supplier::class);

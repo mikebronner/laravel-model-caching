@@ -6,6 +6,7 @@ namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Role;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedRole;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Support\Facades\DB;
@@ -169,5 +170,78 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
             $cachedResult,
             'Existing (non-custom-pivot) cache invalidation on attach should still work.'
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // Issue #551: Related model is NOT cacheable, only parent is
+    // -------------------------------------------------------------------------
+
+    public function testCustomPivotWithUncachedRelatedReturnsCorrectRelation(): void
+    {
+        $userId = $this->userIdWithRoles();
+        $relation = (new User)->find($userId)->uncachedRolesWithCustomPivot();
+
+        $this->assertInstanceOf(
+            CachedBelongsToMany::class,
+            $relation,
+            'uncachedRolesWithCustomPivot() should return CachedBelongsToMany when only parent is cacheable.'
+        );
+    }
+
+    public function testCacheInvalidatedOnAttachWhenRelatedModelNotCacheable(): void
+    {
+        $userId = $this->userIdWithRoles();
+
+        // Warm the cache via the uncached-related relationship.
+        $result = (new User)->find($userId)->uncachedRolesWithCustomPivot;
+        $this->assertNotEmpty($result);
+
+        // Attach a new role.
+        $newRole = UncachedRole::create(['name' => 'test-uncached-role']);
+        (new User)->find($userId)->uncachedRolesWithCustomPivot()->attach($newRole->id);
+
+        // After attach, fetching fresh data should include the new role.
+        $freshResult = (new User)->find($userId)->uncachedRolesWithCustomPivot;
+        $this->assertTrue(
+            $freshResult->contains('id', $newRole->id),
+            'After attach via uncached related model with custom pivot, fresh query should reflect the change.'
+        );
+    }
+
+    public function testCacheInvalidatedOnDetachWhenRelatedModelNotCacheable(): void
+    {
+        $userId = $this->userIdWithRoles();
+
+        $result = (new User)->find($userId)->uncachedRolesWithCustomPivot;
+        $this->assertNotEmpty($result);
+
+        $firstRoleId = $result->first()->id;
+        (new User)->find($userId)->uncachedRolesWithCustomPivot()->detach($firstRoleId);
+
+        $freshResult = (new User)->find($userId)->uncachedRolesWithCustomPivot;
+        $this->assertFalse(
+            $freshResult->contains('id', $firstRoleId),
+            'After detach via uncached related model with custom pivot, fresh query should not contain detached role.'
+        );
+    }
+
+    public function testCacheInvalidatedOnSyncWhenRelatedModelNotCacheable(): void
+    {
+        $userId = $this->userIdWithRoles();
+
+        $result = (new User)->find($userId)->uncachedRolesWithCustomPivot;
+        $this->assertNotEmpty($result);
+
+        $newRoles = collect([
+            UncachedRole::create(['name' => 'sync-role-1']),
+            UncachedRole::create(['name' => 'sync-role-2']),
+        ]);
+        (new User)->find($userId)->uncachedRolesWithCustomPivot()->sync($newRoles->pluck('id'));
+
+        $freshResult = (new User)->find($userId)->uncachedRolesWithCustomPivot;
+        $this->assertEmpty(array_diff(
+            $freshResult->pluck('id')->toArray(),
+            $newRoles->pluck('id')->toArray()
+        ), 'After sync via uncached related model with custom pivot, fresh query should reflect synced roles.');
     }
 }

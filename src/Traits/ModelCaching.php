@@ -127,9 +127,12 @@ trait ModelCaching
         $relatedKey,
         $relationName = null
     ) {
-        if (method_exists($query->getModel(), "isCachable")
-            && $query->getModel()->isCachable()
-        ) {
+        $relatedIsCachable = method_exists($query->getModel(), "isCachable")
+            && $query->getModel()->isCachable();
+        $parentIsCachable = method_exists($parent, "isCachable")
+            && $parent->isCachable();
+
+        if ($relatedIsCachable || $parentIsCachable) {
             return new CachedBelongsToMany(
                 $query,
                 $parent,
