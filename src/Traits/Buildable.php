@@ -1,5 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
+use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\Paginator;
 
 /**
@@ -183,7 +184,13 @@ trait Buildable
 
         $cacheKey = $this->makeCacheKey($columns, null, $keyDifferentiator);
 
-        return $this->cachedValue(func_get_args(), $cacheKey);
+        $result = $this->cachedValue(func_get_args(), $cacheKey);
+
+        if ($result instanceof AbstractPaginator) {
+            $result->setPath(Paginator::resolveCurrentPath());
+        }
+
+        return $result;
     }
 
     protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string

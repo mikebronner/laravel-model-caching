@@ -211,4 +211,40 @@ class PaginateTest extends IntegrationTestCase
 
         $this->assertNotEquals($authors1->pluck("id"), $authors2->pluck("id"));
     }
+
+    public function testPaginatedResultsReturnCorrectDataOnPage2()
+    {
+        $page1 = (new Author)
+            ->paginate(3, ["*"], "page", 1);
+        $page2 = (new Author)
+            ->paginate(3, ["*"], "page", 2);
+
+        $uncachedPage1 = (new UncachedAuthor)
+            ->paginate(3, ["*"], "page", 1);
+        $uncachedPage2 = (new UncachedAuthor)
+            ->paginate(3, ["*"], "page", 2);
+
+        $this->assertEquals($uncachedPage1->pluck("id"), $page1->pluck("id"));
+        $this->assertEquals($uncachedPage2->pluck("id"), $page2->pluck("id"));
+        $this->assertNotEquals($page1->pluck("id"), $page2->pluck("id"));
+    }
+
+    public function testPaginatorPathIsNotPersistedFromCache()
+    {
+        // First call: cache the paginated result with the current path
+        $page1First = (new Author)->paginate(3);
+        $originalPath = $page1First->path();
+
+        // Simulate a subsequent request from a different path (e.g. Livewire AJAX)
+        $livewirePath = 'http://localhost/livewire/message/component';
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () use ($livewirePath) {
+            return $livewirePath;
+        });
+
+        $page1Second = (new Author)->paginate(3);
+
+        // The paginator path should reflect the CURRENT request, not the cached one
+        $this->assertEquals($livewirePath, $page1Second->path());
+        $this->assertNotEquals($originalPath, $page1Second->path());
+    }
 }
