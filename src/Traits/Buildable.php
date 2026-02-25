@@ -303,15 +303,65 @@ trait Buildable
             $this->checkCooldownAndRemoveIfExpired($this->getModel());
         }
 
-        return $this->cache($cacheTags)
-            ->rememberForever(
-                $hashedCacheKey,
-                function () use ($arguments, $cacheKey, $method) {
-                    return [
-                        "key" => $cacheKey,
-                        "value" => parent::{$method}(...$arguments),
-                    ];
+        $cache = $this->cache($cacheTags);
+        $cachedResult = $cache->get($hashedCacheKey);
+
+        if ($cachedResult !== null) {
+            $this->fireRetrievedEvents($cachedResult["value"] ?? null);
+
+            return $cachedResult;
+        }
+
+        $result = [
+            "key" => $cacheKey,
+            "value" => parent::{$method}(...$arguments),
+        ];
+
+        $cache->rememberForever($hashedCacheKey, function () use ($result) {
+            return $result;
+        });
+
+        return $result;
+    }
+
+    protected function fireRetrievedEvents($value): void
+    {
+        if ($value instanceof \Illuminate\Database\Eloquent\Model) {
+            $this->fireRetrievedEventOnModel($value);
+
+            return;
+        }
+
+        $models = null;
+
+        if ($value instanceof \Illuminate\Database\Eloquent\Collection) {
+            $models = $value;
+        } elseif ($value instanceof \Illuminate\Contracts\Pagination\Paginator) {
+            $models = $value->getCollection();
+        } elseif ($value instanceof \Illuminate\Support\Collection) {
+            $models = $value->filter(function ($item) {
+                return $item instanceof \Illuminate\Database\Eloquent\Model;
+            });
+        }
+
+        if ($models) {
+            $models->each(function ($model) {
+                if ($model instanceof \Illuminate\Database\Eloquent\Model) {
+                    $this->fireRetrievedEventOnModel($model);
                 }
+            });
+        }
+    }
+
+    protected function fireRetrievedEventOnModel(\Illuminate\Database\Eloquent\Model $model): void
+    {
+        $dispatcher = $model::getEventDispatcher();
+
+        if ($dispatcher) {
+            $dispatcher->dispatch(
+                "eloquent.retrieved: " . get_class($model),
+                $model
             );
+        }
     }
 }
