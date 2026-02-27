@@ -170,7 +170,7 @@ trait Buildable
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
-        
+
         $columns = collect($columns)->toArray();
         $keyDifferentiator = "-paginate_by_{$perPage}_{$pageName}_{$page}";
 
@@ -317,9 +317,7 @@ trait Buildable
             "value" => parent::{$method}(...$arguments),
         ];
 
-        $cache->rememberForever($hashedCacheKey, function () use ($result) {
-            return $result;
-        });
+        $cache->forever($hashedCacheKey, $result);
 
         return $result;
     }
