@@ -1,0 +1,25 @@
+name: Sync Issue Status with PR
+
+# This is the caller template. Copy this file into any repo's
+# .github/workflows/ directory — no other changes needed.
+#
+# Requires: PROJECT_PAT secret set at org level (GeneaLabs)
+# or repo level with: read/write access to projects + issues.
+
+on:
+  pull_request:
+    types: [opened, converted_to_draft, ready_for_review, closed]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  sync:
+    uses: GeneaLabs/.github/.github/workflows/sync-issue-status.yml@main
+    with:
+      pr_body: ${{ github.event.pull_request.body || '' }}
+      pr_merged: ${{ toJSON(github.event.pull_request.merged) }}
+      event_name: ${{ github.event_name }}
+      event_action: ${{ github.event.action }}
+      review_state: ${{ github.event.review.state || '' }}
+    secrets:
+      PROJECT_PAT: ${{ secrets.PROJECT_PAT }}
