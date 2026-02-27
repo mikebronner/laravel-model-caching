@@ -32,7 +32,9 @@ trait Caching
         ) {
             $result = $this->innerBuilder->{$method}(...$parameters);
 
-            return $result === $this->innerBuilder ? $this : $result;
+            return $result === $this->innerBuilder
+                ? $this
+                : $result;
         }
 
         $result = parent::__call($method, $parameters);
