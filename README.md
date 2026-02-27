@@ -47,7 +47,7 @@ It will not work with non-taggable drivers:
 
 ## Requirements
 - PHP 8.2 - 8.5
-- Laravel 10.0 - 13.0
+- Laravel 11.0 - 13.0
     ```diff
     - Please note that prior Laravel versions are not supported and the package
     - versions that are compatible with prior versions of Laravel contain bugs.
