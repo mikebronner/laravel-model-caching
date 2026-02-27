@@ -11,19 +11,32 @@ trait Cachable
     }
 
     /**
-     * Initialize the Cachable trait on each new model instance.
+     * Re-run the constructor when a cached model is deserialized.
      *
-     * Called by Eloquent during __construct() → initializeTraits(). This
-     * intentionally avoids modifying $fillable, $guarded, $casts, or any
-     * other model properties so that dynamic changes made in a model's
-     * constructor (before calling parent::__construct) are preserved.
+     * PHP's unserialize() restores object properties but does NOT call
+     * __construct(). Models that dynamically modify $fillable, $guarded,
+     * or other properties in their constructor (e.g. based on auth context)
+     * will have stale values from the context in which they were originally
+     * cached. Re-running the constructor ensures these properties reflect
+     * the current request context while preserving the deserialized model
+     * state (attributes, original, relations, etc.).
      *
      * @see https://github.com/mikebronner/laravel-model-caching/issues/534
      */
-    public function initializeCachable(): void
+    public function __wakeup(): void
     {
-        // Intentionally empty — the Cachable trait must not interfere with
-        // model properties (especially $fillable) that may have been set
-        // dynamically in the model's constructor prior to parent::__construct().
+        $original = $this->original ?? [];
+        $attributes = $this->attributes ?? [];
+        $relations = $this->relations ?? [];
+        $exists = $this->exists ?? false;
+        $connection = $this->connection ?? null;
+
+        $this->__construct();
+
+        $this->attributes = $attributes;
+        $this->original = $original;
+        $this->relations = $relations;
+        $this->exists = $exists;
+        $this->connection = $connection;
     }
 }
