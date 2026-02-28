@@ -105,11 +105,15 @@ trait ModelCaching
 
     public static function destroy($ids)
     {
-        $class = get_called_class();
-        $instance = new $class;
-        $instance->flushCache();
+        $result = parent::destroy($ids);
 
-        return parent::destroy($ids);
+        if ($result) {
+            $class = get_called_class();
+            $instance = new $class;
+            $instance->flushCache();
+        }
+
+        return $result;
     }
 
     /**
