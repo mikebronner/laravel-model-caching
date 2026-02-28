@@ -152,7 +152,7 @@ class CustomBuilderTest extends IntegrationTestCase
         $cacheKey = sha1(
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
             ":authors:genealabslaravelmodelcachingtestsfixturesauthorwithcustombuilder" .
-            "-is_famous_=_1-authors.deleted_at_null",
+            "-is_famous_=_1-authors.deleted_at_null-famous",
         );
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
