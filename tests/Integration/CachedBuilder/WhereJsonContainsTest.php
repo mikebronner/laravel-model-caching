@@ -25,7 +25,7 @@ class WhereJsonContainsTest extends IntegrationTestCase
         parent::setUp();
 
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-        factory(Author::class, 10)->create();
+        Author::factory()->count(10)->create();
     }
 
     public function testWithInUsingCollectionQuery()

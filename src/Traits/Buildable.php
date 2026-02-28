@@ -7,6 +7,8 @@ use Illuminate\Pagination\Paginator;
  */
 trait Buildable
 {
+    use CachedValueRetrievable;
+
     public function avg($column)
     {
         if (! $this->isCachable()) {
@@ -170,7 +172,7 @@ trait Buildable
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
-        
+
         $columns = collect($columns)->toArray();
         $keyDifferentiator = "-paginate_by_{$perPage}_{$pageName}_{$page}";
 
@@ -240,78 +242,4 @@ trait Buildable
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function cachedValue(array $arguments, string $cacheKey)
-    {
-        $method = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
-        $cacheTags = $this->makeCacheTags();
-        $hashedCacheKey = sha1($cacheKey);
-        $result = $this->retrieveCachedValue(
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
-
-        return $this->preventHashCollision(
-            $result,
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
-    }
-
-    protected function preventHashCollision(
-        array $result,
-        array $arguments,
-        string $cacheKey,
-        array $cacheTags,
-        string $hashedCacheKey,
-        string $method
-    ) {
-        if ($result["key"] === $cacheKey) {
-            return $result["value"];
-        }
-
-        $this->cache()
-            ->tags($cacheTags)
-            ->forget($hashedCacheKey);
-
-        return $this->retrieveCachedValue(
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
-    }
-
-    protected function retrieveCachedValue(
-        array $arguments,
-        string $cacheKey,
-        array $cacheTags,
-        string $hashedCacheKey,
-        string $method
-    ) {
-        if (property_exists($this, "model")) {
-            $this->checkCooldownAndRemoveIfExpired($this->model);
-        }
-
-        if (method_exists($this, "getModel")) {
-            $this->checkCooldownAndRemoveIfExpired($this->getModel());
-        }
-
-        return $this->cache($cacheTags)
-            ->rememberForever(
-                $hashedCacheKey,
-                function () use ($arguments, $cacheKey, $method) {
-                    return [
-                        "key" => $cacheKey,
-                        "value" => parent::{$method}(...$arguments),
-                    ];
-                }
-            );
-    }
 }

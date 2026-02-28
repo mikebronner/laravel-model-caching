@@ -63,8 +63,8 @@ class BooleanTest extends IntegrationTestCase
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
 
-        $expectedAuthor = factory(Author::class)->create(['is_famous' => false]);
-        factory(Book::class)->create(['author_id' => $expectedAuthor->getKey(), 'title' => 'Mixed Clause']);
+        $expectedAuthor = Author::factory()->create(['is_famous' => false]);
+        Book::factory()->create(['author_id' => $expectedAuthor->getKey(), 'title' => 'Mixed Clause']);
 
         $books = (new Book)
             ->whereHas('author', function ($query) {
