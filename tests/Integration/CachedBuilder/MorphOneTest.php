@@ -44,10 +44,10 @@ class MorphOneTest extends IntegrationTestCase
             ->tags($tags)
             ->get($key2)['value'];
 
-        $this->assertEquals($cachedResults1->pluck("images.id"), $books1->pluck("images.id"));
-        $this->assertEquals($cachedResults2->pluck("images.id"), $books2->pluck("images.id"));
-        $this->assertNotEquals($cachedResults1->pluck("images.id"), $cachedResults2->pluck("images.id"));
-        $this->assertNotEquals($books1->pluck("images.id"), $books2->pluck("images.id"));
+        $this->assertEquals($cachedResults1->pluck("image.id"), $books1->pluck("image.id"));
+        $this->assertEquals($cachedResults2->pluck("image.id"), $books2->pluck("image.id"));
+        $this->assertNotEquals($cachedResults1->pluck("image.id"), $cachedResults2->pluck("image.id"));
+        $this->assertNotEquals($books1->pluck("image.id"), $books2->pluck("image.id"));
         $this->assertNotNull($books1->first()->image);
         $this->assertNotNull($books2->first()->image);
         $this->assertNotNull($cachedResults1->first()->image);

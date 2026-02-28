@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\AuthorResource;
@@ -7,13 +9,13 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\BookResource;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Nova\StoreResource;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers\NovaServiceProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Artisan;
+use Inertia\ServiceProvider;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaCoreServiceProvider;
 
-abstract class NovaTestCase extends FeatureTestCase
+abstract class NovaTestCase extends IntegrationTestCase
 {
-    protected $response;
-
     protected $authenticatedAs;
 
     public function setUp(): void
@@ -34,6 +36,9 @@ abstract class NovaTestCase extends FeatureTestCase
         });
 
         $this->authenticate();
+        $this->withoutMiddleware();
+
+        Artisan::call("nova:publish");
     }
 
     protected function authenticate()
@@ -54,6 +59,7 @@ abstract class NovaTestCase extends FeatureTestCase
                 NovaCoreServiceProvider::class,
                 \Laravel\Nova\NovaServiceProvider::class,
                 NovaServiceProvider::class,
+                ServiceProvider::class,
             ]
         );
     }

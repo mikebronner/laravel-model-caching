@@ -1,5 +1,5 @@
 {
-    "name": "genealabs/laravel-model-caching",
+    "name": "mikebronner/laravel-model-caching",
     "description": "Automatic caching for Eloquent models.",
     "license": "MIT",
     "authors": [
@@ -15,27 +15,24 @@
         }
     ],
     "require": {
-        "php": ">=7.3",
-        "genealabs/laravel-pivot-events": "^0.3.0",
-        "illuminate/cache": "^7.0",
-        "illuminate/config": "^7.0",
-        "illuminate/console": "^7.0",
-        "illuminate/container": "^7.0",
-        "illuminate/database": "^7.0",
-        "illuminate/http": "^7.0",
-        "illuminate/support": "^7.0"
+        "php": ">=8.2",
+        "mikebronner/laravel-pivot-events": "*",
+        "illuminate/cache": "^11.0|^12.0|^13.0",
+        "illuminate/config": "^11.0|^12.0|^13.0",
+        "illuminate/console": "^11.0|^12.0|^13.0",
+        "illuminate/container": "^11.0|^12.0|^13.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
+        "illuminate/http": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0"
     },
     "require-dev": {
-        "doctrine/dbal": "^2.10",
-        "fzaninotto/faker": "^1.9",
-        "laravel/nova": "^3.0",
-        "orchestra/testbench-browser-kit": "^5.0",
-        "orchestra/testbench": "^5.0",
-        "php-coveralls/php-coveralls" : "^2.2",
-        "phpmd/phpmd": "^2.7",
-        "phpunit/phpunit": "^8.0",
-        "sebastian/phpcpd": "^5.0",
-        "squizlabs/php_codesniffer": "^3.4",
+        "doctrine/dbal": "^3.3|^4.2",
+        "fakerphp/faker": "^1.11",
+        "laravel/nova": "^5.0|^6.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^10.5|^11.5.3|^12.5.12",
+        "slevomat/coding-standard": "^7.0|^8.14",
+        "squizlabs/php_codesniffer": "^3.6|^4.0",
         "symfony/thanks": "^1.2"
     },
     "autoload": {
@@ -45,11 +42,11 @@
     },
     "autoload-dev": {
         "classmap": [
-            "tests/database/factories",
             "tests/database/seeds"
         ],
         "psr-4": {
-            "GeneaLabs\\LaravelModelCaching\\Tests\\": "tests/"
+            "GeneaLabs\\LaravelModelCaching\\Tests\\": "tests/",
+            "GeneaLabs\\LaravelModelCaching\\Tests\\Database\\Factories\\": "tests/database/factories/"
         }
     },
     "extra": {
@@ -60,5 +57,11 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "symfony/thanks": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
 }

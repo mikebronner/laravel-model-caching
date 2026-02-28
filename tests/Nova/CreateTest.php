@@ -9,14 +9,14 @@ class CreateTest extends NovaTestCase
     {
         $beforeAuthors = (new Author)->get();
 
-        $this->postJson('nova-api/authors', [
+        $response = $this->postJson('nova-api/authors', [
             'name' => 'foo',
             'email' => 'test1@noemail.com',
         ]);
 
         $authors = (new Author)->get();
 
-        $this->response->assertStatus(201);
+        $response->assertStatus(201);
         $this->assertCount(10, $beforeAuthors);
         $this->assertCount(11, $authors);
     }

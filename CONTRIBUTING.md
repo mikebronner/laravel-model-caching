@@ -2,7 +2,7 @@
 We welcome everyone to submit pull requests with:
 - fixes for issues
 - change suggestions
-- updateing of documentation
+- updating of documentation
 
 However, not every pull request will automatically be accepted. I will review each carefully to make sure it is in line with
  the direction I want the package to continue in. This might mean that some pull requests are not accepted, or might stay

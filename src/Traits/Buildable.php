@@ -1,12 +1,14 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Illuminate\Container\Container;
+use Illuminate\Pagination\Paginator;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 trait Buildable
 {
+    use CachedValueRetrievable;
+
     public function avg($column)
     {
         if (! $this->isCachable()) {
@@ -25,6 +27,17 @@ trait Buildable
         }
 
         $cacheKey = $this->makeCacheKey([$columns], null, "-count");
+
+        return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    public function exists()
+    {
+        if (! $this->isCachable()) {
+            return parent::exists();
+        }
+
+        $cacheKey = $this->makeCacheKey(['*'], null, "-exists");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
@@ -117,7 +130,7 @@ trait Buildable
         if (property_exists($this, "model")) {
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
-        
+
         return parent::insert($values);
     }
 
@@ -147,25 +160,38 @@ trait Buildable
         $perPage = null,
         $columns = ["*"],
         $pageName = "page",
-        $page = null
+        $page = null,
+        $total = null
     ) {
         if (! $this->isCachable()) {
             return parent::paginate($perPage, $columns, $pageName, $page);
         }
 
-        $page = Container::getInstance()
-            ->make("request")
-            ->input($pageName)
-            ?: $page
-            ?: 1;
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
 
         if (is_array($page)) {
             $page = $this->recursiveImplodeWithKey($page);
         }
-        $columns = collect($columns)->toArray();
-        $cacheKey = $this->makeCacheKey($columns, null, "-paginate_by_{$perPage}_{$pageName}_{$page}");
 
-        return $this->cachedValue(func_get_args(), $cacheKey);
+        $columns = collect($columns)->toArray();
+        $keyDifferentiator = "-paginate_by_{$perPage}_{$pageName}_{$page}";
+
+        if ($total !== null) {
+            $total = value($total);
+            $keyDifferentiator .= $total !== null
+                ? "_{$total}"
+                : "";
+        }
+
+        $cacheKey = $this->makeCacheKey($columns, null, $keyDifferentiator);
+
+        $result = $this->cachedValue(func_get_args(), $cacheKey);
+
+        if ($result instanceof \Illuminate\Pagination\AbstractPaginator) {
+            $result->setPath(Paginator::resolveCurrentPath());
+        }
+
+        return $result;
     }
 
     protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string
@@ -222,78 +248,4 @@ trait Buildable
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function cachedValue(array $arguments, string $cacheKey)
-    {
-        $method = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
-        $cacheTags = $this->makeCacheTags();
-        $hashedCacheKey = sha1($cacheKey);
-        $result = $this->retrieveCachedValue(
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
-
-        return $this->preventHashCollision(
-            $result,
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
-    }
-
-    protected function preventHashCollision(
-        array $result,
-        array $arguments,
-        string $cacheKey,
-        array $cacheTags,
-        string $hashedCacheKey,
-        string $method
-    ) {
-        if ($result["key"] === $cacheKey) {
-            return $result["value"];
-        }
-
-        $this->cache()
-            ->tags($cacheTags)
-            ->forget($hashedCacheKey);
-
-        return $this->retrieveCachedValue(
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
-    }
-
-    protected function retrieveCachedValue(
-        array $arguments,
-        string $cacheKey,
-        array $cacheTags,
-        string $hashedCacheKey,
-        string $method
-    ) {
-        if (property_exists($this, "model")) {
-            $this->checkCooldownAndRemoveIfExpired($this->model);
-        }
-
-        if (method_exists($this, "getModel")) {
-            $this->checkCooldownAndRemoveIfExpired($this->getModel());
-        }
-
-        return $this->cache($cacheTags)
-            ->rememberForever(
-                $hashedCacheKey,
-                function () use ($arguments, $cacheKey, $method) {
-                    return [
-                        "key" => $cacheKey,
-                        "value" => parent::{$method}(...$arguments),
-                    ];
-                }
-            );
-    }
 }

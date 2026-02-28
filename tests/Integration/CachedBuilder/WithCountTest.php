@@ -13,7 +13,7 @@ class WithCountTest extends IntegrationTestCase
         $author1 = (new Author)
             ->withCount("books")
             ->first();
-        factory(Book::class, 1)
+        Book::factory()->count(1)
             ->make()
             ->each(function ($book) use ($author1) {
                 $publisher = (new Publisher)->first();
@@ -36,7 +36,7 @@ class WithCountTest extends IntegrationTestCase
         $book1 = (new Book)
             ->withCount("comments")
             ->first();
-        $comment = factory(Comment::class, 1)
+        $comment = Comment::factory()->count(1)
             ->create()
             ->first();
 

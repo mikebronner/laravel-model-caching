@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
@@ -11,8 +13,13 @@ class UpdateRelationTest extends IntegrationTestCase
             ->with("stores")
             ->whereHas("stores")
             ->first();
+
+        // Count actual stores for this book before the update (may be >1 due to random seeding).
+        $storeCount = $book->stores()->count();
+
         $book->stores()
             ->update(["name" => "test store name change"]);
+
         $updatedCount = (new Book)
             ->with("stores")
             ->whereHas("stores")
@@ -21,6 +28,7 @@ class UpdateRelationTest extends IntegrationTestCase
             ->where("name", "test store name change")
             ->count();
 
-        $this->assertEquals(1, $updatedCount);
+        // All stores belonging to the book should have been updated.
+        $this->assertEquals($storeCount, $updatedCount);
     }
 }

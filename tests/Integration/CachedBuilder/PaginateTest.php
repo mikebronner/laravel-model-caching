@@ -4,7 +4,6 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Support\Str;
 
 /**
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -36,18 +35,6 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationReturnsCorrectLinks()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
-            $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
-            $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
-            $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
-        }
-
-        if (preg_match("/^5\.[4-5]/", app()->version())) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-            $page24ActiveLink = '<li class="active"><span>24</span></li>';
-        }
-
         $booksPage1 = (new Book)
             ->paginate(2);
         $booksPage2 = (new Book)
@@ -58,25 +45,13 @@ class PaginateTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertStringContainsString($page1ActiveLink, (string) $booksPage1->links());
-        $this->assertStringContainsString($page2ActiveLink, (string) $booksPage2->links());
-        $this->assertStringContainsString($page24ActiveLink, (string) $booksPage24->links());
+        $this->assertActivePageInLinks(1, (string) $booksPage1->links());
+        $this->assertActivePageInLinks(2, (string) $booksPage2->links());
+        $this->assertActivePageInLinks(24, (string) $booksPage24->links());
     }
 
     public function testPaginationWithOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
-            $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
-            $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
-            $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
-        }
-
-        if (preg_match("/^5\.[4-5]/", app()->version())) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-            $page24ActiveLink = '<li class="active"><span>24</span></li>';
-        }
-
         $booksPage1 = (new Book)
             ->paginate(2);
         $booksPage2 = (new Book)
@@ -87,25 +62,13 @@ class PaginateTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertStringContainsString($page1ActiveLink, (string) $booksPage1->links());
-        $this->assertStringContainsString($page2ActiveLink, (string) $booksPage2->links());
-        $this->assertStringContainsString($page24ActiveLink, (string) $booksPage24->links());
+        $this->assertActivePageInLinks(1, (string) $booksPage1->links());
+        $this->assertActivePageInLinks(2, (string) $booksPage2->links());
+        $this->assertActivePageInLinks(24, (string) $booksPage24->links());
     }
 
     public function testPaginationWithCustomOptionsReturnsCorrectLinks()
     {
-        if (preg_match("/^((5\.[6-8])|(6\.)|(7\.))/", app()->version())) {
-            $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
-            $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
-            $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
-        }
-
-        if (preg_match("/^5\.[4-5]/", app()->version())) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-            $page24ActiveLink = '<li class="active"><span>24</span></li>';
-        }
-
         $booksPage1 = (new Book)
             ->paginate('2');
         $booksPage2 = (new Book)
@@ -116,9 +79,18 @@ class PaginateTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertStringContainsString($page1ActiveLink, (string) $booksPage1->links());
-        $this->assertStringContainsString($page2ActiveLink, (string) $booksPage2->links());
-        $this->assertStringContainsString($page24ActiveLink, (string) $booksPage24->links());
+        $this->assertActivePageInLinks(1, (string) $booksPage1->links());
+        $this->assertActivePageInLinks(2, (string) $booksPage2->links());
+        $this->assertActivePageInLinks(24, (string) $booksPage24->links());
+    }
+
+    private function assertActivePageInLinks(int $page, string $linksHtml): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/aria-current="page">\s*<span[^>]*>' . $page . '<\/span>/s',
+            $linksHtml,
+            "Expected page {$page} to be marked as the active page in pagination links."
+        );
     }
 
     public function testCustomPageNamePagination()
@@ -150,5 +122,68 @@ class PaginateTest extends IntegrationTestCase
             ->paginate(3, ["*"], "custom-page", 2);
 
         $this->assertNotEquals($authors1->pluck("id"), $authors2->pluck("id"));
+    }
+
+    public function testPaginatorBaseUrlReflectsCurrentRequest()
+    {
+        // First request from domain A
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://domain-a.com/authors";
+        });
+
+        $authorsFromDomainA = (new Author)->paginate(3);
+        $this->assertStringContainsString(
+            "domain-a.com",
+            $authorsFromDomainA->url(1)
+        );
+
+        // Second request from domain B — should use domain B's URL, not cached domain A
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://domain-b.com/authors";
+        });
+
+        $authorsFromDomainB = (new Author)->paginate(3);
+        $this->assertStringContainsString(
+            "domain-b.com",
+            $authorsFromDomainB->url(1),
+            "Cached paginator should use current request domain, not the domain that populated the cache"
+        );
+    }
+
+    public function testCachedPaginatorPathIsReappliedFromCurrentRequest()
+    {
+        // Populate cache with a specific path
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://original.com/users";
+        });
+
+        (new Author)->paginate(3);
+
+        // Retrieve from cache with a different path
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://different.com/users";
+        });
+
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-paginate_by_3_page_1");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $cachedRaw = $this->cache()->tags($tags)->get($key)['value'];
+
+        // The cached raw paginator may have the old URL, but when retrieved
+        // through the model caching layer, it should have the current URL
+        $result = (new Author)->paginate(3);
+
+        $this->assertStringContainsString(
+            "different.com",
+            $result->url(1),
+            "Paginator path should be re-applied from current request after cache retrieval"
+        );
+        $this->assertStringNotContainsString(
+            "original.com",
+            $result->url(1),
+            "Paginator should not retain the original cached domain"
+        );
     }
 }

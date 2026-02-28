@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Closure;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
@@ -6,6 +8,11 @@ use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use ReflectionClass;
+use ReflectionNamedType;
+use ReflectionMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
@@ -16,12 +23,17 @@ trait Caching
     protected $isCachable = true;
     protected $scopesAreApplied = false;
     protected $macroKey = "";
+    protected $withoutGlobalScopes = [];
+    protected $withoutAllGlobalScopes = false;
 
     public function __call($method, $parameters)
     {
         $result = parent::__call($method, $parameters);
 
-        if (isset($this->localMacros[$method])) {
+        if (
+            isset($this->localMacros[$method])
+            || (method_exists(static::class, 'hasGlobalMacro') && static::hasGlobalMacro($method))
+        ) {
             $this->macroKey .= "-{$method}";
 
             if ($parameters) {
@@ -37,20 +49,25 @@ trait Caching
         if ($this->scopesAreApplied) {
             return $this;
         }
-        
+
         return parent::applyScopes();
     }
 
     protected function applyScopesToInstance()
     {
-        if (! property_exists($this, "scopes")
+        if (
+            ! property_exists($this, "scopes")
             || $this->scopesAreApplied
+            || $this->withoutAllGlobalScopes
         ) {
             return;
         }
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (! isset($this->scopes[$identifier])) {
+            if (
+                ! isset($this->scopes[$identifier])
+                || isset($this->withoutGlobalScopes[$identifier])
+            ) {
                 continue;
             }
 
@@ -59,7 +76,8 @@ trait Caching
                     $scope($this);
                 }
 
-                if ($scope instanceof Scope
+                if (
+                    $scope instanceof Scope
                     && $this instanceof CachedBuilder
                 ) {
                     $scope->apply($this, $this->getModel());
@@ -124,7 +142,8 @@ trait Caching
             ->make("config")
             ->get("laravel-model-caching.cache-prefix", "");
 
-        if ($this->model
+        if (
+            $this->model
             && property_exists($this->model, "cachePrefix")
         ) {
             $cachePrefix = $this->model->cachePrefix;
@@ -159,14 +178,15 @@ trait Caching
             ?? Container::getInstance()
                 ->make("db")
                 ->query();
-        
-        if ($this->query
+
+        if (
+            $this->query
             && method_exists($this->query, "getQuery")
         ) {
             $query = $this->query->getQuery();
         }
 
-        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey))
+        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey, $this->withoutGlobalScopes, $this->withoutAllGlobalScopes))
             ->make($columns, $idColumn, $keyDifferentiator);
     }
 
@@ -227,8 +247,9 @@ trait Caching
     {
         [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
-        if (! $cacheCooldown
-            || (new Carbon)->now()->diffInSeconds($invalidatedAt) < $cacheCooldown
+        if (
+            ! $cacheCooldown
+            || (new Carbon)->now()->diffInSeconds($invalidatedAt, true) < $cacheCooldown
         ) {
             return;
         }
@@ -250,30 +271,102 @@ trait Caching
 
     protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
     {
+        if (! $this->isCachable()) {
+            return;
+        }
+
         [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
 
         if (! $cacheCooldown) {
             $instance->flushCache();
-
-            if ($relationship) {
-                $relationshipInstance = $instance->$relationship()->getModel();
-
-                if (method_exists($relationshipInstance, "flushCache")) {
-                    $relationshipInstance->flushCache();
-                }
-            }
+            $this->flushMorphToRelatedCaches($instance);
+            $this->flushRelationshipCache($instance, $relationship);
 
             return;
         }
 
         $this->setCacheCooldownSavedAtTimestamp($instance);
 
-        if ((new Carbon)->now()->diffInSeconds($invalidatedAt) >= $cacheCooldown) {
+        if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
             $instance->flushCache();
+            $this->flushMorphToRelatedCaches($instance);
+            $this->flushRelationshipCache($instance, $relationship);
+        }
+    }
 
-            if ($relationship) {
-                $instance->$relationship()->getModel()->flushCache();
+    protected static $morphToMethodCache = [];
+
+    protected function flushMorphToRelatedCaches(Model $instance): void
+    {
+        $className = get_class($instance);
+
+        if (! isset(static::$morphToMethodCache[$className])) {
+            static::$morphToMethodCache[$className] = [];
+            $reflection = new ReflectionClass($instance);
+
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                if ($method->class !== $className
+                    || $method->getNumberOfParameters() > 0
+                ) {
+                    continue;
+                }
+
+                $returnType = $method->getReturnType();
+
+                if (! $returnType
+                    || ! $returnType instanceof ReflectionNamedType
+                    || $returnType->getName() !== MorphTo::class
+                ) {
+                    continue;
+                }
+
+                static::$morphToMethodCache[$className][] = $method->getName();
             }
+        }
+
+        foreach (static::$morphToMethodCache[$className] as $morphToName) {
+            $relation = $instance->{$morphToName}();
+            $typeColumn = $relation->getMorphType();
+            $idColumn = $relation->getForeignKeyName();
+            $parentType = $instance->getAttribute($typeColumn);
+            $parentId = $instance->getAttribute($idColumn);
+
+            if (! $parentType || ! $parentId) {
+                continue;
+            }
+
+            $parentClass = Relation::getMorphedModel($parentType) ?? $parentType;
+            $parentModel = new $parentClass;
+
+            if (method_exists($parentModel, 'flushCache')) {
+                $parentModel->flushCache();
+            }
+        }
+    }
+
+    protected function flushRelationshipCache(Model $instance, string $relationship = ""): void
+    {
+        if (! $relationship) {
+            return;
+        }
+
+        $relationObject = $instance->$relationship();
+        $relationshipInstance = $relationObject->getModel();
+
+        if (method_exists($relationshipInstance, "flushCache")) {
+            $relationshipInstance->flushCache();
+        } else {
+            // Related model is not cacheable — build the cache tag for the
+            // related model and flush it so stale relationship results are
+            // cleared. This covers BelongsToMany with custom pivot models
+            // where only the parent model uses the Cachable trait.
+            $tags = (new CacheTags(
+                [],
+                $relationshipInstance,
+                Container::getInstance()->make("db")->query()
+            ))->make();
+
+            $instance->cache($tags)->flush();
         }
     }
 
@@ -282,24 +375,32 @@ trait Caching
         $isCacheDisabled = ! Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.enabled");
+
+        if ($isCacheDisabled) {
+            return false;
+        }
+
         $allRelationshipsAreCachable = true;
 
-        if (property_exists($this, "eagerLoad")
+        if (
+            property_exists($this, "eagerLoad")
             && $this->eagerLoad
         ) {
             $allRelationshipsAreCachable = collect($this
                 ->eagerLoad)
                 ->keys()
                 ->reduce(function ($carry, $related) {
-                    if (! method_exists($this, $related)
+                    if (
+                        ! method_exists($this->model, $related)
                         || $carry === false
                     ) {
                         return $carry;
                     }
-        
+
                     $relatedModel = $this->model->$related()->getRelated();
 
-                    if (! method_exists($relatedModel, "isCachable")
+                    if (
+                        ! method_exists($relatedModel, "isCachable")
                         || ! $relatedModel->isCachable()
                     ) {
                         return false;
@@ -310,9 +411,21 @@ trait Caching
                 ?? true;
         }
 
+        $hasLock = false;
+
+        if (property_exists($this, 'query') && $this->query) {
+            $baseQuery = $this->query;
+
+            if ($baseQuery instanceof \Illuminate\Database\Eloquent\Builder) {
+                $baseQuery = $baseQuery->getQuery();
+            }
+
+            $hasLock = $baseQuery->lock !== null;
+        }
+
         return $this->isCachable
-            && ! $isCacheDisabled
-            && $allRelationshipsAreCachable;
+            && $allRelationshipsAreCachable
+            && ! $hasLock;
     }
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
