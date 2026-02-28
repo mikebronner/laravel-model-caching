@@ -10,19 +10,6 @@ trait Cachable
         ModelCaching::newBelongsToMany insteadof PivotEventTrait;
     }
 
-    /**
-     * Re-run the constructor when a cached model is deserialized.
-     *
-     * PHP's unserialize() restores object properties but does NOT call
-     * __construct(). Models that dynamically modify $fillable, $guarded,
-     * or other properties in their constructor (e.g. based on auth context)
-     * will have stale values from the context in which they were originally
-     * cached. Re-running the constructor ensures these properties reflect
-     * the current request context while preserving the deserialized model
-     * state (attributes, original, relations, etc.).
-     *
-     * @see https://github.com/mikebronner/laravel-model-caching/issues/534
-     */
     public function __wakeup(): void
     {
         $original = $this->original ?? [];
