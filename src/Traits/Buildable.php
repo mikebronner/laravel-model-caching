@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -44,16 +45,32 @@ trait Buildable
 
     public function decrement($column, $amount = 1, array $extra = [])
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        try {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush failed during decrement — {$exception->getMessage()}");
+        }
 
         return parent::decrement($column, $amount, $extra);
     }
 
     public function delete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        try {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush failed during delete — {$exception->getMessage()}");
+        }
 
         return parent::delete();
     }
@@ -92,8 +109,16 @@ trait Buildable
 
     public function forceDelete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        try {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush failed during forceDelete — {$exception->getMessage()}");
+        }
 
         return parent::forceDelete();
     }
@@ -112,8 +137,16 @@ trait Buildable
 
     public function increment($column, $amount = 1, array $extra = [])
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        try {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush failed during increment — {$exception->getMessage()}");
+        }
 
         return parent::increment($column, $amount, $extra);
     }

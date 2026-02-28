@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 trait Caching
 {
@@ -111,23 +112,31 @@ trait Caching
 
     public function flushCache(array $tags = [])
     {
-        if (count($tags) === 0) {
-            $tags = $this->makeCacheTags();
-        }
+        try {
+            if (count($tags) === 0) {
+                $tags = $this->makeCacheTags();
+            }
 
-        $this->cache($tags)->flush();
+            $this->cache($tags)->flush();
 
-        [$cacheCooldown] = $this->getModelCacheCooldown($this);
+            [$cacheCooldown] = $this->getModelCacheCooldown($this);
 
-        if ($cacheCooldown) {
-            $cachePrefix = $this->getCachePrefix();
-            $modelClassName = get_class($this);
-            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
+            if ($cacheCooldown) {
+                $cachePrefix = $this->getCachePrefix();
+                $modelClassName = get_class($this);
+                $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
 
-            $this->cache()
-                ->rememberForever($cacheKey, function () {
-                    return (new Carbon)->now();
-                });
+                $this->cache()
+                    ->rememberForever($cacheKey, function () {
+                        return (new Carbon)->now();
+                    });
+            }
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush failed — {$exception->getMessage()}");
         }
     }
 
@@ -240,28 +249,36 @@ trait Caching
 
     protected function checkCooldownAndRemoveIfExpired(Model $instance)
     {
-        [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
+        try {
+            [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
-        if (
-            ! $cacheCooldown
-            || (new Carbon)->now()->diffInSeconds($invalidatedAt, true) < $cacheCooldown
-        ) {
-            return;
+            if (
+                ! $cacheCooldown
+                || (new Carbon)->now()->diffInSeconds($invalidatedAt, true) < $cacheCooldown
+            ) {
+                return;
+            }
+
+            $cachePrefix = $this->getCachePrefix();
+            $modelClassName = get_class($instance);
+
+            $instance
+                ->cache()
+                ->forget("{$cachePrefix}:{$modelClassName}-cooldown:seconds");
+            $instance
+                ->cache()
+                ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
+            $instance
+                ->cache()
+                ->forget("{$cachePrefix}:{$modelClassName}-cooldown:saved-at");
+            $instance->flushCache();
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache cooldown check failed — {$exception->getMessage()}");
         }
-
-        $cachePrefix = $this->getCachePrefix();
-        $modelClassName = get_class($instance);
-
-        $instance
-            ->cache()
-            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:seconds");
-        $instance
-            ->cache()
-            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at");
-        $instance
-            ->cache()
-            ->forget("{$cachePrefix}:{$modelClassName}-cooldown:saved-at");
-        $instance->flushCache();
     }
 
     protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
@@ -270,20 +287,28 @@ trait Caching
             return;
         }
 
-        [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
+        try {
+            [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
 
-        if (! $cacheCooldown) {
-            $instance->flushCache();
-            $this->flushRelationshipCache($instance, $relationship);
+            if (! $cacheCooldown) {
+                $instance->flushCache();
+                $this->flushRelationshipCache($instance, $relationship);
 
-            return;
-        }
+                return;
+            }
 
-        $this->setCacheCooldownSavedAtTimestamp($instance);
+            $this->setCacheCooldownSavedAtTimestamp($instance);
 
-        if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
-            $instance->flushCache();
-            $this->flushRelationshipCache($instance, $relationship);
+            if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
+                $instance->flushCache();
+                $this->flushRelationshipCache($instance, $relationship);
+            }
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush after persisting failed — {$exception->getMessage()}");
         }
     }
 
@@ -358,15 +383,31 @@ trait Caching
             && $allRelationshipsAreCachable;
     }
 
+
+    protected function shouldFallbackToDatabase() : bool
+    {
+        return Container::getInstance()
+            ->make("config")
+            ->get("laravel-model-caching.fallback-to-database", false);
+    }
+
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
     {
-        $cachePrefix = $this->getCachePrefix();
-        $modelClassName = get_class($instance);
-        $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
+        try {
+            $cachePrefix = $this->getCachePrefix();
+            $modelClassName = get_class($instance);
+            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:saved-at";
 
-        $instance->cache()
-            ->rememberForever($cacheKey, function () {
-                return (new Carbon)->now();
-            });
+            $instance->cache()
+                ->rememberForever($cacheKey, function () {
+                    return (new Carbon)->now();
+                });
+        } catch (\Exception $exception) {
+            if (! $this->shouldFallbackToDatabase()) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache cooldown timestamp write failed — {$exception->getMessage()}");
+        }
     }
 }
