@@ -10,14 +10,14 @@ class UpdateTest extends NovaTestCase
         $beforeAuthors = (new Author)->get();
         $author = $beforeAuthors->first();
 
-        $this->putJson('nova-api/authors/' . $author->id, [
+        $response = $this->putJson('nova-api/authors/' . $author->id, [
             'name' => 'foo',
             'email' => 'test1@noemail.com',
         ]);
 
         $authors = (new Author)->get();
 
-        $this->response->assertStatus(200);
+        $response->assertStatus(200);
         $this->assertCount(10, $beforeAuthors);
         $this->assertCount(10, $authors);
 

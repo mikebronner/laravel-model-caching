@@ -41,7 +41,7 @@ class CachedBuilderTest extends IntegrationTestCase
     {
         (new Author)->with('books')->get();
 
-        factory(Author::class)->create();
+        Author::factory()->create();
 
         $results = $this->cache()->tags([
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
