@@ -56,10 +56,14 @@ trait Buildable
 
     public function delete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = $this->executeOnInnerOrParent('delete', []);
 
-        return $this->executeOnInnerOrParent('delete', []);
+        if ($result) {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }
+
+        return $result;
     }
 
     /**
@@ -96,10 +100,14 @@ trait Buildable
 
     public function forceDelete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = $this->executeOnInnerOrParent('forceDelete', []);
 
-        return $this->executeOnInnerOrParent('forceDelete', []);
+        if ($result) {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }
+
+        return $result;
     }
 
     public function get($columns = ["*"])
