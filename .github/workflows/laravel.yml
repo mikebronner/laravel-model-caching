@@ -14,25 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - php: '8.3'
-            laravel: '11.*'
-            coverage: false
-          - php: '8.3'
-            laravel: '12.*'
-            coverage: false
-          - php: '8.4'
-            laravel: '11.*'
-            coverage: false
-          - php: '8.4'
-            laravel: '12.*'
-            coverage: false
-          - php: '8.4'
+        php: ['8.2', 8.3', '8.4', '8.5']
+        laravel: ['11.*', '12.*', '13.*']
+        exclude:
+          - php: '8.2'
             laravel: '13.*'
-            coverage: false
-          - php: '8.5'
-            laravel: '13.*'
-            coverage: true
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
@@ -70,7 +56,7 @@ jobs:
       with:
         php-version: ${{ matrix.php }}
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, pgsql, pdo_pgsql
-        coverage: ${{ matrix.coverage && 'xdebug' || 'none' }}
+        coverage: ${{ matrix.php == '8.5' && matrix.laravel == '13.*' && 'xdebug' || 'none' }}
 
     - name: Remove Nova on a pull request
       if: github.event_name == 'pull_request'
@@ -89,10 +75,10 @@ jobs:
         composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Execute Integration and Feature tests via PHPUnit
-      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature ${{ matrix.coverage && '--coverage-clover coverage.xml' || '' }}
+      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature ${{ matrix.php == '8.5' && matrix.laravel == '13.*' && '--coverage-clover coverage.xml' || '' }}
 
     - name: Upload coverage to Codecov
-      if: matrix.coverage
+      if: matrix.php == '8.5' && matrix.laravel == '13.*'
       uses: codecov/codecov-action@v5
       with:
         files: coverage.xml
