@@ -15,7 +15,7 @@ class BelongsToManySyncMemoryTest extends IntegrationTestCase
         $book = (new Book)
             ->disableModelCaching()
             ->first();
-        $stores = factory(Store::class, 50)->create();
+        $stores = Store::factory()->count(50)->create();
         $storeIds = $stores->pluck('id')->toArray();
 
         $memoryBefore = memory_get_usage(true);
@@ -41,7 +41,7 @@ class BelongsToManySyncMemoryTest extends IntegrationTestCase
         $book = (new Book)
             ->disableModelCaching()
             ->first();
-        $newStores = factory(Store::class, 3)->create();
+        $newStores = Store::factory()->count(3)->create();
 
         // Load stores into cache
         $cachedStores = Book::find($book->id)->stores;
