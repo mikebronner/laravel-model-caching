@@ -6,7 +6,6 @@ namespace GeneaLabs\LaravelModelCaching;
 
 use BackedEnum;
 use DateTimeInterface;
-use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Arr;
