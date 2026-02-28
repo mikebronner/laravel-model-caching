@@ -354,9 +354,17 @@ trait Caching
                 ?? true;
         }
 
-        $hasLock = property_exists($this, 'query')
-            && $this->query
-            && $this->query->lock !== null;
+        $hasLock = false;
+
+        if (property_exists($this, 'query') && $this->query) {
+            $baseQuery = $this->query;
+
+            if ($baseQuery instanceof \Illuminate\Database\Eloquent\Builder) {
+                $baseQuery = $baseQuery->getQuery();
+            }
+
+            $hasLock = $baseQuery->lock !== null;
+        }
 
         return $this->isCachable
             && $allRelationshipsAreCachable
