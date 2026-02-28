@@ -1,12 +1,18 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Printer::class, function (Faker $faker) {
-    return [
-        "book_id" => factory(Book::class)->create()->id,
-        'name' => $faker->realText(),
-    ];
-});
+class PrinterFactory extends Factory
+{
+    protected $model = Printer::class;
+
+    public function definition(): array
+    {
+        return [
+            'book_id' => Book::factory(),
+            'name'    => $this->faker->sentence(),
+        ];
+    }
+}

@@ -2,6 +2,8 @@
 
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
+use GeneaLabs\LaravelModelCaching\CachedHasManyThrough;
+use GeneaLabs\LaravelModelCaching\CachedHasOneThrough;
 use GeneaLabs\LaravelModelCaching\EloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -152,6 +154,80 @@ trait ModelCaching
         return new CachedBuilder($query);
     }
 
+    protected function isThroughRelationCachable(Builder $query, Model $farParent): bool
+    {
+        $relatedIsCachable = method_exists($query->getModel(), 'isCachable')
+            && $query->getModel()->isCachable();
+        $parentIsCachable = method_exists($farParent, 'isCachable')
+            && $farParent->isCachable();
+
+        return $relatedIsCachable || $parentIsCachable;
+    }
+
+    protected function newHasManyThrough(
+        Builder $query,
+        Model $farParent,
+        Model $throughParent,
+        $firstKey,
+        $secondKey,
+        $localKey,
+        $secondLocalKey
+    ) {
+        if ($this->isThroughRelationCachable($query, $farParent)) {
+            return new CachedHasManyThrough(
+                $query,
+                $farParent,
+                $throughParent,
+                $firstKey,
+                $secondKey,
+                $localKey,
+                $secondLocalKey
+            );
+        }
+
+        return parent::newHasManyThrough(
+            $query,
+            $farParent,
+            $throughParent,
+            $firstKey,
+            $secondKey,
+            $localKey,
+            $secondLocalKey
+        );
+    }
+
+    protected function newHasOneThrough(
+        Builder $query,
+        Model $farParent,
+        Model $throughParent,
+        $firstKey,
+        $secondKey,
+        $localKey,
+        $secondLocalKey
+    ) {
+        if ($this->isThroughRelationCachable($query, $farParent)) {
+            return new CachedHasOneThrough(
+                $query,
+                $farParent,
+                $throughParent,
+                $firstKey,
+                $secondKey,
+                $localKey,
+                $secondLocalKey
+            );
+        }
+
+        return parent::newHasOneThrough(
+            $query,
+            $farParent,
+            $throughParent,
+            $firstKey,
+            $secondKey,
+            $localKey,
+            $secondLocalKey
+        );
+    }
+
     protected function newBelongsToMany(
         Builder $query,
         Model $parent,
@@ -162,9 +238,12 @@ trait ModelCaching
         $relatedKey,
         $relationName = null
     ) {
-        if (method_exists($query->getModel(), "isCachable")
-            && $query->getModel()->isCachable()
-        ) {
+        $relatedIsCachable = method_exists($query->getModel(), "isCachable")
+            && $query->getModel()->isCachable();
+        $parentIsCachable = method_exists($parent, "isCachable")
+            && $parent->isCachable();
+
+        if ($relatedIsCachable || $parentIsCachable) {
             return new CachedBelongsToMany(
                 $query,
                 $parent,
