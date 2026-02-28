@@ -9,7 +9,9 @@ use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -305,13 +307,17 @@ trait Caching
 
             $returnType = $method->getReturnType();
 
-            if (! $returnType || $returnType->getName() !== MorphTo::class) {
+            if (! $returnType
+                || ! $returnType instanceof ReflectionNamedType
+                || $returnType->getName() !== MorphTo::class
+            ) {
                 continue;
             }
 
             $morphToName = $method->getName();
-            $typeColumn = $instance->{$morphToName}()->getMorphType();
-            $idColumn = $instance->{$morphToName}()->getForeignKeyName();
+            $relation = $instance->{$morphToName}();
+            $typeColumn = $relation->getMorphType();
+            $idColumn = $relation->getForeignKeyName();
             $parentType = $instance->getAttribute($typeColumn);
             $parentId = $instance->getAttribute($idColumn);
 
@@ -319,7 +325,8 @@ trait Caching
                 continue;
             }
 
-            $parentModel = new $parentType;
+            $parentClass = Relation::getMorphedModel($parentType) ?? $parentType;
+            $parentModel = new $parentClass;
 
             if (method_exists($parentModel, 'flushCache')) {
                 $parentModel->flushCache();

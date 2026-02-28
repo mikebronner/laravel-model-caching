@@ -8,6 +8,7 @@ trait Cachable
     use ModelCaching;
     use PivotEventTrait {
         ModelCaching::newBelongsToMany insteadof PivotEventTrait;
+        ModelCaching::newMorphToMany insteadof PivotEventTrait;
     }
 
     public function __wakeup(): void
