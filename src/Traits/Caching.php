@@ -294,27 +294,37 @@ trait Caching
         }
     }
 
+    protected static $morphToMethodCache = [];
+
     protected function flushMorphToRelatedCaches(Model $instance): void
     {
-        $reflection = new ReflectionClass($instance);
+        $className = get_class($instance);
 
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($method->class !== get_class($instance)
-                || $method->getNumberOfParameters() > 0
-            ) {
-                continue;
+        if (! isset(static::$morphToMethodCache[$className])) {
+            static::$morphToMethodCache[$className] = [];
+            $reflection = new ReflectionClass($instance);
+
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                if ($method->class !== $className
+                    || $method->getNumberOfParameters() > 0
+                ) {
+                    continue;
+                }
+
+                $returnType = $method->getReturnType();
+
+                if (! $returnType
+                    || ! $returnType instanceof ReflectionNamedType
+                    || $returnType->getName() !== MorphTo::class
+                ) {
+                    continue;
+                }
+
+                static::$morphToMethodCache[$className][] = $method->getName();
             }
+        }
 
-            $returnType = $method->getReturnType();
-
-            if (! $returnType
-                || ! $returnType instanceof ReflectionNamedType
-                || $returnType->getName() !== MorphTo::class
-            ) {
-                continue;
-            }
-
-            $morphToName = $method->getName();
+        foreach (static::$morphToMethodCache[$className] as $morphToName) {
             $relation = $instance->{$morphToName}();
             $typeColumn = $relation->getMorphType();
             $idColumn = $relation->getForeignKeyName();

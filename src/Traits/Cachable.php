@@ -26,5 +26,7 @@ trait Cachable
         $this->relations = $relations;
         $this->exists = $exists;
         $this->connection = $connection;
+
+        parent::__wakeup();
     }
 }
