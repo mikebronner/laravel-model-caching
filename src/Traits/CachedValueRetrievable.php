@@ -27,8 +27,8 @@ trait CachedValueRetrievable
                 $hashedCacheKey,
                 $method
             );
-        } catch (\Exception $exception) {
-            if (! $this->shouldFallbackToDatabase()) {
+        } catch (\Throwable $exception) {
+            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 

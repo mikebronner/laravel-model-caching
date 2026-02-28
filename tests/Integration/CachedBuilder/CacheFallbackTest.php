@@ -3,6 +3,7 @@
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\ThrowingCacheStore;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
+use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Log;
 
@@ -15,20 +16,32 @@ class CacheFallbackTest extends IntegrationTestCase
         $this->cache()->flush();
     }
 
-    private function breakCacheConnection(): void
+    private function breakCacheConnection(string $exceptionClass = \RedisException::class): void
     {
-        $throwingStore = new ThrowingCacheStore();
+        $throwingStore = new ThrowingCacheStore($exceptionClass);
         $throwingRepo = new Repository($throwingStore);
 
-        app()->singleton('cache', function () use ($throwingRepo) {
-            $manager = new class($throwingRepo) {
-                private $repo;
-                public function __construct($repo) { $this->repo = $repo; }
-                public function store($name = null) { return $this->repo; }
-                public function driver($driver = null) { return $this->repo; }
-                public function __call($method, $args) { return $this->repo->$method(...$args); }
+        $this->app->extend('cache', function ($cache) use ($throwingRepo) {
+            return new class($this->app, $throwingRepo) extends CacheManager
+            {
+                private Repository $throwingRepo;
+
+                public function __construct($app, Repository $throwingRepo)
+                {
+                    parent::__construct($app);
+                    $this->throwingRepo = $throwingRepo;
+                }
+
+                public function store($name = null)
+                {
+                    return $this->throwingRepo;
+                }
+
+                public function driver($driver = null)
+                {
+                    return $this->throwingRepo;
+                }
             };
-            return $manager;
         });
     }
 
@@ -50,12 +63,40 @@ class CacheFallbackTest extends IntegrationTestCase
         $this->assertNotEmpty($authors);
     }
 
+    public function testCacheReadFailureFallsThroughWithPredisException(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+        $this->breakCacheConnection(\RedisException::class);
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $authors = Author::all();
+
+        $this->assertNotNull($authors);
+        $this->assertNotEmpty($authors);
+    }
+
     public function testCacheReadFailureThrowsWhenFallbackDisabled(): void
     {
         config(['laravel-model-caching.fallback-to-database' => false]);
         $this->breakCacheConnection();
 
         $this->expectException(\RedisException::class);
+
+        Author::all();
+    }
+
+    public function testNonConnectionExceptionIsNotSwallowed(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+        $this->breakCacheConnection(\RuntimeException::class);
+
+        $this->expectException(\RuntimeException::class);
 
         Author::all();
     }

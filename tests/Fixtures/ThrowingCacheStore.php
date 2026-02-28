@@ -4,49 +4,64 @@ use Illuminate\Contracts\Cache\Store;
 
 class ThrowingCacheStore implements Store
 {
+    private string $exceptionClass;
+
+    private string $message;
+
+    public function __construct(string $exceptionClass = \RedisException::class, string $message = 'Connection refused')
+    {
+        $this->exceptionClass = $exceptionClass;
+        $this->message = $message;
+    }
+
+    private function throwException(): never
+    {
+        throw new ($this->exceptionClass)($this->message);
+    }
+
     public function get($key): mixed
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function many(array $keys): array
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function put($key, $value, $seconds): bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function putMany(array $values, $seconds): bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function increment($key, $value = 1): int|bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function decrement($key, $value = 1): int|bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function forever($key, $value): bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function forget($key): bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function flush(): bool
     {
-        throw new \RedisException('Connection refused');
+        $this->throwException();
     }
 
     public function getPrefix(): string

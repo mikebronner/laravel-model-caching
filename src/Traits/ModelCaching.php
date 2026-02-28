@@ -8,7 +8,6 @@ use GeneaLabs\LaravelModelCaching\EloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Container\Container;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -64,12 +63,8 @@ trait ModelCaching
                 ->rememberForever($key, function () use ($columns) {
                     return parent::all($columns);
                 });
-        } catch (\Exception $exception) {
-            $shouldFallback = Container::getInstance()
-                ->make("config")
-                ->get("laravel-model-caching.fallback-to-database", false);
-
-            if (! $shouldFallback) {
+        } catch (\Throwable $exception) {
+            if (! $instance->shouldFallbackToDatabase() || ! $instance->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 
@@ -122,12 +117,8 @@ trait ModelCaching
 
         try {
             $instance->flushCache();
-        } catch (\Exception $exception) {
-            $shouldFallback = Container::getInstance()
-                ->make("config")
-                ->get("laravel-model-caching.fallback-to-database", false);
-
-            if (! $shouldFallback) {
+        } catch (\Throwable $exception) {
+            if (! $instance->shouldFallbackToDatabase() || ! $instance->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 
@@ -294,12 +285,8 @@ trait ModelCaching
                 ->rememberForever($cacheKey, function () {
                     return (new Carbon)->now();
                 });
-        } catch (\Exception $exception) {
-            $shouldFallback = Container::getInstance()
-                ->make("config")
-                ->get("laravel-model-caching.fallback-to-database", false);
-
-            if (! $shouldFallback) {
+        } catch (\Throwable $exception) {
+            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 

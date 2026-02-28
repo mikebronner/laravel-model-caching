@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Log;
 
 trait Caching
 {
+    protected static array $cacheConnectionExceptions = [
+        \RedisException::class,
+        'Predis\\Connection\\ConnectionException',
+    ];
+
     protected $isCachable = true;
     protected $scopesAreApplied = false;
     protected $macroKey = "";
@@ -131,8 +136,8 @@ trait Caching
                         return (new Carbon)->now();
                     });
             }
-        } catch (\Exception $exception) {
-            if (! $this->shouldFallbackToDatabase()) {
+        } catch (\Throwable $exception) {
+            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 
@@ -272,8 +277,8 @@ trait Caching
                 ->cache()
                 ->forget("{$cachePrefix}:{$modelClassName}-cooldown:saved-at");
             $instance->flushCache();
-        } catch (\Exception $exception) {
-            if (! $this->shouldFallbackToDatabase()) {
+        } catch (\Throwable $exception) {
+            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 
@@ -303,8 +308,8 @@ trait Caching
                 $instance->flushCache();
                 $this->flushRelationshipCache($instance, $relationship);
             }
-        } catch (\Exception $exception) {
-            if (! $this->shouldFallbackToDatabase()) {
+        } catch (\Throwable $exception) {
+            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 
@@ -383,12 +388,22 @@ trait Caching
             && $allRelationshipsAreCachable;
     }
 
-
-    protected function shouldFallbackToDatabase() : bool
+    public function shouldFallbackToDatabase() : bool
     {
         return Container::getInstance()
             ->make("config")
             ->get("laravel-model-caching.fallback-to-database", false);
+    }
+
+    public function isCacheConnectionException(\Throwable $exception) : bool
+    {
+        foreach (static::$cacheConnectionExceptions as $exceptionClass) {
+            if ($exception instanceof $exceptionClass) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
@@ -402,8 +417,8 @@ trait Caching
                 ->rememberForever($cacheKey, function () {
                     return (new Carbon)->now();
                 });
-        } catch (\Exception $exception) {
-            if (! $this->shouldFallbackToDatabase()) {
+        } catch (\Throwable $exception) {
+            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
                 throw $exception;
             }
 
