@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Closure;
@@ -28,6 +30,30 @@ trait Caching
 
     public function __call($method, $parameters)
     {
+        // Inner builder takes precedence over parent::__call when present.
+        // This means if both the inner builder and a scope define the same
+        // method name, the inner builder wins. This is intentional: custom
+        // builder methods should not be silently overridden by scopes.
+        if (
+            property_exists($this, 'innerBuilder')
+            && $this->innerBuilder
+            && method_exists($this->innerBuilder, $method)
+        ) {
+            // Track the method call in macroKey for cache key differentiation,
+            // matching the same treatment applied to local/global macros below.
+            $this->macroKey .= "-{$method}";
+
+            if ($parameters) {
+                $this->macroKey .= implode("_", $parameters);
+            }
+
+            $result = $this->innerBuilder->{$method}(...$parameters);
+
+            return $result === $this->innerBuilder
+                ? $this
+                : $result;
+        }
+
         $result = parent::__call($method, $parameters);
 
         if (
