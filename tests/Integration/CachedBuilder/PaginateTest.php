@@ -123,4 +123,67 @@ class PaginateTest extends IntegrationTestCase
 
         $this->assertNotEquals($authors1->pluck("id"), $authors2->pluck("id"));
     }
+
+    public function testPaginatorBaseUrlReflectsCurrentRequest()
+    {
+        // First request from domain A
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://domain-a.com/authors";
+        });
+
+        $authorsFromDomainA = (new Author)->paginate(3);
+        $this->assertStringContainsString(
+            "domain-a.com",
+            $authorsFromDomainA->url(1)
+        );
+
+        // Second request from domain B — should use domain B's URL, not cached domain A
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://domain-b.com/authors";
+        });
+
+        $authorsFromDomainB = (new Author)->paginate(3);
+        $this->assertStringContainsString(
+            "domain-b.com",
+            $authorsFromDomainB->url(1),
+            "Cached paginator should use current request domain, not the domain that populated the cache"
+        );
+    }
+
+    public function testCachedPaginatorPathIsReappliedFromCurrentRequest()
+    {
+        // Populate cache with a specific path
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://original.com/users";
+        });
+
+        (new Author)->paginate(3);
+
+        // Retrieve from cache with a different path
+        \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+            return "https://different.com/users";
+        });
+
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-paginate_by_3_page_1");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+        ];
+
+        $cachedRaw = $this->cache()->tags($tags)->get($key)['value'];
+
+        // The cached raw paginator may have the old URL, but when retrieved
+        // through the model caching layer, it should have the current URL
+        $result = (new Author)->paginate(3);
+
+        $this->assertStringContainsString(
+            "different.com",
+            $result->url(1),
+            "Paginator path should be re-applied from current request after cache retrieval"
+        );
+        $this->assertStringNotContainsString(
+            "original.com",
+            $result->url(1),
+            "Paginator should not retain the original cached domain"
+        );
+    }
 }
