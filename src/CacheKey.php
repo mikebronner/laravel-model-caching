@@ -140,16 +140,18 @@ class CacheKey
         $type = strtolower($where["type"]);
         $subquery = $this->getValuesFromWhere($where);
 
-        if (! is_numeric($subquery) && ! is_numeric(str_replace("_", "", $subquery))) {
-            if (strlen($subquery) === 16) {
-                try {
-                    $subquery = Uuid::fromBytes($subquery);
-                    $values = $this->recursiveImplode([$subquery], "_");
+        if (
+            ! is_numeric($subquery)
+            && ! is_numeric(str_replace("_", "", $subquery))
+            && strlen($subquery) === 16
+        ) {
+            try {
+                $subquery = Uuid::fromBytes($subquery);
+                $values = $this->recursiveImplode([$subquery], "_");
 
-                    return "-{$where["column"]}_{$type}{$values}";
-                } catch (Throwable $exception) {
-                    // do nothing
-                }
+                return "-{$where["column"]}_{$type}{$values}";
+            } catch (Throwable) {
+                // do nothing
             }
         }
 
