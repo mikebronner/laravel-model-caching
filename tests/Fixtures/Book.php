@@ -61,6 +61,6 @@ class Book extends Model
 
     public function scopeStartsWith(Builder $query, string $startOfName) : Builder
     {
-        return $query->where("name", "LIKE", "{$startOfName}%");
+        return $query->where("title", "LIKE", "{$startOfName}%");
     }
 }

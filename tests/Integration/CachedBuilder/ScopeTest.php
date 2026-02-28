@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorBeginsWithScoped;
@@ -235,6 +236,10 @@ class ScopeTest extends IntegrationTestCase
 
     public function testLocalScopesInRelationship()
     {
+        $author = Author::factory()->create();
+        Book::factory()->create(['author_id' => $author->id, 'title' => 'Alpha Book']);
+        Book::factory()->create(['author_id' => $author->id, 'title' => 'Beta Book']);
+
         $first = "A";
         $second = "B";
         $authors1 = (new Author)
@@ -243,14 +248,18 @@ class ScopeTest extends IntegrationTestCase
             }])
             ->get();
         $authors2 = (new Author)
-            ->disableModelCaching()
             ->with(['books' => static function (HasMany $model) use ($second) {
                 $model->startsWith($second);
             }])
             ->get();
 
-        // $this->assertNotEquals($authors1, $authors2);
-        $this->markTestSkipped();
+        $booksFromAuthors1 = $authors1->find($author->id)->books;
+        $booksFromAuthors2 = $authors2->find($author->id)->books;
+
+        $this->assertCount(1, $booksFromAuthors1);
+        $this->assertCount(1, $booksFromAuthors2);
+        $this->assertEquals('Alpha Book', $booksFromAuthors1->first()->title);
+        $this->assertEquals('Beta Book', $booksFromAuthors2->first()->title);
     }
 
     public function testScopeNotAppliedTwice()
