@@ -1,6 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
+use GeneaLabs\LaravelModelCaching\CachingScope;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CachedHasManyThrough;
 use GeneaLabs\LaravelModelCaching\CachedHasOneThrough;
@@ -65,6 +66,8 @@ trait ModelCaching
 
     public static function bootCachable()
     {
+        static::addGlobalScope(new CachingScope);
+
         static::created(function ($instance) {
             $instance->checkCooldownAndFlushAfterPersisting($instance);
         });

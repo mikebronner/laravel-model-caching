@@ -2,10 +2,12 @@
 
 namespace GeneaLabs\LaravelModelCaching\Providers;
 
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\Console\Commands\Clear;
 use GeneaLabs\LaravelModelCaching\Console\Commands\Publish;
 use GeneaLabs\LaravelModelCaching\Helper;
 use GeneaLabs\LaravelModelCaching\ModelCaching;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\ServiceProvider;
 
 class Service extends ServiceProvider

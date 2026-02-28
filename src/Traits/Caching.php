@@ -5,6 +5,7 @@ namespace GeneaLabs\LaravelModelCaching\Traits;
 use Closure;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CacheKey;
+use GeneaLabs\LaravelModelCaching\CacheKeyGenerator;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Container\Container;
@@ -131,6 +132,30 @@ trait Caching
         }
     }
 
+
+    /**
+     * Get the cache key metadata needed for key generation.
+     *
+     * @return array{macroKey: string, withoutGlobalScopes: array, withoutAllGlobalScopes: bool, scopesAreApplied: bool}
+     */
+    public function getCacheKeyMetadata(): array
+    {
+        return [
+            'macroKey' => $this->macroKey,
+            'withoutGlobalScopes' => $this->withoutGlobalScopes,
+            'withoutAllGlobalScopes' => $this->withoutAllGlobalScopes,
+            'scopesAreApplied' => $this->scopesAreApplied,
+        ];
+    }
+
+    /**
+     * Set whether scopes have been applied (used by CacheKeyGenerator on clones).
+     */
+    public function setScopesAreApplied(bool $applied): void
+    {
+        $this->scopesAreApplied = $applied;
+    }
+
     protected function getCachePrefix() : string
     {
         $cachePrefix = Container::getInstance()
@@ -157,32 +182,12 @@ trait Caching
         $idColumn = null,
         string $keyDifferentiator = ''
     ) : string {
-        $this->applyScopesToInstance();
-        $eagerLoad = $this->eagerLoad ?? [];
-        $model = $this;
-
-        if (property_exists($this, "model")) {
-            $model = $this->model;
-        }
-
-        if (method_exists($this, "getModel")) {
-            $model = $this->getModel();
-        }
-
-        $query = $this->query
-            ?? Container::getInstance()
-                ->make("db")
-                ->query();
-
-        if (
-            $this->query
-            && method_exists($this->query, "getQuery")
-        ) {
-            $query = $this->query->getQuery();
-        }
-
-        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey, $this->withoutGlobalScopes, $this->withoutAllGlobalScopes))
-            ->make($columns, $idColumn, $keyDifferentiator);
+        return CacheKeyGenerator::generate(
+            $this,
+            $columns,
+            $idColumn,
+            $keyDifferentiator
+        );
     }
 
     protected function makeCacheTags() : array
