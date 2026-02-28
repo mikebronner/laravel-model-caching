@@ -354,8 +354,13 @@ trait Caching
                 ?? true;
         }
 
+        $hasLock = property_exists($this, 'query')
+            && $this->query
+            && $this->query->lock;
+
         return $this->isCachable
-            && $allRelationshipsAreCachable;
+            && $allRelationshipsAreCachable
+            && ! $hasLock;
     }
 
     protected function setCacheCooldownSavedAtTimestamp(Model $instance)
