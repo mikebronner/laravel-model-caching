@@ -9,7 +9,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class DynamicFillableTest extends IntegrationTestCase
 {
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         AuthorWithConditionalFillable::$adminMode = false;
 

@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PivotModelObserverTest extends IntegrationTestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class PivotModelObserverTest extends IntegrationTestCase
         RoleUserObserver::reset();
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         RoleUserObserver::reset();
 

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class MagicMethodProxyTest extends IntegrationTestCase
 {
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         $reflection = new \ReflectionClass(Builder::class);
         $macros = $reflection->getStaticPropertyValue('macros');

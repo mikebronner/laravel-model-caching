@@ -22,7 +22,7 @@ class WhereJsonContainsTest extends IntegrationTestCase
         $app['config']->set('database.connections.pgsql.password', env('PGSQL_PASSWORD', 'secret'));
     }
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 

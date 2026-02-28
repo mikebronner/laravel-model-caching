@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 class FlushTest extends IntegrationTestCase
 {
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 

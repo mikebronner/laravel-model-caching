@@ -18,7 +18,7 @@ abstract class NovaTestCase extends IntegrationTestCase
 {
     protected $authenticatedAs;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
