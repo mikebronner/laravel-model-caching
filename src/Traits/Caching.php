@@ -274,14 +274,7 @@ trait Caching
 
         if (! $cacheCooldown) {
             $instance->flushCache();
-
-            if ($relationship) {
-                $relationshipInstance = $instance->$relationship()->getModel();
-
-                if (method_exists($relationshipInstance, "flushCache")) {
-                    $relationshipInstance->flushCache();
-                }
-            }
+            $this->flushRelationshipCache($instance, $relationship);
 
             return;
         }
@@ -290,10 +283,33 @@ trait Caching
 
         if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
             $instance->flushCache();
+            $this->flushRelationshipCache($instance, $relationship);
+        }
+    }
 
-            if ($relationship) {
-                $instance->$relationship()->getModel()->flushCache();
-            }
+    protected function flushRelationshipCache(Model $instance, string $relationship = ""): void
+    {
+        if (! $relationship) {
+            return;
+        }
+
+        $relationObject = $instance->$relationship();
+        $relationshipInstance = $relationObject->getModel();
+
+        if (method_exists($relationshipInstance, "flushCache")) {
+            $relationshipInstance->flushCache();
+        } else {
+            // Related model is not cacheable — build the cache tag for the
+            // related model and flush it so stale relationship results are
+            // cleared. This covers BelongsToMany with custom pivot models
+            // where only the parent model uses the Cachable trait.
+            $tags = (new CacheTags(
+                [],
+                $relationshipInstance,
+                Container::getInstance()->make("db")->query()
+            ))->make();
+
+            $instance->cache($tags)->flush();
         }
     }
 

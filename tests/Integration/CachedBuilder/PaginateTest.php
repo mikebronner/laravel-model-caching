@@ -4,7 +4,6 @@ use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Support\Str;
 
 /**
 * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -36,38 +35,6 @@ class PaginateTest extends IntegrationTestCase
 
     public function testPaginationReturnsCorrectLinks()
     {
-        // Checking the version start with 11.0.
-        if ($this->appVersionEleven()) {
-            $page1ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">1</span>';
-            $page2ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">2</span>';
-            $page24ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">24</span>';
-        }
-
-        // Checking the version start with 10.0.
-        if ($this->appVersionTen()) {
-            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">1</span>';
-            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">2</span>';
-            $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">24</span>';
-        }
-
-        if ($this->appVersionEightAndNine()) {
-            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
-            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
-            $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
-        }
-
-        if ($this->appVersionFiveBetweenSeven()) {
-            $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
-            $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
-            $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
-        }
-
-        if ($this->appVersionOld()) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-            $page24ActiveLink = '<li class="active"><span>24</span></li>';
-        }
-
         $booksPage1 = (new Book)
             ->paginate(2);
         $booksPage2 = (new Book)
@@ -78,45 +45,13 @@ class PaginateTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertStringContainsString($page1ActiveLink, (string) $booksPage1->links());
-        $this->assertStringContainsString($page2ActiveLink, (string) $booksPage2->links());
-        $this->assertStringContainsString($page24ActiveLink, (string) $booksPage24->links());
+        $this->assertActivePageInLinks(1, (string) $booksPage1->links());
+        $this->assertActivePageInLinks(2, (string) $booksPage2->links());
+        $this->assertActivePageInLinks(24, (string) $booksPage24->links());
     }
 
     public function testPaginationWithOptionsReturnsCorrectLinks()
     {
-        // Checking the version start with 11.0.
-        if ($this->appVersionEleven()) {
-            $page1ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">1</span>';
-            $page2ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">2</span>';
-            $page24ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">24</span>';
-        }
-
-        // Checking the version start with 10.0.
-        if ($this->appVersionTen()) {
-            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">1</span>';
-            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">2</span>';
-            $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">24</span>';
-        }
-
-        if ($this->appVersionEightAndNine()) {
-            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
-            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
-            $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
-        }
-
-        if ($this->appVersionFiveBetweenSeven()) {
-            $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
-            $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
-            $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
-        }
-
-        if ($this->appVersionOld()) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-            $page24ActiveLink = '<li class="active"><span>24</span></li>';
-        }
-
         $booksPage1 = (new Book)
             ->paginate(2);
         $booksPage2 = (new Book)
@@ -127,45 +62,13 @@ class PaginateTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertStringContainsString($page1ActiveLink, (string) $booksPage1->links());
-        $this->assertStringContainsString($page2ActiveLink, (string) $booksPage2->links());
-        $this->assertStringContainsString($page24ActiveLink, (string) $booksPage24->links());
+        $this->assertActivePageInLinks(1, (string) $booksPage1->links());
+        $this->assertActivePageInLinks(2, (string) $booksPage2->links());
+        $this->assertActivePageInLinks(24, (string) $booksPage24->links());
     }
 
     public function testPaginationWithCustomOptionsReturnsCorrectLinks()
     {
-        // Checking the version start with 11.0.
-        if ($this->appVersionEleven()) {
-            $page1ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">1</span>';
-            $page2ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">2</span>';
-            $page24ActiveLink = '<span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">24</span>';
-        }
-
-        // Checking the version start with 10.0.
-        if ($this->appVersionTen()) {
-            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">1</span>';
-            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">2</span>';
-            $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 dark:bg-gray-800 dark:border-gray-600">24</span>';
-        }
-
-        if ($this->appVersionEightAndNine()) {
-            $page1ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">1</span>';
-            $page2ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">2</span>';
-            $page24ActiveLink = '<span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">24</span>';
-        }
-
-        if ($this->appVersionFiveBetweenSeven()) {
-            $page1ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>';
-            $page2ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>';
-            $page24ActiveLink = '<li class="page-item active" aria-current="page"><span class="page-link">24</span></li>';
-        }
-
-        if ($this->appVersionOld()) {
-            $page1ActiveLink = '<li class="active"><span>1</span></li>';
-            $page2ActiveLink = '<li class="active"><span>2</span></li>';
-            $page24ActiveLink = '<li class="active"><span>24</span></li>';
-        }
-
         $booksPage1 = (new Book)
             ->paginate('2');
         $booksPage2 = (new Book)
@@ -176,9 +79,18 @@ class PaginateTest extends IntegrationTestCase
         $this->assertCount(2, $booksPage1);
         $this->assertCount(2, $booksPage2);
         $this->assertCount(2, $booksPage24);
-        $this->assertStringContainsString($page1ActiveLink, (string) $booksPage1->links());
-        $this->assertStringContainsString($page2ActiveLink, (string) $booksPage2->links());
-        $this->assertStringContainsString($page24ActiveLink, (string) $booksPage24->links());
+        $this->assertActivePageInLinks(1, (string) $booksPage1->links());
+        $this->assertActivePageInLinks(2, (string) $booksPage2->links());
+        $this->assertActivePageInLinks(24, (string) $booksPage24->links());
+    }
+
+    private function assertActivePageInLinks(int $page, string $linksHtml): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/aria-current="page">\s*<span[^>]*>' . $page . '<\/span>/s',
+            $linksHtml,
+            "Expected page {$page} to be marked as the active page in pagination links."
+        );
     }
 
     public function testCustomPageNamePagination()

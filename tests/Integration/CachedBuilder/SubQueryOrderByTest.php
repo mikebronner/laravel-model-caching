@@ -17,10 +17,10 @@ class SubQueryOrderByTest extends IntegrationTestCase
         ];
 
         /** @var Collection $publishers */
-        $publishers = factory(UncachedPublisher::class, 5)->create();
+        $publishers = UncachedPublisher::factory()->count(5)->create();
 
         $publishers->each(function (UncachedPublisher $publisher) {
-            factory(UncachedBook::class, 2)->create(['publisher_id' => $publisher->id]);
+            UncachedBook::factory()->count(2)->create(['publisher_id' => $publisher->id]);
         });
 
         $publisherIds = $publishers->pluck('id')->toArray();

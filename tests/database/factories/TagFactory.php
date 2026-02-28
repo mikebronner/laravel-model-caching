@@ -1,10 +1,16 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Tag;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Tag::class, function (Faker $faker) {
-    return [
-        'name' => $faker->word,
-    ];
-});
+class TagFactory extends Factory
+{
+    protected $model = Tag::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->word,
+        ];
+    }
+}
