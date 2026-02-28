@@ -1,6 +1,5 @@
 <?php namespace GeneaLabs\LaravelModelCaching;
 
-use Exception;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
