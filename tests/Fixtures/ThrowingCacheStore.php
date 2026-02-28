@@ -64,6 +64,11 @@ class ThrowingCacheStore implements Store
         $this->throwException();
     }
 
+    public function touch($key, $seconds): bool
+    {
+        $this->throwException();
+    }
+
     public function getPrefix(): string
     {
         return '';
