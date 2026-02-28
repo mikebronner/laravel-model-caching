@@ -7,6 +7,10 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Log;
 
+// Stub for Predis exception — Predis may not be installed as a dependency
+class_exists('Predis\Connection\ConnectionException') || eval('namespace Predis\Connection; class ConnectionException extends \Exception {}');
+use Predis\Connection\ConnectionException as PredisConnectionException;
+
 class CacheFallbackTest extends IntegrationTestCase
 {
     public function setUp(): void
@@ -63,7 +67,7 @@ class CacheFallbackTest extends IntegrationTestCase
         $this->assertNotEmpty($authors);
     }
 
-    public function testCacheReadFailureFallsThroughWithPredisException(): void
+    public function testCacheReadFailureFallsThroughWithRedisException(): void
     {
         config(['laravel-model-caching.fallback-to-database' => true]);
         $this->breakCacheConnection(\RedisException::class);
@@ -79,6 +83,48 @@ class CacheFallbackTest extends IntegrationTestCase
 
         $this->assertNotNull($authors);
         $this->assertNotEmpty($authors);
+    }
+
+    public function testCacheReadFailureFallsThroughWithPredisException(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+        $this->breakCacheConnection(PredisConnectionException::class);
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $authors = Author::all();
+
+        $this->assertNotNull($authors);
+        $this->assertNotEmpty($authors);
+    }
+
+    public function testIsCacheConnectionExceptionRecognizesPredisException(): void
+    {
+        $instance = new Author;
+        $predisException = new PredisConnectionException('Connection refused');
+
+        $this->assertTrue($instance->isCacheConnectionException($predisException));
+    }
+
+    public function testIsCacheConnectionExceptionRecognizesRedisException(): void
+    {
+        $instance = new Author;
+        $redisException = new \RedisException('Connection refused');
+
+        $this->assertTrue($instance->isCacheConnectionException($redisException));
+    }
+
+    public function testIsCacheConnectionExceptionRejectsUnrelatedExceptions(): void
+    {
+        $instance = new Author;
+        $runtimeException = new \RuntimeException('Something else');
+
+        $this->assertFalse($instance->isCacheConnectionException($runtimeException));
     }
 
     public function testCacheReadFailureThrowsWhenFallbackDisabled(): void

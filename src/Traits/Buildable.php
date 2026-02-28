@@ -1,7 +1,6 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -45,32 +44,20 @@ trait Buildable
 
     public function decrement($column, $amount = 1, array $extra = [])
     {
-        try {
+        $this->withCacheFallback(function () {
             $this->cache($this->makeCacheTags())
                 ->flush();
-        } catch (\Throwable $exception) {
-            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache flush failed during decrement — {$exception->getMessage()}");
-        }
+        }, 'cache flush failed during decrement');
 
         return parent::decrement($column, $amount, $extra);
     }
 
     public function delete()
     {
-        try {
+        $this->withCacheFallback(function () {
             $this->cache($this->makeCacheTags())
                 ->flush();
-        } catch (\Throwable $exception) {
-            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache flush failed during delete — {$exception->getMessage()}");
-        }
+        }, 'cache flush failed during delete');
 
         return parent::delete();
     }
@@ -109,16 +96,10 @@ trait Buildable
 
     public function forceDelete()
     {
-        try {
+        $this->withCacheFallback(function () {
             $this->cache($this->makeCacheTags())
                 ->flush();
-        } catch (\Throwable $exception) {
-            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache flush failed during forceDelete — {$exception->getMessage()}");
-        }
+        }, 'cache flush failed during forceDelete');
 
         return parent::forceDelete();
     }
@@ -137,16 +118,10 @@ trait Buildable
 
     public function increment($column, $amount = 1, array $extra = [])
     {
-        try {
+        $this->withCacheFallback(function () {
             $this->cache($this->makeCacheTags())
                 ->flush();
-        } catch (\Throwable $exception) {
-            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache flush failed during increment — {$exception->getMessage()}");
-        }
+        }, 'cache flush failed during increment');
 
         return parent::increment($column, $amount, $extra);
     }

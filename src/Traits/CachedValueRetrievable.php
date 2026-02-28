@@ -1,6 +1,5 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Traits;
 
-use Illuminate\Support\Facades\Log;
 
 trait CachedValueRetrievable
 {
@@ -10,32 +9,30 @@ trait CachedValueRetrievable
         $cacheTags = $this->makeCacheTags();
         $hashedCacheKey = sha1($cacheKey);
 
-        try {
-            $result = $this->retrieveCachedValue(
-                $arguments,
-                $cacheKey,
-                $cacheTags,
-                $hashedCacheKey,
-                $method
-            );
+        return $this->withCacheFallback(
+            function () use ($arguments, $cacheKey, $cacheTags, $hashedCacheKey, $method) {
+                $result = $this->retrieveCachedValue(
+                    $arguments,
+                    $cacheKey,
+                    $cacheTags,
+                    $hashedCacheKey,
+                    $method
+                );
 
-            return $this->preventHashCollision(
-                $result,
-                $arguments,
-                $cacheKey,
-                $cacheTags,
-                $hashedCacheKey,
-                $method
-            );
-        } catch (\Throwable $exception) {
-            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
-                throw $exception;
+                return $this->preventHashCollision(
+                    $result,
+                    $arguments,
+                    $cacheKey,
+                    $cacheTags,
+                    $hashedCacheKey,
+                    $method
+                );
+            },
+            'cache read failed, falling back to database',
+            function () use ($method, $arguments) {
+                return parent::{$method}(...$arguments);
             }
-
-            Log::warning("laravel-model-caching: cache read failed, falling back to database — {$exception->getMessage()}");
-
-            return parent::{$method}(...$arguments);
-        }
+        );
     }
 
     protected function preventHashCollision(

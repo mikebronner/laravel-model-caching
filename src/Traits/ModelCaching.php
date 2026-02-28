@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 trait ModelCaching
 {
@@ -51,27 +50,25 @@ trait ModelCaching
         $class = get_called_class();
         $instance = new $class;
 
-	    if (!$instance->isCachable()) {
-		    return parent::all($columns);
-	    }
-
-        try {
-            $tags = $instance->makeCacheTags();
-            $key = $instance->makeCacheKey();
-
-            return $instance->cache($tags)
-                ->rememberForever($key, function () use ($columns) {
-                    return parent::all($columns);
-                });
-        } catch (\Throwable $exception) {
-            if (! $instance->shouldFallbackToDatabase() || ! $instance->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache read failed, falling back to database — {$exception->getMessage()}");
-
+        if (! $instance->isCachable()) {
             return parent::all($columns);
         }
+
+        return $instance->withCacheFallback(
+            function () use ($instance, $columns) {
+                $tags = $instance->makeCacheTags();
+                $key = $instance->makeCacheKey();
+
+                return $instance->cache($tags)
+                    ->rememberForever($key, function () use ($columns) {
+                        return parent::all($columns);
+                    });
+            },
+            'cache read failed, falling back to database',
+            function () use ($columns) {
+                return parent::all($columns);
+            }
+        );
     }
 
     public static function bootCachable()
@@ -115,15 +112,9 @@ trait ModelCaching
         $class = get_called_class();
         $instance = new $class;
 
-        try {
+        $instance->withCacheFallback(function () use ($instance) {
             $instance->flushCache();
-        } catch (\Throwable $exception) {
-            if (! $instance->shouldFallbackToDatabase() || ! $instance->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache flush failed during destroy — {$exception->getMessage()}");
-        }
+        }, 'cache flush failed during destroy');
 
         return parent::destroy($ids);
     }
@@ -270,7 +261,7 @@ trait ModelCaching
             $seconds = $this->cacheCooldownSeconds;
         }
 
-        try {
+        $this->withCacheFallback(function () use ($seconds) {
             $cachePrefix = $this->getCachePrefix();
             $modelClassName = get_class($this);
             $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";
@@ -285,13 +276,7 @@ trait ModelCaching
                 ->rememberForever($cacheKey, function () {
                     return (new Carbon)->now();
                 });
-        } catch (\Throwable $exception) {
-            if (! $this->shouldFallbackToDatabase() || ! $this->isCacheConnectionException($exception)) {
-                throw $exception;
-            }
-
-            Log::warning("laravel-model-caching: cache cooldown write failed — {$exception->getMessage()}");
-        }
+        }, 'cache cooldown write failed');
 
         return $query;
     }
