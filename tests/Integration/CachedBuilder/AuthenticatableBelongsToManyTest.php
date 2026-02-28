@@ -98,7 +98,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
         $this->assertNotEmpty($result);
 
         // Attach a new role — this should bust the cache.
-        $newRole = factory(Role::class)->create();
+        $newRole = Role::factory()->create();
         (new User)->find($userId)->roles()->attach($newRole->id);
 
         $cachedResult = $this->cache()->tags($tags)->get($hashedKey);
@@ -144,7 +144,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
         $result = (new User)->find($userId)->roles;
         $this->assertNotEmpty($result);
 
-        $newRoles = factory(Role::class, 2)->create();
+        $newRoles = Role::factory()->count(2)->create();
         (new User)->find($userId)->roles()->sync($newRoles->pluck('id'));
 
         $cachedResult = $this->cache()->tags($tags)->get($hashedKey);

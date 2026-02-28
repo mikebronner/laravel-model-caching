@@ -56,8 +56,7 @@ class BelongsToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
         ];
-        $newStore = factory(Store::class)
-            ->create();
+        $newStore = Store::factory()->create();
         $result = (new Book)
             ->find($bookId)
             ->stores;
@@ -182,8 +181,7 @@ class BelongsToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
         ];
-        $newStores = factory(Store::class, 2)
-            ->create();
+        $newStores = Store::factory()->count(2)->create();
         $result = Book::find($bookId)
             ->stores;
 

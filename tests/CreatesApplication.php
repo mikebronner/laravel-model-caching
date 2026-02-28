@@ -42,8 +42,6 @@ trait CreatesApplication
 
         require(__DIR__ . '/routes/web.php');
 
-        $this->withFactories(__DIR__ . '/database/factories');
-
         view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
         $this->cache = app('cache')
@@ -83,7 +81,6 @@ trait CreatesApplication
             ?: unlink($file);
         touch($file);
 
-        $this->withFactories(__DIR__ . '/database/factories');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         Artisan::call('db:seed', [

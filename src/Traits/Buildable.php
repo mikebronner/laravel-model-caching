@@ -11,6 +11,8 @@ use Illuminate\Pagination\Paginator;
  */
 trait Buildable
 {
+    use CachedValueRetrievable;
+
     public function avg($column)
     {
         if (! $this->isCachable()) {
@@ -187,7 +189,13 @@ trait Buildable
 
         $cacheKey = $this->makeCacheKey($columns, null, $keyDifferentiator);
 
-        return $this->cachedValue(func_get_args(), $cacheKey);
+        $result = $this->cachedValue(func_get_args(), $cacheKey);
+
+        if ($result instanceof \Illuminate\Pagination\AbstractPaginator) {
+            $result->setPath(Paginator::resolveCurrentPath());
+        }
+
+        return $result;
     }
 
     protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string
@@ -307,16 +315,47 @@ trait Buildable
             $this->checkCooldownAndRemoveIfExpired($this->getModel());
         }
 
-        return $this->cache($cacheTags)
+        $closureRan = false;
+
+        $result = $this->cache($cacheTags)
             ->rememberForever(
                 $hashedCacheKey,
-                function () use ($arguments, $cacheKey, $method) {
+                function () use ($arguments, $cacheKey, $method, &$closureRan) {
+                    $closureRan = true;
+
                     return [
                         "key" => $cacheKey,
                         "value" => $this->executeOnInnerOrParent($method, $arguments),
                     ];
                 }
             );
+
+        if (! $closureRan) {
+            $this->fireRetrievedEvents($result["value"] ?? null);
+        }
+
+        return $result;
+    }
+
+    protected function fireRetrievedEvents($value): void
+    {
+        $dispatcher = \Illuminate\Database\Eloquent\Model::getEventDispatcher();
+
+        if (! $dispatcher) {
+            return;
+        }
+
+        $models = [];
+
+        if ($value instanceof \Illuminate\Database\Eloquent\Model) {
+            $models = [$value];
+        } elseif ($value instanceof \Illuminate\Support\Collection || $value instanceof \Illuminate\Pagination\AbstractPaginator) {
+            $models = $value->filter(fn ($item) => $item instanceof \Illuminate\Database\Eloquent\Model);
+        }
+
+        foreach ($models as $model) {
+            $dispatcher->dispatch("eloquent.retrieved: " . get_class($model), $model);
+        }
     }
 
     protected function executeOnInnerOrParent(string $method, array $arguments)
