@@ -1,7 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
+use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\BookFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -11,6 +13,12 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 class Book extends Model
 {
     use Cachable;
+    use HasFactory;
+
+    protected static function newFactory(): BookFactory
+    {
+        return BookFactory::new();
+    }
 
     protected $casts = [
         'price' => 'float',

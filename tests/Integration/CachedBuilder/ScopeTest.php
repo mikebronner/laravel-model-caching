@@ -15,7 +15,7 @@ class ScopeTest extends IntegrationTestCase
 {
     public function testScopeClauseParsing()
     {
-        $author = factory(Author::class, 1)
+        $author = Author::factory()->count(1)
             ->create(['name' => 'Anton'])
             ->first();
         $authors = (new Author)
@@ -38,7 +38,7 @@ class ScopeTest extends IntegrationTestCase
 
     public function testScopeClauseWithParameter()
     {
-        $author = factory(Author::class, 1)
+        $author = Author::factory()->count(1)
             ->create(['name' => 'Boris'])
             ->first();
         $authors = (new Author)
@@ -61,9 +61,9 @@ class ScopeTest extends IntegrationTestCase
 
     public function testGlobalScopesAreCached()
     {
-        $user = factory(User::class)->create(["name" => "Abernathy Kings"]);
+        $user = User::factory()->create(["name" => "Abernathy Kings"]);
         $this->actingAs($user);
-        $author = factory(UncachedAuthor::class, 1)
+        $author = UncachedAuthor::factory()->count(1)
             ->create(['name' => 'Alois'])
             ->first();
         $authors = (new AuthorBeginsWithScoped)
@@ -85,7 +85,7 @@ class ScopeTest extends IntegrationTestCase
 
     public function testInlineGlobalScopesAreCached()
     {
-        $author = factory(UncachedAuthor::class, 1)
+        $author = UncachedAuthor::factory()->count(1)
             ->create(['name' => 'Alois'])
             ->first();
         $authors = (new AuthorWithInlineGlobalScope)
@@ -106,8 +106,8 @@ class ScopeTest extends IntegrationTestCase
 
     public function testGlobalScopesWhenSwitchingContextUsingAllMethod()
     {
-        factory(Author::class, 200)->create();
-        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        Author::factory()->count(200)->create();
+        $user = User::factory()->create(["name" => "Andrew Junior"]);
         $this->actingAs($user);
         $authorsA = (new AuthorBeginsWithScoped)
             ->all()
@@ -115,7 +115,7 @@ class ScopeTest extends IntegrationTestCase
                 return (new Str)->substr($author->name, 0, 1);
             })
             ->unique();
-        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $user = User::factory()->create(["name" => "Barry Barry Barry"]);
         $this->actingAs($user);
         $authorsB = (new AuthorBeginsWithScoped)
             ->all()
@@ -132,8 +132,8 @@ class ScopeTest extends IntegrationTestCase
 
     public function testGlobalScopesWhenSwitchingContextUsingGetMethod()
     {
-        factory(Author::class, 200)->create();
-        $user = factory(User::class)->create(["name" => "Anton Junior"]);
+        Author::factory()->count(200)->create();
+        $user = User::factory()->create(["name" => "Anton Junior"]);
         $this->actingAs($user);
         $authorsA = (new AuthorBeginsWithScoped)
             ->get()
@@ -141,7 +141,7 @@ class ScopeTest extends IntegrationTestCase
                 return (new Str)->substr($author->name, 0, 1);
             })
             ->unique();
-        $user = factory(User::class)->create(["name" => "Burli Burli Burli"]);
+        $user = User::factory()->create(["name" => "Burli Burli Burli"]);
         $this->actingAs($user);
         $authorsB = (new AuthorBeginsWithScoped)
             ->get()
@@ -158,9 +158,9 @@ class ScopeTest extends IntegrationTestCase
 
     public function testGlobalScopesAreNotCachedWhenUsingWithoutGlobalScopes()
     {
-        $user = factory(User::class)->create(["name" => "Abernathy Kings"]);
+        $user = User::factory()->create(["name" => "Abernathy Kings"]);
         $this->actingAs($user);
-        $author = factory(UncachedAuthor::class, 1)
+        $author = UncachedAuthor::factory()->count(1)
             ->create(['name' => 'Alois'])
             ->first();
         $authors = (new AuthorBeginsWithScoped)
@@ -183,8 +183,8 @@ class ScopeTest extends IntegrationTestCase
 
     public function testWithoutGlobalScopes()
     {
-        factory(Author::class, 200)->create();
-        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        Author::factory()->count(200)->create();
+        $user = User::factory()->create(["name" => "Andrew Junior"]);
         $this->actingAs($user);
         $authorsA = (new AuthorBeginsWithScoped)
             ->withoutGlobalScopes()
@@ -193,7 +193,7 @@ class ScopeTest extends IntegrationTestCase
                 return (new Str)->substr($author->name, 0, 1);
             })
             ->unique();
-        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $user = User::factory()->create(["name" => "Barry Barry Barry"]);
         $this->actingAs($user);
         $authorsB = (new AuthorBeginsWithScoped)
             ->withoutGlobalScopes(['GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith'])
@@ -209,8 +209,8 @@ class ScopeTest extends IntegrationTestCase
 
     public function testWithoutGlobalScope()
     {
-        factory(Author::class, 200)->create();
-        $user = factory(User::class)->create(["name" => "Andrew Junior"]);
+        Author::factory()->count(200)->create();
+        $user = User::factory()->create(["name" => "Andrew Junior"]);
         $this->actingAs($user);
         $authorsA = (new AuthorBeginsWithScoped)
             ->withoutGlobalScope('GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith')
@@ -219,7 +219,7 @@ class ScopeTest extends IntegrationTestCase
                 return (new Str)->substr($author->name, 0, 1);
             })
             ->unique();
-        $user = factory(User::class)->create(["name" => "Barry Barry Barry"]);
+        $user = User::factory()->create(["name" => "Barry Barry Barry"]);
         $this->actingAs($user);
         $authorsB = (new AuthorBeginsWithScoped)
             ->withoutGlobalScope('GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes\NameBeginsWith')
@@ -255,11 +255,10 @@ class ScopeTest extends IntegrationTestCase
 
     public function testScopeNotAppliedTwice()
     {
-        $user = factory(User::class)
-            ->create(["name" => "Anton Junior"]);
+        $user = User::factory()->create(["name" => "Anton Junior"]);
         $this->actingAs($user);
         DB::enableQueryLog();
-        
+
         (new AuthorBeginsWithScoped)
             ->get();
         $queryLog = DB::getQueryLog();

@@ -1,6 +1,8 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
+use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\UserFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +13,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable
 {
     use Cachable;
+    use HasFactory;
+
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
 
     protected $fillable = [
         "name",
