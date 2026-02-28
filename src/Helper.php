@@ -3,7 +3,6 @@
 namespace GeneaLabs\LaravelModelCaching;
 
 use Illuminate\Container\Container;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class Helper
@@ -49,8 +48,10 @@ class Helper
 
     protected function invalidateModel(string $modelClass): void
     {
-        $usesCachable = $this->getAllTraitsUsedByClass($modelClass)
-            ->contains("GeneaLabs\LaravelModelCaching\Traits\Cachable");
+        $usesCachable = in_array(
+            "GeneaLabs\LaravelModelCaching\Traits\Cachable",
+            class_uses_recursive($modelClass)
+        );
 
         if (! $usesCachable) {
             throw new InvalidArgumentException(
@@ -59,25 +60,5 @@ class Helper
         }
 
         (new $modelClass)->flushCache();
-    }
-
-    protected function getAllTraitsUsedByClass(
-        string $classname,
-        bool $autoload = true
-    ): Collection {
-        $traits = collect();
-
-        if (class_exists($classname, $autoload)) {
-            $traits = collect(class_uses($classname, $autoload));
-        }
-
-        $parentClass = get_parent_class($classname);
-
-        if ($parentClass) {
-            $traits = $traits
-                ->merge($this->getAllTraitsUsedByClass($parentClass, $autoload));
-        }
-
-        return $traits;
     }
 }
