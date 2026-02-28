@@ -21,6 +21,9 @@
         <testsuite name="Nova">
             <directory suffix="Test.php">./tests/Nova</directory>
         </testsuite>
+            <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
     </testsuites>
     <php>
         <env name="APP_KEY" value="base64:Xgs1LQt1GdVHhD6qyYCXnyq61DE3UKqJ5k2SJc+Nw2g="/>
