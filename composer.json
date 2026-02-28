@@ -37,8 +37,7 @@
         "symfony/thanks": "^1.2",
         "laravel/legacy-factories": "^1.3",
         "larastan/larastan": "^2.0|^3.0",
-        "laravel/pint": "^1.27",
-        "laravel/nova": "^5.0"
+        "laravel/pint": "^1.27"
     },
     "autoload": {
         "psr-4": {

@@ -39,6 +39,16 @@ class CachedBuilder extends Builder
         return parent::setModel($model);
     }
 
+    /**
+     * Synchronise builder state from the outer CachedBuilder to the inner
+     * (custom) builder before delegating a terminal operation.
+     *
+     * Note: wheres, orders, bindings, and other query-level state are NOT
+     * synced here because both builders share the same underlying $query
+     * (Illuminate\Database\Query\Builder) instance — it was passed to both
+     * constructors. Only Eloquent-level state (eager loads, scopes, etc.)
+     * needs explicit propagation.
+     */
     protected function syncStateToInner(): void
     {
         if (! $this->innerBuilder) {
@@ -52,6 +62,11 @@ class CachedBuilder extends Builder
             self::$builderReflection = new ReflectionClass(Builder::class);
         }
 
+        // WARNING: These properties are internal to Illuminate\Database\Eloquent\Builder
+        // and are not part of Laravel's public API. Verified against Laravel 10.x–12.x.
+        // If Laravel renames or removes them, this will break. There are no public
+        // accessors for `scopes` or `afterQueryCallbacks` as of Laravel 12.
+        // `getRemovedScopes()` exists but returns values only (no setter).
         foreach (['scopes', 'removedScopes', 'afterQueryCallbacks'] as $prop) {
             $p = self::$builderReflection->getProperty($prop);
             $p->setValue($this->innerBuilder, $p->getValue($this));
