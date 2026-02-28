@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class LimitTest extends IntegrationTestCase
 {
-    public function testGetModelResultsCreatesCache()
+    public function test_get_model_results_creates_cache()
     {
         $authors = (new Author)
             ->limit(5)

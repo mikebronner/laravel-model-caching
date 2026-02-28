@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching;
 
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +12,9 @@ class CacheTags
     use CachePrefixing;
 
     protected $eagerLoad;
+
     protected $model;
+
     protected $query;
 
     public function __construct(
@@ -23,7 +27,7 @@ class CacheTags
         $this->query = $query;
     }
 
-    public function make() : array
+    public function make(): array
     {
         $tags = collect($this->eagerLoad)
             ->keys()
@@ -31,16 +35,17 @@ class CacheTags
                 $relation = $this->getRelation($relationName);
 
                 return $this->getCachePrefix()
-                    . (new Str)->slug(get_class($relation->getQuery()->getModel()));
+                    .(new Str)->slug(get_class($relation->getQuery()->getModel()));
             })
             ->prepend($this->getTagName())
             ->values()
             ->toArray();
-// dump($tags);
+
+        // dump($tags);
         return $tags;
     }
 
-    protected function getRelatedModel($carry) : Model
+    protected function getRelatedModel($carry): Model
     {
         if ($carry instanceof Relation) {
             return $carry->getQuery()->getModel();
@@ -49,7 +54,7 @@ class CacheTags
         return $carry;
     }
 
-    protected function getRelation(string $relationName) : Relation
+    protected function getRelation(string $relationName): Relation
     {
         return collect(explode('.', $relationName))
             ->reduce(function ($carry, $name) {
@@ -60,9 +65,9 @@ class CacheTags
             });
     }
 
-    protected function getTagName() : string
+    protected function getTagName(): string
     {
         return $this->getCachePrefix()
-            . (new Str)->slug(get_class($this->model));
+            .(new Str)->slug(get_class($this->model));
     }
 }

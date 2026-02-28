@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreatePostsTable extends Migration
 {
@@ -11,8 +11,8 @@ class CreatePostsTable extends Migration
             $table->bigIncrements('id');
             $table->timestamps();
 
-            $table->string("title");
-            $table->string("body");
+            $table->string('title');
+            $table->string('body');
         });
     }
 }

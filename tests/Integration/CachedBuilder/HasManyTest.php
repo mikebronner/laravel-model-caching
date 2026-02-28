@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class HasManyTest extends IntegrationTestCase
 {
-    public function testEagerloadedHasMany()
+    public function test_eagerloaded_has_many()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_inraw_1");
         $tags = [
@@ -14,25 +16,25 @@ class HasManyTest extends IntegrationTestCase
         ];
 
         $books = (new Author)
-            ->with("books")
+            ->with('books')
             ->find(1)
             ->books;
         $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
-            ->with("books")
+            ->with('books')
             ->find(1)
             ->books;
 
-        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $books->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($books);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testLazyloadedHasMany()
+    public function test_lazyloaded_has_many()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull");
         $tags = [
@@ -49,8 +51,8 @@ class HasManyTest extends IntegrationTestCase
             ->find(1)
             ->books;
 
-        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $books->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($books);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);

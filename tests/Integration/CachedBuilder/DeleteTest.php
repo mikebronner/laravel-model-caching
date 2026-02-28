@@ -1,14 +1,16 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class DeleteTest extends IntegrationTestCase
 {
-    public function testDecrementingInvalidatesCache()
+    public function test_decrementing_invalidates_cache()
     {
         $book = (new Book)
-            ->orderBy("id", "DESC")
+            ->orderBy('id', 'DESC')
             ->first();
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook_orderBy_id_desc-first");
         $tags = [

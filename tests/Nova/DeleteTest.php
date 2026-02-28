@@ -1,11 +1,13 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\NovaTestCase;
 
 class DeleteTest extends NovaTestCase
 {
-    public function testDeleteFlushesCacheForModel()
+    public function test_delete_flushes_cache_for_model()
     {
         $beforeAuthors = (new Author)->get();
         $deleteAuthor = $beforeAuthors->first();

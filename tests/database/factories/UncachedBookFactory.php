@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;

@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class DisabledCachedModelTest extends IntegrationTestCase
 {
-    public function testCacheCanBeDisabledOnModel()
+    public function test_cache_can_be_disabled_on_model()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
@@ -24,7 +26,7 @@ class DisabledCachedModelTest extends IntegrationTestCase
         $this->assertNull($cachedResults);
     }
 
-    public function testCacheCanBeDisabledOnQuery()
+    public function test_cache_can_be_disabled_on_query()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-testing:{$this->testingSqlitePath}testing.sqlite:books");
         $tags = [
@@ -35,7 +37,7 @@ class DisabledCachedModelTest extends IntegrationTestCase
             ->with('books')
             ->disableCache()
             ->get()
-            ->keyBy("id");
+            ->keyBy('id');
 
         $cachedResults = $this->cache()
             ->tags($tags)
@@ -43,7 +45,7 @@ class DisabledCachedModelTest extends IntegrationTestCase
         $liveResults = (new UncachedAuthor)
             ->with('books')
             ->get()
-            ->keyBy("id");
+            ->keyBy('id');
 
         $this->assertNull($cachedResults);
         $this->assertEmpty($liveResults->diffKeys($authors));

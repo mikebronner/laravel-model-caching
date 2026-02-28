@@ -8,7 +8,7 @@ class ModelCaching
 {
     protected static $builder = Builder::class;
 
-    public static function useEloquentBuilder(string $builder) : void
+    public static function useEloquentBuilder(string $builder): void
     {
         self::$builder = $builder;
     }

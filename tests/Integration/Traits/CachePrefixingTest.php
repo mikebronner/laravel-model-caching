@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class CachePrefixingTest extends IntegrationTestCase
 {
-    public function testDatabaseKeyingEnabled()
+    public function test_database_keying_enabled()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first");
         $tags = [
@@ -21,18 +23,18 @@ class CachePrefixingTest extends IntegrationTestCase
         $liveResults = (new UncachedAuthor)
             ->first();
 
-        $this->assertEquals($liveResults->pluck("id"), $author->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $author->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($author);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testDatabaseKeyingDisabled()
+    public function test_database_keying_disabled()
     {
-        config(["laravel-model-caching.use-database-keying" => false]);
-        $key = sha1("genealabs:laravel-model-caching:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first");
-        $tags = ["genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor"];
+        config(['laravel-model-caching.use-database-keying' => false]);
+        $key = sha1('genealabs:laravel-model-caching:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first');
+        $tags = ['genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor'];
 
         $author = (new Author)
             ->first();
@@ -42,8 +44,8 @@ class CachePrefixingTest extends IntegrationTestCase
         $liveResults = (new UncachedAuthor)
             ->first();
 
-        $this->assertEquals($liveResults->pluck("id"), $author->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $author->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($author);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);

@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Supplier;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedSupplier;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class HasOneThroughTest extends IntegrationTestCase
 {
-    public function testEagerloadedHasOneThrough()
+    public function test_eagerloaded_has_one_through()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:suppliers:genealabslaravelmodelcachingtestsfixturessupplier-testing:{$this->testingSqlitePath}testing.sqlite:history-limit_1");
         $tags = [
@@ -15,7 +17,7 @@ class HasOneThroughTest extends IntegrationTestCase
         ];
 
         $history = (new Supplier)
-            ->with("history")
+            ->with('history')
             ->first()
             ->history;
         $cachedResults = $this->cache()
@@ -24,7 +26,7 @@ class HasOneThroughTest extends IntegrationTestCase
             ->first()
             ->history;
         $liveResults = (new UncachedSupplier)
-            ->with("history")
+            ->with('history')
             ->first()
             ->history;
 
@@ -35,7 +37,7 @@ class HasOneThroughTest extends IntegrationTestCase
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testLazyloadedHasOneThrough()
+    public function test_lazyloaded_has_one_through()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:histories:genealabslaravelmodelcachingtestsfixtureshistory-users.supplier_id_=_1-first");
         $tags = [

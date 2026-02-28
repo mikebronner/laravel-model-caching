@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -11,7 +13,7 @@ class StoreFactory extends Factory
     {
         return [
             'address' => $this->faker->address(),
-            'name'    => $this->faker->company(),
+            'name' => $this->faker->company(),
         ];
     }
 }

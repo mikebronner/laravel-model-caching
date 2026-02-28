@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,23 +14,26 @@ class PrefixedAuthor extends Model
     use Cachable;
     use SoftDeletes;
 
-    protected $cachePrefix = "model-prefix";
+    protected $cachePrefix = 'model-prefix';
+
     protected $casts = [
-        "finances" => "array",
+        'finances' => 'array',
     ];
+
     protected $fillable = [
         'name',
         'email',
-        "finances",
+        'finances',
     ];
-    protected $table = "authors";
 
-    public function books() : HasMany
+    protected $table = 'authors';
+
+    public function books(): HasMany
     {
         return $this->hasMany(Book::class);
     }
 
-    public function profile() : HasOne
+    public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
@@ -37,17 +42,17 @@ class PrefixedAuthor extends Model
     {
         return $this
             ->books()
-            ->latest("id")
+            ->latest('id')
             ->first();
     }
 
-    public function scopeStartsWithA(Builder $query) : Builder
+    public function scopeStartsWithA(Builder $query): Builder
     {
         return $query->where('name', 'LIKE', 'A%');
     }
 
-    public function scopeNameStartsWith(Builder $query, string $startOfName) : Builder
+    public function scopeNameStartsWith(Builder $query, string $startOfName): Builder
     {
-        return $query->where("name", "LIKE", "{$startOfName}%");
+        return $query->where('name', 'LIKE', "{$startOfName}%");
     }
 }

@@ -1,10 +1,12 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
-use GeneaLabs\LaravelModelCaching\CachingScope;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CachedHasManyThrough;
 use GeneaLabs\LaravelModelCaching\CachedHasOneThrough;
+use GeneaLabs\LaravelModelCaching\CachingScope;
 use GeneaLabs\LaravelModelCaching\EloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -15,17 +17,17 @@ trait ModelCaching
 {
     public function __get($key)
     {
-        if ($key === "cachePrefix") {
+        if ($key === 'cachePrefix') {
             return $this->cachePrefix
-                ?? "";
+                ?? '';
         }
 
-        if ($key === "cacheCooldownSeconds") {
+        if ($key === 'cacheCooldownSeconds') {
             return $this->cacheCooldownSeconds
                 ?? 0;
         }
 
-        if ($key === "query") {
+        if ($key === 'query') {
             return $this->query
                 ?? $this->newModelQuery();
         }
@@ -35,11 +37,11 @@ trait ModelCaching
 
     public function __set($key, $value)
     {
-        if ($key === "cachePrefix") {
+        if ($key === 'cachePrefix') {
             $this->cachePrefix = $value;
         }
 
-        if ($key === "cacheCooldownSeconds") {
+        if ($key === 'cacheCooldownSeconds') {
             $this->cacheCooldownSeconds = $value;
         }
 
@@ -51,9 +53,9 @@ trait ModelCaching
         $class = get_called_class();
         $instance = new $class;
 
-	    if (!$instance->isCachable()) {
-		    return parent::all($columns);
-	    }
+        if (! $instance->isCachable()) {
+            return parent::all($columns);
+        }
 
         $tags = $instance->makeCacheTags();
         $key = $instance->makeCacheKey();
@@ -206,9 +208,9 @@ trait ModelCaching
         $relatedKey,
         $relationName = null
     ) {
-        $relatedIsCachable = method_exists($query->getModel(), "isCachable")
+        $relatedIsCachable = method_exists($query->getModel(), 'isCachable')
             && $query->getModel()->isCachable();
-        $parentIsCachable = method_exists($parent, "isCachable")
+        $parentIsCachable = method_exists($parent, 'isCachable')
             && $parent->isCachable();
 
         if ($relatedIsCachable || $parentIsCachable) {
@@ -236,7 +238,7 @@ trait ModelCaching
         );
     }
 
-    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    public function scopeDisableCache(EloquentBuilder $query): EloquentBuilder
     {
         if ($this->isCachable()) {
             $query = $query->disableModelCaching();
@@ -248,7 +250,7 @@ trait ModelCaching
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
         ?int $seconds = null
-    ) : EloquentBuilder {
+    ): EloquentBuilder {
         if (! $seconds) {
             $seconds = $this->cacheCooldownSeconds;
         }

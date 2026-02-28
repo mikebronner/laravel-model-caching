@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class FindOrFailTest extends IntegrationTestCase
 {
-    public function testFindOrFailCachesModels()
+    public function test_find_or_fail_caches_models()
     {
         $author = (new Author)
             ->findOrFail(1);
@@ -26,12 +28,12 @@ class FindOrFailTest extends IntegrationTestCase
         $this->assertEquals($liveResults->toArray(), $author->toArray());
     }
 
-    public function testFindOrFailWithArrayReturnsResults()
+    public function test_find_or_fail_with_array_returns_results()
     {
         $author = (new Author)->findOrFail([1, 2]);
         $uncachedAuthor = (new UncachedAuthor)->findOrFail([1, 2]);
 
         $this->assertEquals($uncachedAuthor->count(), $author->count());
-        $this->assertEquals($uncachedAuthor->pluck("id"), $author->pluck("id"));
+        $this->assertEquals($uncachedAuthor->pluck('id'), $author->pluck('id'));
     }
 }

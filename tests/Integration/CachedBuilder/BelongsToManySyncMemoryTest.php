@@ -10,7 +10,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class BelongsToManySyncMemoryTest extends IntegrationTestCase
 {
-    public function testSyncCompletesWithoutMemoryExhaustion(): void
+    public function test_sync_completes_without_memory_exhaustion(): void
     {
         $book = (new Book)
             ->disableModelCaching()
@@ -32,11 +32,11 @@ class BelongsToManySyncMemoryTest extends IntegrationTestCase
         $this->assertLessThan(
             10 * 1024 * 1024,
             $memoryGrowth,
-            "Memory grew by " . round($memoryGrowth / 1024 / 1024, 2) . "MB during sync — possible memory leak."
+            'Memory grew by '.round($memoryGrowth / 1024 / 1024, 2).'MB during sync — possible memory leak.'
         );
     }
 
-    public function testSyncInvalidatesCacheCorrectly(): void
+    public function test_sync_invalidates_cache_correctly(): void
     {
         $book = (new Book)
             ->disableModelCaching()

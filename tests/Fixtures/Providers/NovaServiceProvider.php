@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
@@ -16,7 +18,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         parent::boot();
 
         Nova::serving(function () {
-            Nova::style('laravel-nova-custom-styles', __DIR__ . '/../../public/css/nova.css');
+            Nova::style('laravel-nova-custom-styles', __DIR__.'/../../public/css/nova.css');
         });
     }
 

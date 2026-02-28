@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\RoleFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -20,7 +22,7 @@ class Role extends Model
         'name',
     ];
 
-    public function users() : BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }

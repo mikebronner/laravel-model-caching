@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateBookStore extends Migration
 {
@@ -13,7 +13,7 @@ class CreateBookStore extends Migration
             $table->unsignedInteger('store_id');
             $table->timestamps();
 
-            $table->string("test")->nullable();
+            $table->string('test')->nullable();
 
             $table->foreign('book_id')
                 ->references('id')

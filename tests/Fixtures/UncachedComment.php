@@ -1,6 +1,7 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -10,9 +11,10 @@ class UncachedComment extends Model
         'description',
         'subject',
     ];
-    protected $table = "comments";
 
-    public function commentable() : MorphTo
+    protected $table = 'comments';
+
+    public function commentable(): MorphTo
     {
         return $this->morphTo();
     }

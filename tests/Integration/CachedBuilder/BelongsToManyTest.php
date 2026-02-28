@@ -12,11 +12,11 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class BelongsToManyTest extends IntegrationTestCase
 {
-    public function testLazyLoadingRelationship(): void
+    public function test_lazy_loading_relationship(): void
     {
         $bookId = (new Store)
             ->disableModelCaching()
-            ->with("books")
+            ->with('books')
             ->first()
             ->books
             ->first()
@@ -37,17 +37,17 @@ class BelongsToManyTest extends IntegrationTestCase
             ->find($bookId);
         $uncachedStores = $uncachedBook->stores;
 
-        $this->assertEquals($uncachedStores->pluck("id"), $stores->pluck("id"));
-        $this->assertEquals($uncachedStores->pluck("id"), $cachedStores->pluck("id"));
+        $this->assertEquals($uncachedStores->pluck('id'), $stores->pluck('id'));
+        $this->assertEquals($uncachedStores->pluck('id'), $cachedStores->pluck('id'));
         $this->assertNotNull($cachedStores);
         $this->assertNotNull($uncachedStores);
     }
 
-    public function testInvalidatingCacheWhenAttaching()
+    public function test_invalidating_cache_when_attaching()
     {
         $bookId = (new Store)
             ->disableModelCaching()
-            ->with("books")
+            ->with('books')
             ->first()
             ->books
             ->first()
@@ -75,11 +75,11 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testInvalidatingCacheWhenDetaching()
+    public function test_invalidating_cache_when_detaching()
     {
         $bookId = (new Store)
             ->disableModelCaching()
-            ->with("books")
+            ->with('books')
             ->first()
             ->books
             ->first()
@@ -106,11 +106,11 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testInvalidatingCacheWhenUpdating()
+    public function test_invalidating_cache_when_updating()
     {
         $bookId = (new Store)
             ->disableModelCaching()
-            ->with("books")
+            ->with('books')
             ->first()
             ->books
             ->first()
@@ -124,7 +124,7 @@ class BelongsToManyTest extends IntegrationTestCase
             ->stores;
 
         $store = $result->first();
-        $store->address = "test address";
+        $store->address = 'test address';
         $store->save();
         $cachedResult = $this
             ->cache()
@@ -136,11 +136,11 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testUncachedRelatedModelDoesntCache()
+    public function test_uncached_related_model_doesnt_cache()
     {
         $bookId = (new Store)
             ->disableModelCaching()
-            ->with("books")
+            ->with('books')
             ->first()
             ->books
             ->first()
@@ -162,17 +162,17 @@ class BelongsToManyTest extends IntegrationTestCase
             ->find($bookId)
             ->stores;
 
-        $this->assertEquals($uncachedResult->pluck("id"), $result->pluck("id"));
+        $this->assertEquals($uncachedResult->pluck('id'), $result->pluck('id'));
         $this->assertNull($cachedResult);
         $this->assertNotNull($result);
         $this->assertNotNull($uncachedResult);
     }
 
-    public function testInvalidatingCacheWhenSyncing()
+    public function test_invalidating_cache_when_syncing()
     {
         $bookId = (new Store)
             ->disableModelCaching()
-            ->with("books")
+            ->with('books')
             ->first()
             ->books
             ->first()
@@ -198,7 +198,7 @@ class BelongsToManyTest extends IntegrationTestCase
             ?? null;
 
         $this->assertEmpty(array_diff(
-            Book::find($bookId)->stores()->pluck((new Store)->getTable() . '.id')->toArray(),
+            Book::find($bookId)->stores()->pluck((new Store)->getTable().'.id')->toArray(),
             $newStores->pluck('id')->toArray()
         ));
         $this->assertNotEmpty($result);

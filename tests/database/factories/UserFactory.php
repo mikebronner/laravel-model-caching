@@ -1,6 +1,7 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+<?php
 
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Supplier;
+namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

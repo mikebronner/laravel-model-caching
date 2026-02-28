@@ -1,18 +1,20 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class UncachedTag extends Model
 {
     protected $fillable = [
-        "name",
+        'name',
     ];
-    protected $table = "tags";
 
-    public function posts() : MorphToMany
+    protected $table = 'tags';
+
+    public function posts(): MorphToMany
     {
-        return $this->morphedByMany(UncachedPost::class, "taggable");
+        return $this->morphedByMany(UncachedPost::class, 'taggable');
     }
 }

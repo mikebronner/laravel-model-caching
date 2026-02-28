@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Console\Commands;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
@@ -7,6 +9,7 @@ use Illuminate\Support\Collection;
 class Clear extends Command
 {
     protected $signature = 'modelCache:clear {--model=}';
+
     protected $description = 'Flush cache for a given model. If no model is given, entire model-cache is flushed.';
 
     public function handle()
@@ -20,23 +23,23 @@ class Clear extends Command
         return $this->flushModelCache($option);
     }
 
-    protected function flushEntireCache() : int
+    protected function flushEntireCache(): int
     {
         $config = Container::getInstance()
-            ->make("config")
+            ->make('config')
             ->get('laravel-model-caching.store');
 
         Container::getInstance()
-            ->make("cache")
+            ->make('cache')
             ->store($config)
             ->flush();
 
-        $this->info("✔︎ Entire model cache has been flushed.");
+        $this->info('✔︎ Entire model cache has been flushed.');
 
         return 0;
     }
 
-    protected function flushModelCache(string $option) : int
+    protected function flushModelCache(string $option): int
     {
         $model = new $option;
         $usesCachableTrait = $this->getAllTraitsUsedByClass($option)
@@ -44,7 +47,7 @@ class Clear extends Command
 
         if (! $usesCachableTrait) {
             $this->error("'{$option}' is not an instance of CachedModel.");
-            $this->line("Only CachedModel instances can be flushed.");
+            $this->line('Only CachedModel instances can be flushed.');
 
             return 1;
         }
@@ -59,7 +62,7 @@ class Clear extends Command
     protected function getAllTraitsUsedByClass(
         string $classname,
         bool $autoload = true
-    ) : Collection {
+    ): Collection {
         $traits = collect();
 
         if (class_exists($classname, $autoload)) {

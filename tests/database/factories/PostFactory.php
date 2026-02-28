@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -11,7 +13,7 @@ class PostFactory extends Factory
     {
         return [
             'title' => $this->faker->word,
-            'body'  => $this->faker->paragraph,
+            'body' => $this->faker->paragraph,
         ];
     }
 }

@@ -47,7 +47,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
     // Sanity check: the relationship returns the right class
     // -------------------------------------------------------------------------
 
-    public function testRolesRelationshipReturnsCachedBelongsToMany(): void
+    public function test_roles_relationship_returns_cached_belongs_to_many(): void
     {
         $userId = $this->userIdWithRoles();
         $relation = (new User)->find($userId)->roles();
@@ -63,7 +63,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
     // AC1: Query is cached
     // -------------------------------------------------------------------------
 
-    public function testBelongsToManyOnAuthenticatableModelCachesResults(): void
+    public function test_belongs_to_many_on_authenticatable_model_caches_results(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -86,7 +86,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
     // AC2a: Cache is invalidated on attach
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenAttachingRole(): void
+    public function test_cache_is_invalidated_when_attaching_role(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -110,7 +110,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
     // AC2b: Cache is invalidated on detach
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenDetachingRole(): void
+    public function test_cache_is_invalidated_when_detaching_role(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -133,7 +133,7 @@ class AuthenticatableBelongsToManyTest extends IntegrationTestCase
     // AC2c: Cache is invalidated on sync
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenSyncingRoles(): void
+    public function test_cache_is_invalidated_when_syncing_roles(): void
     {
         $userId = $this->userIdWithRoles();
 

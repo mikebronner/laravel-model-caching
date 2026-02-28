@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedUser;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class PolymorphicOneToOneTest extends IntegrationTestCase
 {
-    public function testEagerloadedRelationship()
+    public function test_eagerloaded_relationship()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images:genealabslaravelmodelcachingtestsfixturesimage-images.imagable_id_inraw_2-images.imagable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\User");
         $tags = [
@@ -14,8 +16,8 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
         ];
 
         $result = (new User)
-            ->with("image")
-            ->whereHas("image")
+            ->with('image')
+            ->whereHas('image')
             ->first()
             ->image;
         $cachedResults = $this->cache()
@@ -23,8 +25,8 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
             ->get($key)['value']
             ->first();
         $liveResults = (new UncachedUser)
-            ->with("image")
-            ->whereHas("image")
+            ->with('image')
+            ->whereHas('image')
             ->first()
             ->image;
 
@@ -35,7 +37,7 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testLazyloadedHasOneThrough()
+    public function test_lazyloaded_has_one_through()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images:genealabslaravelmodelcachingtestsfixturesimage-images.imagable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\User-images.imagable_id_=_2-images.imagable_id_notnull-limit_1");
         $tags = [
@@ -43,7 +45,7 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
         ];
 
         $result = (new User)
-            ->whereHas("image")
+            ->whereHas('image')
             ->first()
             ->image;
         $cachedResults = $this->cache()
@@ -51,7 +53,7 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
             ->get($key)['value']
             ->first();
         $liveResults = (new UncachedUser)
-            ->whereHas("image")
+            ->whereHas('image')
             ->first()
             ->image;
 

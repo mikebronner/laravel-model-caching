@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
@@ -6,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BuilderCachingTest extends IntegrationTestCase
 {
-    public function testDisablingAllQuery()
+    public function test_disabling_all_query()
     {
         $allAuthors = (new Author)
             ->disableCache()
@@ -18,14 +20,14 @@ class BuilderCachingTest extends IntegrationTestCase
         $cachedAuthors = $this
             ->cache()
             ->tags($tags)
-            ->get($key)["value"]
+            ->get($key)['value']
             ?? null;
 
         $this->assertInstanceOf(Collection::class, $allAuthors);
         $this->assertNull($cachedAuthors);
     }
 
-    public function testUsingTruncateInvalidatesCache()
+    public function test_using_truncate_invalidates_cache()
     {
         (new Author)->get();
         Author::truncate();

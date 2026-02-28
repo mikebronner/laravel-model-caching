@@ -10,7 +10,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class CachingExtensionTest extends IntegrationTestCase
 {
-    public function testCachingWorksWhenRegisteredAsExtension(): void
+    public function test_caching_works_when_registered_as_extension(): void
     {
         $authors = (new Author)->get();
         $cachedAuthors = (new Author)->get();
@@ -18,7 +18,7 @@ class CachingExtensionTest extends IntegrationTestCase
         $this->assertEquals($authors->pluck('id'), $cachedAuthors->pluck('id'));
     }
 
-    public function testChainedQueryMethodsWorkWithExtensionBasedCaching(): void
+    public function test_chained_query_methods_work_with_extension_based_caching(): void
     {
         $authors = (new Author)
             ->where('id', '>', 0)
@@ -36,7 +36,7 @@ class CachingExtensionTest extends IntegrationTestCase
         $this->assertLessThanOrEqual(5, $authors->count());
     }
 
-    public function testDisableModelCachingMacroWorks(): void
+    public function test_disable_model_caching_macro_works(): void
     {
         $builder = (new Author)->newQuery();
 
@@ -47,7 +47,7 @@ class CachingExtensionTest extends IntegrationTestCase
         $this->assertFalse($builder->isCachable());
     }
 
-    public function testGlobalScopeParsingThroughExtensionMechanism(): void
+    public function test_global_scope_parsing_through_extension_mechanism(): void
     {
         // AuthorWithInlineGlobalScope uses a global scope
         $authors = (new AuthorWithInlineGlobalScope)->get();
@@ -56,7 +56,7 @@ class CachingExtensionTest extends IntegrationTestCase
         $this->assertEquals($authors->pluck('id'), $cachedAuthors->pluck('id'));
     }
 
-    public function testCachingScopeIsRegisteredAsGlobalScope(): void
+    public function test_caching_scope_is_registered_as_global_scope(): void
     {
         $author = new Author;
         $builder = $author->newQuery();
@@ -70,7 +70,7 @@ class CachingExtensionTest extends IntegrationTestCase
         $this->assertNotNull($result);
     }
 
-    public function testCachingExtensionDoesNotInterfereWithUncachedModels(): void
+    public function test_caching_extension_does_not_interfere_with_uncached_models(): void
     {
         $cachedAuthors = (new Author)->get();
         $uncachedAuthors = (new UncachedAuthor)->get();
@@ -81,7 +81,7 @@ class CachingExtensionTest extends IntegrationTestCase
         );
     }
 
-    public function testChainedWhereClausesProduceDifferentCacheKeys(): void
+    public function test_chained_where_clauses_produce_different_cache_keys(): void
     {
         $authors1 = (new Author)->where('id', '>', 0)->get();
         $authors2 = (new Author)->where('id', '>', 5)->get();

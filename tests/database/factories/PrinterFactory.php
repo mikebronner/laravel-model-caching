@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Printer;
@@ -12,7 +14,7 @@ class PrinterFactory extends Factory
     {
         return [
             'book_id' => Book::factory(),
-            'name'    => $this->faker->sentence(),
+            'name' => $this->faker->sentence(),
         ];
     }
 }

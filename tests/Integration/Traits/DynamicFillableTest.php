@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithConditionalFillable;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithDynamicFillable;
@@ -14,9 +16,9 @@ class DynamicFillableTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    public function testDynamicFillableInConstructorWorksOnFirstSave()
+    public function test_dynamic_fillable_in_constructor_works_on_first_save()
     {
-        $author = new AuthorWithDynamicFillable();
+        $author = new AuthorWithDynamicFillable;
         $author->fill([
             'name' => 'Test Author',
             'email' => 'test@example.com',
@@ -29,16 +31,16 @@ class DynamicFillableTest extends IntegrationTestCase
         );
     }
 
-    public function testDynamicFillableMatchesUncachedBehavior()
+    public function test_dynamic_fillable_matches_uncached_behavior()
     {
-        $uncached = new UncachedAuthorWithDynamicFillable();
+        $uncached = new UncachedAuthorWithDynamicFillable;
         $uncached->fill([
             'name' => 'Uncached Author',
             'email' => 'uncached@example.com',
             'is_famous' => true,
         ]);
 
-        $cached = new AuthorWithDynamicFillable();
+        $cached = new AuthorWithDynamicFillable;
         $cached->fill([
             'name' => 'Cached Author',
             'email' => 'cached@example.com',
@@ -52,7 +54,7 @@ class DynamicFillableTest extends IntegrationTestCase
         );
     }
 
-    public function testDynamicFillableFieldIsSavedOnFirstAttempt()
+    public function test_dynamic_fillable_field_is_saved_on_first_attempt()
     {
         $author = AuthorWithDynamicFillable::create([
             'name' => 'First Save Author',
@@ -60,7 +62,7 @@ class DynamicFillableTest extends IntegrationTestCase
             'is_famous' => true,
         ]);
 
-        $fromDb = (new UncachedAuthorWithDynamicFillable())
+        $fromDb = (new UncachedAuthorWithDynamicFillable)
             ->newQuery()
             ->where('email', 'firstsave@example.com')
             ->first();
@@ -72,7 +74,7 @@ class DynamicFillableTest extends IntegrationTestCase
         );
     }
 
-    public function testDynamicFillableFieldWorksWithUpdate()
+    public function test_dynamic_fillable_field_works_with_update()
     {
         $author = AuthorWithDynamicFillable::create([
             'name' => 'Update Author',
@@ -82,7 +84,7 @@ class DynamicFillableTest extends IntegrationTestCase
 
         $author->update(['is_famous' => true]);
 
-        $fromDb = (new UncachedAuthorWithDynamicFillable())
+        $fromDb = (new UncachedAuthorWithDynamicFillable)
             ->newQuery()
             ->where('email', 'update@example.com')
             ->first();
@@ -93,9 +95,9 @@ class DynamicFillableTest extends IntegrationTestCase
         );
     }
 
-    public function testConstructorFillableChangesNotLostByTraitInitialization()
+    public function test_constructor_fillable_changes_not_lost_by_trait_initialization()
     {
-        $author = new AuthorWithDynamicFillable();
+        $author = new AuthorWithDynamicFillable;
         $fillable = $author->getFillable();
 
         $this->assertContains(
@@ -113,11 +115,11 @@ class DynamicFillableTest extends IntegrationTestCase
      * $fillable from the original (non-admin) context, silently dropping
      * admin-only fields on mass assignment.
      */
-    public function testDeserializedModelRerunsConstructorForDynamicFillable()
+    public function test_deserialized_model_reruns_constructor_for_dynamic_fillable()
     {
         // Cache the model in non-admin context — is_famous NOT in $fillable
         AuthorWithConditionalFillable::$adminMode = false;
-        $original = new AuthorWithConditionalFillable();
+        $original = new AuthorWithConditionalFillable;
         $this->assertNotContains('is_famous', $original->getFillable());
 
         $serialized = serialize($original);
@@ -141,7 +143,7 @@ class DynamicFillableTest extends IntegrationTestCase
      * assignable on a model retrieved from cache that was originally
      * cached in a non-admin context.
      */
-    public function testCachedModelUpdateWorksAfterContextChange()
+    public function test_cached_model_update_works_after_context_change()
     {
         // Create author in admin mode
         AuthorWithConditionalFillable::$adminMode = true;
@@ -162,7 +164,7 @@ class DynamicFillableTest extends IntegrationTestCase
         $fromCache->update(['is_famous' => true]);
 
         // Verify in DB
-        $fromDb = (new UncachedAuthorWithDynamicFillable())
+        $fromDb = (new UncachedAuthorWithDynamicFillable)
             ->newQuery()
             ->where('email', 'context@example.com')
             ->first();

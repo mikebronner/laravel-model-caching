@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -12,6 +14,7 @@ trait CreatesApplication
     private static $baseLineDatabaseMigrated = false;
 
     protected $cache;
+
     protected $testingSqlitePath;
 
     protected function cache()
@@ -25,13 +28,13 @@ trait CreatesApplication
         return $cache;
     }
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->setUpBaseLineSqlLiteDatabase();
 
-        $databasePath = __DIR__ . "/database";
+        $databasePath = __DIR__.'/database';
         $this->testingSqlitePath = "{$databasePath}/";
         $baselinePath = "{$databasePath}/baseline.sqlite";
         $testingPath = "{$databasePath}/testing.sqlite";
@@ -40,9 +43,9 @@ trait CreatesApplication
             ?: unlink($testingPath);
         copy($baselinePath, $testingPath);
 
-        require(__DIR__ . '/routes/web.php');
+        require __DIR__.'/routes/web.php';
 
-        view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
+        view()->addLocation(__DIR__.'/resources/views', 'laravel-model-caching');
 
         $this->cache = app('cache')
             ->store(config('laravel-model-caching.store'));
@@ -67,21 +70,21 @@ trait CreatesApplication
 
         self::$baseLineDatabaseMigrated = true;
 
-        $file = __DIR__ . '/database/baseline.sqlite';
+        $file = __DIR__.'/database/baseline.sqlite';
         $this->app['config']->set('database.default', 'baseline');
         $this->app['config']->set('database.connections.baseline', [
             'driver' => 'sqlite',
-            "url" => null,
+            'url' => null,
             'database' => $file,
             'prefix' => '',
-            "foreign_key_constraints" => false,
+            'foreign_key_constraints' => false,
         ]);
 
         ! file_exists($file)
             ?: unlink($file);
         touch($file);
 
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         Artisan::call('db:seed', [
             '--class' => 'DatabaseSeeder',
@@ -96,11 +99,11 @@ trait CreatesApplication
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
-            'database' => __DIR__ . '/database/testing.sqlite',
+            'database' => __DIR__.'/database/testing.sqlite',
             'prefix' => '',
-            "foreign_key_constraints" => false,
+            'foreign_key_constraints' => false,
         ]);
-        $app['config']->set('database.redis.client', "phpredis");
+        $app['config']->set('database.redis.client', 'phpredis');
         $app['config']->set('database.redis.cache', [
             'host' => env('REDIS_HOST', '127.0.0.1'),
             'port' => env('REDIS_PORT', 6379),
@@ -120,7 +123,7 @@ trait CreatesApplication
             'connection' => 'model-cache',
         ]);
         $app['config']->set('laravel-model-caching.store', 'model');
-        $app['config']->set("nova", [
+        $app['config']->set('nova', [
             'name' => 'Nova Site',
             'url' => env('APP_URL', '/'),
             'path' => '/nova',

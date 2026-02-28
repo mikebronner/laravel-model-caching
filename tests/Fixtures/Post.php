@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\PostFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -18,17 +20,17 @@ class Post extends Model
     }
 
     protected $fillable = [
-        "title",
-        "body",
+        'title',
+        'body',
     ];
 
-    public function comments() : MorphMany
+    public function comments(): MorphMany
     {
-        return $this->morphMany(Comment::class, "commentable");
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function tags() : MorphToMany
+    public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 }

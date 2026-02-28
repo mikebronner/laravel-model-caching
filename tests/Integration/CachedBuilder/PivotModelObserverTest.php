@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PivotModelObserverTest extends IntegrationTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class PivotModelObserverTest extends IntegrationTestCase
         RoleUserObserver::reset();
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         RoleUserObserver::reset();
 
@@ -47,7 +47,7 @@ class PivotModelObserverTest extends IntegrationTestCase
     // AC1 + AC2: Observer fires on sync() with caching enabled
     // -------------------------------------------------------------------------
 
-    public function testPivotObserverFiresOnSyncWithCachingEnabled(): void
+    public function test_pivot_observer_fires_on_sync_with_caching_enabled(): void
     {
         $userId = $this->userIdWithRoles();
         $user = (new User)->find($userId);
@@ -76,7 +76,7 @@ class PivotModelObserverTest extends IntegrationTestCase
     // AC2: Observer fires on attach() with caching enabled
     // -------------------------------------------------------------------------
 
-    public function testPivotObserverFiresOnAttachWithCachingEnabled(): void
+    public function test_pivot_observer_fires_on_attach_with_caching_enabled(): void
     {
         $userId = $this->userIdWithRoles();
         $user = (new User)->find($userId);
@@ -101,7 +101,7 @@ class PivotModelObserverTest extends IntegrationTestCase
     // AC2: Observer fires on detach() with caching enabled
     // -------------------------------------------------------------------------
 
-    public function testPivotObserverFiresOnDetachWithCachingEnabled(): void
+    public function test_pivot_observer_fires_on_detach_with_caching_enabled(): void
     {
         $userId = $this->userIdWithRoles();
         $user = (new User)->find($userId);

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateSuppliersTable extends Migration
 {
@@ -11,7 +11,7 @@ class CreateSuppliersTable extends Migration
             $table->bigIncrements('id');
             $table->timestamps();
 
-            $table->string("name");
+            $table->string('name');
         });
     }
 }

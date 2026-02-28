@@ -1,13 +1,15 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
 
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+
+use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use GeneaLabs\LaravelModelCaching\CachedBuilder;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class AuthorWithInlineGlobalScope extends Model
 {
@@ -15,35 +17,37 @@ class AuthorWithInlineGlobalScope extends Model
     use SoftDeletes;
 
     protected $casts = [
-        "finances" => "array",
+        'finances' => 'array',
     ];
+
     protected $fillable = [
         'name',
         'email',
-        "finances",
+        'finances',
     ];
-    protected $table = "authors";
+
+    protected $table = 'authors';
 
     protected static function boot()
     {
         parent::boot();
 
         static::addGlobalScope('inlineScope', function (CachedBuilder $builder) {
-            return $builder->where('name', 'LIKE', "A%");
+            return $builder->where('name', 'LIKE', 'A%');
         });
     }
 
-    public function books() : HasMany
+    public function books(): HasMany
     {
         return $this->hasMany(Book::class);
     }
 
-    public function printers() : HasManyThrough
+    public function printers(): HasManyThrough
     {
         return $this->hasManyThrough(Printer::class, Book::class);
     }
 
-    public function profile() : HasOne
+    public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
@@ -52,17 +56,17 @@ class AuthorWithInlineGlobalScope extends Model
     {
         return $this
             ->books()
-            ->latest("id")
+            ->latest('id')
             ->first();
     }
 
-    public function scopeStartsWithA(Builder $query) : Builder
+    public function scopeStartsWithA(Builder $query): Builder
     {
         return $query->where('name', 'LIKE', 'A%');
     }
 
-    public function scopeNameStartsWith(Builder $query, string $startOfName) : Builder
+    public function scopeNameStartsWith(Builder $query, string $startOfName): Builder
     {
-        return $query->where("name", "LIKE", "{$startOfName}%");
+        return $query->where('name', 'LIKE', "{$startOfName}%");
     }
 }

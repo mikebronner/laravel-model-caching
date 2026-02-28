@@ -1,9 +1,11 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class UncachedBookWithStores extends Model
@@ -12,7 +14,7 @@ class UncachedBookWithStores extends Model
         'price' => 'float',
         'published_at' => 'datetime',
     ];
-    
+
     protected $fillable = [
         'description',
         'published_at',
@@ -21,28 +23,28 @@ class UncachedBookWithStores extends Model
 
     protected $table = 'books';
 
-    public function author() : BelongsTo
+    public function author(): BelongsTo
     {
         return $this->belongsTo(UncachedAuthor::class);
     }
 
-    public function comments() : MorphMany
+    public function comments(): MorphMany
     {
-        return $this->morphMany(Comment::class, "commentable");
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function image() : MorphOne
+    public function image(): MorphOne
     {
-        return $this->morphOne(Image::class, "imagable");
+        return $this->morphOne(Image::class, 'imagable');
     }
 
-    public function publisher() : BelongsTo
+    public function publisher(): BelongsTo
     {
         return $this->belongsTo(UncachedPublisher::class);
     }
 
-    public function stores() : BelongsToMany
+    public function stores(): BelongsToMany
     {
-        return $this->belongsToMany(Store::class, "book_store", "book_id", "store_id");
+        return $this->belongsToMany(Store::class, 'book_store', 'book_id', 'store_id');
     }
 }

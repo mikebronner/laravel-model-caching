@@ -2,12 +2,10 @@
 
 namespace GeneaLabs\LaravelModelCaching\Providers;
 
-use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\Console\Commands\Clear;
 use GeneaLabs\LaravelModelCaching\Console\Commands\Publish;
 use GeneaLabs\LaravelModelCaching\Helper;
 use GeneaLabs\LaravelModelCaching\ModelCaching;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\ServiceProvider;
 
 class Service extends ServiceProvider
@@ -16,7 +14,7 @@ class Service extends ServiceProvider
 
     public function boot()
     {
-        $configPath = __DIR__ . '/../../config/laravel-model-caching.php';
+        $configPath = __DIR__.'/../../config/laravel-model-caching.php';
         $this->mergeConfigFrom($configPath, 'laravel-model-caching');
         $this->commands([
             Clear::class,
@@ -24,7 +22,7 @@ class Service extends ServiceProvider
         ]);
         $this->publishes([
             $configPath => config_path('laravel-model-caching.php'),
-        ], "config");
+        ], 'config');
     }
 
     public function register()
@@ -36,6 +34,6 @@ class Service extends ServiceProvider
             );
         }
 
-        $this->app->bind("model-cache", Helper::class);
+        $this->app->bind('model-cache', Helper::class);
     }
 }

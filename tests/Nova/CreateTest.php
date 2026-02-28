@@ -1,11 +1,13 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\NovaTestCase;
 
 class CreateTest extends NovaTestCase
 {
-    public function testCreateFlushesCacheForModel()
+    public function test_create_flushes_cache_for_model()
     {
         $beforeAuthors = (new Author)->get();
 

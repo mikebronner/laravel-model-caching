@@ -14,7 +14,7 @@ class AuthorResource extends Resource
     public static $search = ['id'];
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function fields(Request $request)
     {

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateImages extends Migration
 {
@@ -11,9 +11,9 @@ class CreateImages extends Migration
             $table->increments('id');
             $table->timestamps();
 
-            $table->unsignedInteger("imagable_id")->nullable();
-            $table->string("imagable_type")->nullable();
-            $table->text("path");
+            $table->unsignedInteger('imagable_id')->nullable();
+            $table->string('imagable_type')->nullable();
+            $table->text('path');
         });
     }
 }

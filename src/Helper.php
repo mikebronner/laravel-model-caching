@@ -9,17 +9,17 @@ class Helper
     public function runDisabled(callable $closure)
     {
         $originalSetting = Container::getInstance()
-            ->make("config")
+            ->make('config')
             ->get('laravel-model-caching.enabled');
 
         Container::getInstance()
-            ->make("config")
+            ->make('config')
             ->set(['laravel-model-caching.enabled' => false]);
 
         $result = $closure();
 
         Container::getInstance()
-            ->make("config")
+            ->make('config')
             ->set(['laravel-model-caching.enabled' => $originalSetting]);
 
         return $result;

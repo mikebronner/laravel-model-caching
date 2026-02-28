@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -7,32 +9,32 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WhereNotInTest extends IntegrationTestCase
 {
-    public function testWhereNotInQuery()
+    public function test_where_not_in_query()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_notin_1_2_3_4");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
         $authors = (new UncachedAuthor)
-            ->where("id", "<", 5)
-            ->get(["id"]);
+            ->where('id', '<', 5)
+            ->get(['id']);
 
         $books = (new Book)
-            ->whereNotIn("author_id", $authors)
+            ->whereNotIn('author_id', $authors)
             ->get();
         $cachedResults = $this
             ->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedBook)
-            ->whereNotIn("author_id", $authors)
+            ->whereNotIn('author_id', $authors)
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $books->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 
-    public function testWhereNotInResults()
+    public function test_where_not_in_results()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2");
         $tags = [
@@ -49,19 +51,19 @@ class WhereNotInTest extends IntegrationTestCase
             ->whereNotIn('id', [1, 2])
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $results->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $results->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 
-    public function testWhereNotInSubquery()
+    public function test_where_not_in_subquery()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_select_id_from_authors_where_id_<_10");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
         $results = (new Book)
-            ->whereNotIn("id", function ($query) {
-                $query->select("id")->from("authors")->where("id", "<", 10);
+            ->whereNotIn('id', function ($query) {
+                $query->select('id')->from('authors')->where('id', '<', 10);
             })
             ->get();
         $cachedResults = $this
@@ -69,12 +71,12 @@ class WhereNotInTest extends IntegrationTestCase
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedBook)
-            ->whereNotIn("id", function ($query) {
-                $query->select("id")->from("authors")->where("id", "<", 10);
+            ->whereNotIn('id', function ($query) {
+                $query->select('id')->from('authors')->where('id', '<', 10);
             })
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $results->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $results->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 }

@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
@@ -15,7 +17,7 @@ class InRandomOrderQueryTest extends IntegrationTestCase
      * probabilistically flaky: with a random seed, the same row can be
      * returned on consecutive calls.
      */
-    public function testInRandomOrderCachesResults()
+    public function test_in_random_order_caches_results()
     {
         $cachedBook1 = (new Book)
             ->inRandomOrder()

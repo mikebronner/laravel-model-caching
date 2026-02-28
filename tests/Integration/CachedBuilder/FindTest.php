@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class FindTest extends IntegrationTestCase
 {
-    public function testFindModelResultsCreatesCache()
+    public function test_find_model_results_creates_cache()
     {
         $author = collect()->push((new Author)->find(1));
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_1");
@@ -22,7 +24,7 @@ class FindTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
-    public function testFindMultipleModelResultsCreatesCache()
+    public function test_find_multiple_model_results_creates_cache()
     {
         $authors = (new Author)
             ->find([1, 2, 3]);
@@ -34,14 +36,14 @@ class FindTest extends IntegrationTestCase
         $cachedResults = $this
             ->cache()
             ->tags($tags)
-            ->get($key)["value"];
+            ->get($key)['value'];
         $liveResults = (new UncachedAuthor)->find([1, 2, 3]);
 
-        $this->assertEquals($authors->pluck("id"), $cachedResults->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($authors->pluck('id'), $cachedResults->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 
-    public function testSubsequentFindsReturnDifferentModels()
+    public function test_subsequent_finds_return_different_models()
     {
         $author1 = (new Author)->find(1);
         $author2 = (new Author)->find(2);
@@ -51,22 +53,22 @@ class FindTest extends IntegrationTestCase
         $this->assertEquals($author2->id, 2);
     }
 
-    public function testFindWithArrayReturnsResults()
+    public function test_find_with_array_returns_results()
     {
         $author = (new Author)->find([1, 2]);
         $uncachedAuthor = (new UncachedAuthor)->find([1, 2]);
 
         $this->assertEquals($uncachedAuthor->count(), $author->count());
-        $this->assertEquals($uncachedAuthor->pluck("id"), $author->pluck("id"));
+        $this->assertEquals($uncachedAuthor->pluck('id'), $author->pluck('id'));
     }
 
-    public function testFindWithSingleElementArrayDoesntConflictWithNormalFind()
+    public function test_find_with_single_element_array_doesnt_conflict_with_normal_find()
     {
         $author1 = (new Author)
             ->find(1);
         $author2 = (new Author)
             ->find([1]);
-        
+
         $this->assertNotEquals($author1, $author2);
         $this->assertIsIterable($author2);
         $this->assertEquals(Author::class, get_class($author1));

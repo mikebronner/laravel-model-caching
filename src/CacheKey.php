@@ -20,11 +20,17 @@ class CacheKey
     use CachePrefixing;
 
     protected $currentBinding = 0;
+
     protected $eagerLoad;
+
     protected $macroKey;
+
     protected $model;
+
     protected $query;
+
     protected $withoutGlobalScopes = [];
+
     protected $withoutAllGlobalScopes = false;
 
     public function __construct(
@@ -44,14 +50,14 @@ class CacheKey
     }
 
     public function make(
-        array $columns = ["*"],
+        array $columns = ['*'],
         $idColumn = null,
-        string $keyDifferentiator = ""
-    ) : string {
+        string $keyDifferentiator = ''
+    ): string {
         $key = $this->getCachePrefix();
         $key .= $this->getTableSlug();
         $key .= $this->getModelSlug();
-        $key .= $this->getIdColumn($idColumn ?: "");
+        $key .= $this->getIdColumn($idColumn ?: '');
         $key .= $this->getQueryColumns($columns);
         $key .= $this->getWhereClauses();
         $key .= $this->getHavingClauses();
@@ -66,7 +72,7 @@ class CacheKey
         return $key;
     }
 
-    protected function getBindingsSlug() : string
+    protected function getBindingsSlug(): string
     {
         if (! method_exists($this->model, 'query')) {
             return '';
@@ -83,21 +89,21 @@ class CacheKey
         return Arr::query($this->model->query()->getBindings());
     }
 
-    protected function getColumnClauses(array $where) : string
+    protected function getColumnClauses(array $where): string
     {
-        if ($where["type"] !== "Column") {
-            return "";
+        if ($where['type'] !== 'Column') {
+            return '';
         }
 
-        if ($where["first"] instanceof Expression) {
-            $where["first"] = $this->expressionToString($where["first"]);
+        if ($where['first'] instanceof Expression) {
+            $where['first'] = $this->expressionToString($where['first']);
         }
 
-        if ($where["second"] instanceof Expression) {
-	    $where["second"] = $this->expressionToString($where["second"]);
+        if ($where['second'] instanceof Expression) {
+            $where['second'] = $this->expressionToString($where['second']);
         }
 
-        return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
+        return "-{$where['boolean']}_{$where['first']}_{$where['operator']}_{$where['second']}";
     }
 
     protected function getCurrentBinding(string $type, $bindingFallback = null)
@@ -120,36 +126,36 @@ class CacheKey
         $return = '-having';
 
         foreach ($having as $key => $value) {
-            $return .= '_' . $key . '_' . str_replace(' ', '_', $value);
+            $return .= '_'.$key.'_'.str_replace(' ', '_', $value);
         }
 
         return $return;
     }
 
-    protected function getIdColumn(string $idColumn) : string
+    protected function getIdColumn(string $idColumn): string
     {
-        return $idColumn ? "_{$idColumn}" : "";
+        return $idColumn ? "_{$idColumn}" : '';
     }
 
-    protected function getInAndNotInClauses(array $where) : string
+    protected function getInAndNotInClauses(array $where): string
     {
-        if (! in_array($where["type"], ["In", "NotIn", "InRaw"])) {
-            return "";
+        if (! in_array($where['type'], ['In', 'NotIn', 'InRaw'])) {
+            return '';
         }
 
-        $type = strtolower($where["type"]);
+        $type = strtolower($where['type']);
         $subquery = $this->getValuesFromWhere($where);
 
         if (
             ! is_numeric($subquery)
-            && ! is_numeric(str_replace("_", "", $subquery))
+            && ! is_numeric(str_replace('_', '', $subquery))
             && strlen($subquery) === 16
         ) {
             try {
                 $subquery = Uuid::fromBytes($subquery);
-                $values = $this->recursiveImplode([$subquery], "_");
+                $values = $this->recursiveImplode([$subquery], '_');
 
-                return "-{$where["column"]}_{$type}{$values}";
+                return "-{$where['column']}_{$type}{$values}";
             } catch (Throwable) {
                 // do nothing
             }
@@ -158,242 +164,244 @@ class CacheKey
         $placeholderCount = preg_match_all('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', $subquery);
 
         if ($placeholderCount === 0) {
-            if (data_get($where, "values")) {
-                $this->currentBinding += count(data_get($where, "values"));
+            if (data_get($where, 'values')) {
+                $this->currentBinding += count(data_get($where, 'values'));
             }
 
-            $values = $this->recursiveImplode([$subquery], "_");
+            $values = $this->recursiveImplode([$subquery], '_');
 
-            return "-{$where["column"]}_{$type}{$values}";
+            return "-{$where['column']}_{$type}{$values}";
         }
 
-        $values = collect(data_get($this->query->bindings, "where"))
+        $values = collect(data_get($this->query->bindings, 'where'))
             ->slice($this->currentBinding, $placeholderCount)
             ->values();
         $this->currentBinding += $placeholderCount;
 
-        $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
+        $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', '_??_', $subquery);
         $subquery = str_replace('%', '%%', $subquery);
-        $subquery = collect(vsprintf(str_replace("_??_", "%s", $subquery), $values->toArray()));
-        $values = $this->recursiveImplode($subquery->toArray(), "_");
+        $subquery = collect(vsprintf(str_replace('_??_', '%s', $subquery), $values->toArray()));
+        $values = $this->recursiveImplode($subquery->toArray(), '_');
 
-        return "-{$where["column"]}_{$type}{$values}";
+        return "-{$where['column']}_{$type}{$values}";
     }
 
-    protected function getLimitClause() : string
+    protected function getLimitClause(): string
     {
-        if (! property_exists($this->query, "limit")
+        if (! property_exists($this->query, 'limit')
             || ! $this->query->limit
         ) {
-            return "";
+            return '';
         }
 
         return "-limit_{$this->query->limit}";
     }
 
-    protected function getModelSlug() : string
+    protected function getModelSlug(): string
     {
         return (new Str)->slug(get_class($this->model));
     }
 
-    protected function getNestedClauses(array $where) : string
+    protected function getNestedClauses(array $where): string
     {
-        if (! in_array($where["type"], ["Exists", "Nested", "NotExists"])) {
-            return "";
+        if (! in_array($where['type'], ['Exists', 'Nested', 'NotExists'])) {
+            return '';
         }
 
-        return "-" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
+        return '-'.strtolower($where['type']).$this->getWhereClauses($where['query']->wheres);
     }
 
-    protected function getOffsetClause() : string
+    protected function getOffsetClause(): string
     {
-        if (! property_exists($this->query, "offset")
+        if (! property_exists($this->query, 'offset')
             || ! $this->query->offset
         ) {
-            return "";
+            return '';
         }
 
         return "-offset_{$this->query->offset}";
     }
 
-    protected function getOrderByClauses() : string
+    protected function getOrderByClauses(): string
     {
-        if (! property_exists($this->query, "orders")
+        if (! property_exists($this->query, 'orders')
             || ! $this->query->orders
         ) {
-            return "";
+            return '';
         }
 
         $orders = collect($this->query->orders);
 
         return $orders
             ->reduce(function ($carry, $order) {
-                if (($order["type"] ?? "") === "Raw") {
-                    return $carry . "_orderByRaw_" . (new Str)->slug($order["sql"]);
+                if (($order['type'] ?? '') === 'Raw') {
+                    return $carry.'_orderByRaw_'.(new Str)->slug($order['sql']);
                 }
 
                 return sprintf(
                     '%s_orderBy_%s_%s',
                     $carry,
-                    $this->expressionToString($order["column"]),
-                    $order["direction"]
+                    $this->expressionToString($order['column']),
+                    $order['direction']
                 );
             })
-            ?: "";
+            ?: '';
     }
 
-    protected function getOtherClauses(array $where) : string
+    protected function getOtherClauses(array $where): string
     {
-        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn", "InRaw"])) {
-            return "";
+        if (in_array($where['type'], ['Exists', 'Nested', 'NotExists', 'Column', 'raw', 'In', 'NotIn', 'InRaw'])) {
+            return '';
         }
 
         $value = $this->getTypeClause($where);
         $value .= $this->getValuesClause($where);
 
-        $column = "";
+        $column = '';
 
-	if (data_get($where, "column") instanceof Expression) {
-            $where["column"] = $this->expressionToString(data_get($where, "column"));
+        if (data_get($where, 'column') instanceof Expression) {
+            $where['column'] = $this->expressionToString(data_get($where, 'column'));
         }
 
-        $column .= isset($where["column"]) ? $where["column"] : "";
-        $column .= isset($where["columns"]) ? implode("-", $where["columns"]) : "";
+        $column .= isset($where['column']) ? $where['column'] : '';
+        $column .= isset($where['columns']) ? implode('-', $where['columns']) : '';
 
         return "-{$column}_{$value}";
     }
 
-    protected function getQueryColumns(array $columns) : string
+    protected function getQueryColumns(array $columns): string
     {
-        if (($columns === ["*"]
+        if (($columns === ['*']
                 || $columns === [])
-            && (! property_exists($this->query, "columns")
+            && (! property_exists($this->query, 'columns')
                 || ! $this->query->columns)
         ) {
-            return "";
+            return '';
         }
 
-        if (property_exists($this->query, "columns")
+        if (property_exists($this->query, 'columns')
             && $this->query->columns
         ) {
             $columns = array_map(function ($column) {
                 return $this->expressionToString($column);
             }, $this->query->columns);
 
-            return "_" . implode("_", $columns);
+            return '_'.implode('_', $columns);
         }
 
         $columns = array_map(function ($column) {
             return $this->expressionToString($column);
         }, $columns);
 
-        return "_" . implode("_", $columns);
+        return '_'.implode('_', $columns);
     }
 
-    protected function getRawClauses(array $where) : string
+    protected function getRawClauses(array $where): string
     {
-        if (! in_array($where["type"], ["raw"])) {
-            return "";
+        if (! in_array($where['type'], ['raw'])) {
+            return '';
         }
 
-        $queryParts = explode("?", $where["sql"]);
-        $clause = "_{$where["boolean"]}";
+        $queryParts = explode('?', $where['sql']);
+        $clause = "_{$where['boolean']}";
 
         while (count($queryParts) > 1) {
-            $clause .= "_" . array_shift($queryParts);
-            $clause .= $this->getCurrentBinding("where");
+            $clause .= '_'.array_shift($queryParts);
+            $clause .= $this->getCurrentBinding('where');
             $this->currentBinding++;
         }
 
         $lastPart = array_shift($queryParts);
 
         if ($lastPart) {
-            $clause .= "_" . $lastPart;
+            $clause .= '_'.$lastPart;
         }
 
-        return "-" . str_replace(" ", "_", $clause);
+        return '-'.str_replace(' ', '_', $clause);
     }
 
-    protected function getTableSlug() : string
+    protected function getTableSlug(): string
     {
         return (new Str)->slug($this->query->from)
-            . ":";
+            .':';
     }
 
-    protected function getTypeClause($where) : string
+    protected function getTypeClause($where): string
     {
-        $type = in_array($where["type"], ["InRaw", "In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub", "JsonContains", "Fulltext", "JsonContainsKey"])
-            ? strtolower($where["type"])
-            : strtolower($where["operator"]);
+        $type = in_array($where['type'], ['InRaw', 'In', 'NotIn', 'Null', 'NotNull', 'between', 'NotInSub', 'InSub', 'JsonContains', 'Fulltext', 'JsonContainsKey'])
+            ? strtolower($where['type'])
+            : strtolower($where['operator']);
 
-        return str_replace(" ", "_", $type);
+        return str_replace(' ', '_', $type);
     }
 
-    protected function getValuesClause(array $where = []) : string
+    protected function getValuesClause(array $where = []): string
     {
         if (! $where
-            || in_array($where["type"], ["NotNull", "Null"])
+            || in_array($where['type'], ['NotNull', 'Null'])
         ) {
-            return "";
+            return '';
         }
 
         $values = $this->getValuesFromWhere($where);
         $values = $this->getValuesFromBindings($where, $values);
 
-        return "_" . $values;
+        return '_'.$values;
     }
 
-    protected function getValuesFromWhere(array $where) : string
+    protected function getValuesFromWhere(array $where): string
     {
-        if (array_key_exists("value", $where)
-            && is_object($where["value"])
-            && get_class($where["value"]) === "DateTime"
+        if (array_key_exists('value', $where)
+            && is_object($where['value'])
+            && get_class($where['value']) === 'DateTime'
         ) {
-            return $where["value"]->format("Y-m-d-H-i-s");
+            return $where['value']->format('Y-m-d-H-i-s');
         }
 
-        if (is_array((new Arr)->get($where, "values"))) {
-            $values = collect($where["values"])->flatten()->toArray();
-            return implode("_", $this->processEnums($values));
+        if (is_array((new Arr)->get($where, 'values'))) {
+            $values = collect($where['values'])->flatten()->toArray();
+
+            return implode('_', $this->processEnums($values));
         }
 
-        if (is_array((new Arr)->get($where, "value"))) {
-            $values = collect($where["value"])->flatten()->toArray();
-            return implode("_", $this->processEnums($values));
+        if (is_array((new Arr)->get($where, 'value'))) {
+            $values = collect($where['value'])->flatten()->toArray();
+
+            return implode('_', $this->processEnums($values));
         }
 
-        $value = (new Arr)->get($where, "value", "");
+        $value = (new Arr)->get($where, 'value', '');
 
         return $this->processEnum($value);
     }
 
-    protected function getValuesFromBindings(array $where, string $values) : string
+    protected function getValuesFromBindings(array $where, string $values): string
     {
-        $bindingFallback = __CLASS__ . ':UNKNOWN_BINDING';
-        $currentBinding = $this->getCurrentBinding("where", $bindingFallback);
+        $bindingFallback = __CLASS__.':UNKNOWN_BINDING';
+        $currentBinding = $this->getCurrentBinding('where', $bindingFallback);
 
         if ($currentBinding !== $bindingFallback) {
             $values = $currentBinding;
             $this->currentBinding++;
 
-            if ($where["type"] === "between") {
-                $values .= "_" . $this->getCurrentBinding("where");
+            if ($where['type'] === 'between') {
+                $values .= '_'.$this->getCurrentBinding('where');
                 $this->currentBinding++;
             }
         }
 
         if (is_object($values)
-            && get_class($values) === "DateTime"
+            && get_class($values) === 'DateTime'
         ) {
-            $values = $values->format("Y-m-d-H-i-s");
+            $values = $values->format('Y-m-d-H-i-s');
         }
 
         return (string) $values;
     }
 
-    protected function getWhereClauses(array $wheres = []) : string
+    protected function getWhereClauses(array $wheres = []): string
     {
-        return "" . $this->getWheres($wheres)
+        return ''.$this->getWheres($wheres)
             ->reduce(function ($carry, $where) {
                 $value = $carry;
                 $value .= $this->getNestedClauses($where);
@@ -406,12 +414,12 @@ class CacheKey
             });
     }
 
-    protected function getWheres(array $wheres) : Collection
+    protected function getWheres(array $wheres): Collection
     {
         $wheres = collect($wheres);
 
         if ($wheres->isEmpty()
-            && property_exists($this->query, "wheres")
+            && property_exists($this->query, 'wheres')
         ) {
             $wheres = collect($this->query->wheres);
         }
@@ -419,12 +427,12 @@ class CacheKey
         return $wheres;
     }
 
-    protected function getWithModels() : string
+    protected function getWithModels(): string
     {
         $eagerLoads = collect($this->eagerLoad);
 
         if ($eagerLoads->isEmpty()) {
-            return "";
+            return '';
         }
 
         return $eagerLoads->reduce(function ($carry, $constraint, $related) {
@@ -441,48 +449,48 @@ class CacheKey
             $carry .= $this->getEagerLoadConstraintKey($related, $constraint);
 
             return $carry;
-        }, "");
+        }, '');
     }
 
-    protected function getEagerLoadConstraintKey(string $related, $constraint) : string
+    protected function getEagerLoadConstraintKey(string $related, $constraint): string
     {
         if (! ($constraint instanceof \Closure)) {
-            return "";
+            return '';
         }
 
         if (! method_exists($this->model, $related)) {
-            return "";
+            return '';
         }
 
         try {
             $freshModel = (new \ReflectionClass($this->model))->newInstanceWithoutConstructor();
             $relation = $freshModel->$related();
-            $baseWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $baseWheres = $relation->getQuery()->getQuery()->wheres ?? [];
             $baseBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
             $constraint($relation);
-            $afterWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $afterWheres = $relation->getQuery()->getQuery()->wheres ?? [];
             $afterBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
-            $addedWheres   = array_slice($afterWheres,   count($baseWheres));
+            $addedWheres = array_slice($afterWheres, count($baseWheres));
             $addedBindings = array_slice($afterBindings, count($baseBindings));
 
             if (empty($addedWheres)) {
-                return "";
+                return '';
             }
 
-            return "=" . sha1(json_encode($addedWheres) . json_encode($addedBindings));
+            return '='.sha1(json_encode($addedWheres).json_encode($addedBindings));
         } catch (Throwable) {
-            return "";
+            return '';
         }
     }
 
-    protected function recursiveImplode(array $items, string $glue = ",") : string
+    protected function recursiveImplode(array $items, string $glue = ','): string
     {
-        $result = "";
+        $result = '';
 
         foreach ($items as $value) {
             if (is_string($value)) {
                 $value = str_replace('"', '', $value);
-                $value = explode(" ", $value);
+                $value = explode(' ', $value);
 
                 if (count($value) === 1) {
                     $value = $value[0];
@@ -495,7 +503,7 @@ class CacheKey
                 continue;
             }
 
-            $result .= $glue . $value;
+            $result .= $glue.$value;
         }
 
         return $result;
@@ -511,7 +519,7 @@ class CacheKey
         } elseif ($value instanceof Expression) {
             return $this->expressionToString($value);
         } elseif ($value instanceof DateTimeInterface) {
-            return $value->format("Y-m-d-H-i-s");
+            return $value->format('Y-m-d-H-i-s');
         }
 
         return "{$value}";
@@ -519,7 +527,7 @@ class CacheKey
 
     private function processEnums(array $values): array
     {
-        return array_map(fn($value) => $this->processEnum($value), $values);
+        return array_map(fn ($value) => $this->processEnum($value), $values);
     }
 
     private function expressionToString(Expression|string $value): string

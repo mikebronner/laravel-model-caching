@@ -1,16 +1,18 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\NovaTestCase;
 
 class UpdateTest extends NovaTestCase
 {
-    public function testUpdateFlushesCacheForModel()
+    public function test_update_flushes_cache_for_model()
     {
         $beforeAuthors = (new Author)->get();
         $author = $beforeAuthors->first();
 
-        $response = $this->putJson('nova-api/authors/' . $author->id, [
+        $response = $this->putJson('nova-api/authors/'.$author->id, [
             'name' => 'foo',
             'email' => 'test1@noemail.com',
         ]);

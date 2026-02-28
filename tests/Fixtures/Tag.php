@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\TagFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -17,11 +19,11 @@ class Tag extends Model
     }
 
     protected $fillable = [
-        "name",
+        'name',
     ];
 
-    public function posts() : MorphToMany
+    public function posts(): MorphToMany
     {
-        return $this->morphedByMany(Post::class, "taggable");
+        return $this->morphedByMany(Post::class, 'taggable');
     }
 }

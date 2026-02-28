@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\ImageFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -20,7 +22,7 @@ class Image extends Model
         'path',
     ];
 
-    public function imagable() : MorphTo
+    public function imagable(): MorphTo
     {
         return $this->morphTo();
     }

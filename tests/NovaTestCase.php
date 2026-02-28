@@ -18,7 +18,7 @@ abstract class NovaTestCase extends IntegrationTestCase
 {
     protected $authenticatedAs;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -38,7 +38,7 @@ abstract class NovaTestCase extends IntegrationTestCase
         $this->authenticate();
         $this->withoutMiddleware();
 
-        Artisan::call("nova:publish");
+        Artisan::call('nova:publish');
     }
 
     protected function authenticate()

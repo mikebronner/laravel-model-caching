@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching;
 
 use GeneaLabs\LaravelModelCaching\Traits\Buildable;
 use GeneaLabs\LaravelModelCaching\Traits\BuilderCaching;

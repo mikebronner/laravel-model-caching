@@ -14,7 +14,7 @@ use ReflectionClass;
  */
 class BuilderInternalsTest extends TestCase
 {
-    public function testBuilderHasScopesProperty(): void
+    public function test_builder_has_scopes_property(): void
     {
         $reflection = new ReflectionClass(Builder::class);
 
@@ -24,7 +24,7 @@ class BuilderInternalsTest extends TestCase
         );
     }
 
-    public function testBuilderHasWithoutGlobalScopesProperty(): void
+    public function test_builder_has_without_global_scopes_property(): void
     {
         $reflection = new ReflectionClass(Builder::class);
 
@@ -34,7 +34,7 @@ class BuilderInternalsTest extends TestCase
         );
     }
 
-    public function testBuilderHasCallScopeMethod(): void
+    public function test_builder_has_call_scope_method(): void
     {
         $reflection = new ReflectionClass(Builder::class);
 

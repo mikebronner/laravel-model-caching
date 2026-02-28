@@ -1,23 +1,16 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Traits;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedProfile;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPublisher;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedStore;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Database\Eloquent\Collection;
 
 class CachableTest extends IntegrationTestCase
 {
-    public function testSpecifyingAlternateCacheDriver()
+    public function test_specifying_alternate_cache_driver()
     {
         $configCacheStores = config('cache.stores');
         $configCacheStores['customCache'] = ['driver' => 'array'];
@@ -46,21 +39,21 @@ class CachableTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffAssoc($customCacheResults));
     }
 
-    public function testSetCachePrefixAttribute()
+    public function test_set_cache_prefix_attribute()
     {
         (new PrefixedAuthor)->get();
 
         $results = $this->
             cache()
-            ->tags([
-                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:model-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor",
-            ])
-            ->get(sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:model-prefix:authors:genealabslaravelmodelcachingtestsfixturesprefixedauthor-authors.deleted_at_null"))['value'];
+                ->tags([
+                    "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:model-prefix:genealabslaravelmodelcachingtestsfixturesprefixedauthor",
+                ])
+                ->get(sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:model-prefix:authors:genealabslaravelmodelcachingtestsfixturesprefixedauthor-authors.deleted_at_null"))['value'];
 
         $this->assertNotNull($results);
     }
 
-    public function testAllReturnsCollection()
+    public function test_all_returns_collection()
     {
         (new Author)->truncate();
         Author::factory()->count(1)->create();
@@ -79,7 +72,7 @@ class CachableTest extends IntegrationTestCase
         $this->assertInstanceOf(Collection::class, $liveResults);
     }
 
-    public function testsCacheFlagDisablesCaching()
+    public function tests_cache_flag_disables_caching()
     {
         config(['laravel-model-caching.enabled' => false]);
 

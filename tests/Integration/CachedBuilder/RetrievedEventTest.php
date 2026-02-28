@@ -1,11 +1,13 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class RetrievedEventTest extends IntegrationTestCase
 {
-    public function testRetrievedEventFiresOnCacheMiss()
+    public function test_retrieved_event_fires_on_cache_miss()
     {
         $firedCount = 0;
 
@@ -21,7 +23,7 @@ class RetrievedEventTest extends IntegrationTestCase
         $this->assertGreaterThan(0, $firedCount, 'Retrieved event should fire on cache miss');
     }
 
-    public function testRetrievedEventFiresOnCacheHit()
+    public function test_retrieved_event_fires_on_cache_hit()
     {
         // First call — cache miss, populates cache
         (new Author)->get();
@@ -39,7 +41,7 @@ class RetrievedEventTest extends IntegrationTestCase
         $this->assertGreaterThan(0, $firedCount, 'Retrieved event should fire on cache hit');
     }
 
-    public function testRetrievedEventFiresOnCacheHitForFind()
+    public function test_retrieved_event_fires_on_cache_hit_for_find()
     {
         $author = (new Author)->first();
 
@@ -56,7 +58,7 @@ class RetrievedEventTest extends IntegrationTestCase
         $this->assertGreaterThanOrEqual(1, $firedCount, 'Retrieved event should fire on cache hit for find()');
     }
 
-    public function testRetrievedEventFiresOnCacheHitForFirst()
+    public function test_retrieved_event_fires_on_cache_hit_for_first()
     {
         // Cache miss
         (new Author)->first();
@@ -74,7 +76,7 @@ class RetrievedEventTest extends IntegrationTestCase
         $this->assertGreaterThanOrEqual(1, $firedCount, 'Retrieved event should fire on cache hit for first()');
     }
 
-    public function testRetrievedEventFiresOnCacheHitForPaginate()
+    public function test_retrieved_event_fires_on_cache_hit_for_paginate()
     {
         // Cache miss
         (new Author)->paginate(5);

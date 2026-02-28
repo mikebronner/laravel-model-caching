@@ -27,13 +27,13 @@ class DatabaseSeeder extends Seeder
         $user = User::factory()->create();
         $user->roles()->sync($roles->pluck('id'));
         $image = Image::factory()->create([
-            "imagable_id" => $user->id,
-            "imagable_type" => User::class,
+            'imagable_id' => $user->id,
+            'imagable_type' => User::class,
         ]);
         Image::factory()->create([
-            "imagable_id" => $user->id,
-            "imagable_type" => UncachedUser::class,
-            "path" => $image->path,
+            'imagable_id' => $user->id,
+            'imagable_type' => UncachedUser::class,
+            'path' => $image->path,
         ]);
         Tag::factory()->count(5)->create();
         $post = Post::factory()->create();
@@ -42,15 +42,15 @@ class DatabaseSeeder extends Seeder
         $uncachedPost->tags()->attach(1);
         Comment::factory()->count(5)
             ->create([
-                "commentable_id" => $post->id,
-                "commentable_type" => Post::class,
+                'commentable_id' => $post->id,
+                'commentable_type' => Post::class,
             ])
             ->each(function ($comment) {
                 (new Comment)->create([
-                    "commentable_id" => $comment->commentable_id,
-                    "commentable_type" => UncachedPost::class,
-                    "description" => $comment->description,
-                    "subject" => $comment->subject . ' - uncached post',
+                    'commentable_id' => $comment->commentable_id,
+                    'commentable_type' => UncachedPost::class,
+                    'description' => $comment->description,
+                    'subject' => $comment->subject.' - uncached post',
                 ]);
             });
         $publishers = Publisher::factory()->count(10)->create();
@@ -62,12 +62,12 @@ class DatabaseSeeder extends Seeder
                 $profile->save();
                 Book::factory()->count(random_int(5, 25))
                     ->create([
-                        "author_id" => $author->id,
-                        "publisher_id" => $publishers[rand(0, 9)]->id,
+                        'author_id' => $author->id,
+                        'publisher_id' => $publishers[rand(0, 9)]->id,
                     ])
                     ->each(function ($book) {
                         Printer::factory()->create([
-                            "book_id" => $book->id,
+                            'book_id' => $book->id,
                         ]);
                     });
                 Profile::factory()->make([

@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class SoftDeletesTest extends IntegrationTestCase
 {
-    public function testWithTrashedIsCached()
+    public function test_with_trashed_is_cached()
     {
         $author = (new UncachedAuthor)
             ->first();
@@ -31,7 +33,7 @@ class SoftDeletesTest extends IntegrationTestCase
         $this->assertEquals($cachedResults->toArray(), $deletedUncachedAuthor->toArray());
     }
 
-    public function testWithoutTrashedIsCached()
+    public function test_without_trashed_is_cached()
     {
         $author = (new UncachedAuthor)
             ->first();
@@ -59,7 +61,7 @@ class SoftDeletesTest extends IntegrationTestCase
         $this->assertNull($uncachedResult);
     }
 
-    public function testonlyTrashedIsCached()
+    public function testonly_trashed_is_cached()
     {
         $author = (new UncachedAuthor)
             ->first();

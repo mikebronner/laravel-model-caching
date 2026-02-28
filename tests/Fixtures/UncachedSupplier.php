@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,20 +11,21 @@ class UncachedSupplier extends Model
     protected $fillable = [
         'name',
     ];
-    protected $table = "suppliers";
 
-    public function user() : HasOne
+    protected $table = 'suppliers';
+
+    public function user(): HasOne
     {
         return $this->hasOne(User::class);
     }
 
-    public function history() : HasOneThrough
+    public function history(): HasOneThrough
     {
         return $this->hasOneThrough(
             History::class,
             User::class,
-            "supplier_id",
-            "user_id"
+            'supplier_id',
+            'user_id'
         );
     }
 }

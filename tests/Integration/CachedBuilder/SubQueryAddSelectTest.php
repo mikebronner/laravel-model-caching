@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SubQueryAddSelectTest extends IntegrationTestCase
 {
-    public function testAddSelect()
+    public function test_add_select()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook_books.*_(select \"name\" from \"publishers\" where \"id\" = \"books\".\"publisher_id\" order by \"published_at\" desc limit 1) as \"publisher_name\"-publisher_id_in_11_12_13_14_15");
         $tags = [
@@ -26,11 +28,10 @@ class SubQueryAddSelectTest extends IntegrationTestCase
         $publisherIds = $publishers->pluck('id')->toArray();
 
         $books = Book::whereIn('publisher_id', $publisherIds)
-            ->addSelect(['publisher_name' =>
-                Publisher::select('name')
+            ->addSelect(['publisher_name' => Publisher::select('name')
                 ->whereColumn('id', 'books.publisher_id')
                 ->orderBy('published_at', 'desc')
-                ->limit(1)
+                ->limit(1),
             ])->get()->pluck('publisher_name')->filter()->toArray();
 
         $cachedResults = $this
@@ -39,11 +40,10 @@ class SubQueryAddSelectTest extends IntegrationTestCase
             ->get($key)['value'];
 
         $liveResults = UncachedBook::whereIn('publisher_id', $publisherIds)
-            ->addSelect(['publisher_name' =>
-                UncachedPublisher::select('name')
+            ->addSelect(['publisher_name' => UncachedPublisher::select('name')
                 ->whereColumn('id', 'books.publisher_id')
                 ->orderBy('published_at', 'desc')
-                ->limit(1)
+                ->limit(1),
             ])->get()->pluck('publisher_name')->filter()->toArray();
 
         $this->assertCount(10, $books);

@@ -8,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class CacheKeyGeneratorPerformanceTest extends IntegrationTestCase
 {
-    public function testCacheKeyGenerationPerformance(): void
+    public function test_cache_key_generation_performance(): void
     {
         $builder = (new Author)->newQuery()
             ->where('id', '>', 0)
@@ -32,7 +32,7 @@ class CacheKeyGeneratorPerformanceTest extends IntegrationTestCase
         $this->assertLessThan(1.0, $avgMs, "Average cache key generation time ({$avgMs}ms) exceeds 1ms threshold");
     }
 
-    public function testCloneBasedGenerationDoesNotAccumulateState(): void
+    public function test_clone_based_generation_does_not_accumulate_state(): void
     {
         $builder = (new Author)->newQuery()->where('id', '>', 0);
 

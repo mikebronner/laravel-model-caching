@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 trait CachedValueRetrievable
 {
@@ -33,8 +35,8 @@ trait CachedValueRetrievable
         string $hashedCacheKey,
         string $method
     ) {
-        if ($result["key"] === $cacheKey) {
-            return $result["value"];
+        if ($result['key'] === $cacheKey) {
+            return $result['value'];
         }
 
         $this->cache()
@@ -57,11 +59,11 @@ trait CachedValueRetrievable
         string $hashedCacheKey,
         string $method
     ) {
-        if (property_exists($this, "model")) {
+        if (property_exists($this, 'model')) {
             $this->checkCooldownAndRemoveIfExpired($this->model);
         }
 
-        if (method_exists($this, "getModel")) {
+        if (method_exists($this, 'getModel')) {
             $this->checkCooldownAndRemoveIfExpired($this->getModel());
         }
 
@@ -69,14 +71,14 @@ trait CachedValueRetrievable
         $cachedResult = $cache->get($hashedCacheKey);
 
         if ($cachedResult !== null) {
-            $this->fireRetrievedEvents($cachedResult["value"] ?? null);
+            $this->fireRetrievedEvents($cachedResult['value'] ?? null);
 
             return $cachedResult;
         }
 
         $result = [
-            "key" => $cacheKey,
-            "value" => parent::{$method}(...$arguments),
+            'key' => $cacheKey,
+            'value' => parent::{$method}(...$arguments),
         ];
 
         $cache->forever($hashedCacheKey, $result);
@@ -119,7 +121,7 @@ trait CachedValueRetrievable
 
         if ($dispatcher) {
             $dispatcher->dispatch(
-                "eloquent.retrieved: " . get_class($model),
+                'eloquent.retrieved: '.get_class($model),
                 $model
             );
         }

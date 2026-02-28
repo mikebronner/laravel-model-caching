@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedBook;
@@ -6,11 +8,11 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class CachedBuilderRelationshipsTest extends IntegrationTestCase
 {
-    public function testHasRelationshipResults()
+    public function test_has_relationship_results()
     {
         $booksWithStores = (new Book)
-            ->with("stores")
-            ->has("stores")
+            ->with('stores')
+            ->has('stores')
             ->get();
         $key = "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-exists-and_books.id_=_book_store.book_id-testing:{$this->testingSqlitePath}testing.sqlite:stores";
         $tags = [
@@ -20,28 +22,28 @@ class CachedBuilderRelationshipsTest extends IntegrationTestCase
         $cachedResults = $this
             ->cache()
             ->tags($tags)
-            ->get(sha1($key))["value"];
+            ->get(sha1($key))['value'];
 
         $this->assertNotEmpty($booksWithStores);
         $this->assertEquals($booksWithStores, $cachedResults);
     }
 
-    public function testWhereHasRelationship()
+    public function test_where_has_relationship()
     {
         $books = (new Book)
-            ->with("stores")
-            ->whereHas("stores", function ($query) {
+            ->with('stores')
+            ->whereHas('stores', function ($query) {
                 $query->whereRaw('address like ?', ['%s%']);
             })
             ->get();
 
         $uncachedBooks = (new UncachedBook)
-            ->with("stores")
-            ->whereHas("stores", function ($query) {
+            ->with('stores')
+            ->whereHas('stores', function ($query) {
                 $query->whereRaw('address like ?', ['%s%']);
             })
             ->get();
 
-        $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+        $this->assertEquals($books->pluck('id'), $uncachedBooks->pluck('id'));
     }
 }

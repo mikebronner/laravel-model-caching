@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,9 +11,10 @@ class UncachedStore extends Model
         'address',
         'name',
     ];
+
     protected $table = 'stores';
 
-    public function books() : BelongsToMany
+    public function books(): BelongsToMany
     {
         return $this->belongsToMany(UncachedBook::class);
     }

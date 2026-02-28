@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\BookFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -6,8 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Book extends Model
@@ -26,41 +28,41 @@ class Book extends Model
     ];
 
     protected $fillable = [
-        "author_id",
+        'author_id',
         'description',
         'published_at',
         'title',
-        "publisher_id",
+        'publisher_id',
         'price',
     ];
 
-    public function author() : BelongsTo
+    public function author(): BelongsTo
     {
         return $this->belongsTo(Author::class);
     }
 
-    public function comments() : MorphMany
+    public function comments(): MorphMany
     {
-        return $this->morphMany(Comment::class, "commentable");
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function image() : MorphOne
+    public function image(): MorphOne
     {
-        return $this->morphOne(Image::class, "imagable");
+        return $this->morphOne(Image::class, 'imagable');
     }
 
-    public function publisher() : BelongsTo
+    public function publisher(): BelongsTo
     {
         return $this->belongsTo(Publisher::class);
     }
 
-    public function stores() : BelongsToMany
+    public function stores(): BelongsToMany
     {
         return $this->belongsToMany(Store::class);
     }
 
-    public function scopeStartsWith(Builder $query, string $startOfName) : Builder
+    public function scopeStartsWith(Builder $query, string $startOfName): Builder
     {
-        return $query->where("title", "LIKE", "{$startOfName}%");
+        return $query->where('title', 'LIKE', "{$startOfName}%");
     }
 }

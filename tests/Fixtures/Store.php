@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\StoreFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -21,7 +23,7 @@ class Store extends Model
         'name',
     ];
 
-    public function books() : BelongsToMany
+    public function books(): BelongsToMany
     {
         return $this->belongsToMany(Book::class);
     }

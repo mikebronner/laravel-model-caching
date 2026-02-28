@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Console\Commands;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Console\Commands;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service;
 use Illuminate\Console\Command;
@@ -6,6 +8,7 @@ use Illuminate\Console\Command;
 class Publish extends Command
 {
     protected $signature = 'modelCache:publish {--assets} {--config} {--views} {--migrations}';
+
     protected $description = "Publish various assets of the 'Model Caching for Laravel' package.";
 
     public function handle()

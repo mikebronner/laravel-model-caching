@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class HasManyThroughTest extends IntegrationTestCase
 {
-    public function testEagerloadedHasManyThrough()
+    public function test_eagerloaded_has_many_through()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-testing:{$this->testingSqlitePath}testing.sqlite:printers-first");
         $tags = [
@@ -15,7 +17,7 @@ class HasManyThroughTest extends IntegrationTestCase
         ];
 
         $printers = (new Author)
-            ->with("printers")
+            ->with('printers')
             ->first()
             ->printers;
         $cachedResults = $this->cache()
@@ -24,18 +26,18 @@ class HasManyThroughTest extends IntegrationTestCase
             ->first()
             ->printers;
         $liveResults = (new UncachedAuthor)
-            ->with("printers")
+            ->with('printers')
             ->first()
             ->printers;
 
-        $this->assertEquals($liveResults->pluck("id")->toArray(), $printers->pluck("id")->toArray());
-        $this->assertEquals($liveResults->pluck("id")->toArray(), $cachedResults->pluck("id")->toArray());
+        $this->assertEquals($liveResults->pluck('id')->toArray(), $printers->pluck('id')->toArray());
+        $this->assertEquals($liveResults->pluck('id')->toArray(), $cachedResults->pluck('id')->toArray());
         $this->assertNotEmpty($printers);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testLazyloadedHasManyThrough()
+    public function test_lazyloaded_has_many_through()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:printers:genealabslaravelmodelcachingtestsfixturesprinter-books.author_id_=_1");
         $tags = [
@@ -52,8 +54,8 @@ class HasManyThroughTest extends IntegrationTestCase
             ->find(1)
             ->printers;
 
-        $this->assertEquals($liveResults->pluck("id")->toArray(), $printers->pluck("id")->toArray());
-        $this->assertEquals($liveResults->pluck("id")->toArray(), $cachedResults->pluck("id")->toArray());
+        $this->assertEquals($liveResults->pluck('id')->toArray(), $printers->pluck('id')->toArray());
+        $this->assertEquals($liveResults->pluck('id')->toArray(), $cachedResults->pluck('id')->toArray());
         $this->assertNotEmpty($printers);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);

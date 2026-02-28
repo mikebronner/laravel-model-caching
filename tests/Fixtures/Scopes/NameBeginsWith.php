@@ -1,8 +1,10 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes;
+<?php
 
-use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Database\Eloquent\Model;
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures\Scopes;
+
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Str;
 
 class NameBeginsWith implements Scope

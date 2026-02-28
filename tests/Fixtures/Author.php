@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\AuthorFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -22,25 +24,26 @@ class Author extends Model
     }
 
     protected $casts = [
-        "finances" => "array",
+        'finances' => 'array',
     ];
+
     protected $fillable = [
         'name',
         'email',
-        "finances",
+        'finances',
     ];
 
-    public function books() : HasMany
+    public function books(): HasMany
     {
         return $this->hasMany(Book::class);
     }
 
-    public function printers() : HasManyThrough
+    public function printers(): HasManyThrough
     {
         return $this->hasManyThrough(Printer::class, Book::class);
     }
-    
-    public function profile() : HasOne
+
+    public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
@@ -49,22 +52,22 @@ class Author extends Model
     {
         return $this
             ->books()
-            ->latest("id")
+            ->latest('id')
             ->first();
     }
 
-    public function scopeStartsWithA(Builder $query) : Builder
+    public function scopeStartsWithA(Builder $query): Builder
     {
         return $query->where('name', 'LIKE', 'A%');
     }
 
-    public function scopeNameStartsWith(Builder $query, string $startOfName) : Builder
+    public function scopeNameStartsWith(Builder $query, string $startOfName): Builder
     {
-        return $query->where("name", "LIKE", "{$startOfName}%");
+        return $query->where('name', 'LIKE', "{$startOfName}%");
     }
 
-    public function scopeBooksStartWith(Builder $query, string $startOfName) : Builder
+    public function scopeBooksStartWith(Builder $query, string $startOfName): Builder
     {
-        return $query->where("name", "LIKE", "{$startOfName}%");
+        return $query->where('name', 'LIKE', "{$startOfName}%");
     }
 }

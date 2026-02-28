@@ -21,7 +21,7 @@ class MagicMethodProxyTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    public function testGlobalMacroProxyDoesNotThrowBadMethodCallException(): void
+    public function test_global_macro_proxy_does_not_throw_bad_method_call_exception(): void
     {
         Builder::macro('type', function (string $type) {
             /** @var Builder $this */
@@ -37,7 +37,7 @@ class MagicMethodProxyTest extends IntegrationTestCase
         $this->assertCount(3, $fictionAuthors);
     }
 
-    public function testGlobalMacroProducesDistinctCacheKeys(): void
+    public function test_global_macro_produces_distinct_cache_keys(): void
     {
         Builder::macro('type', function (string $type) {
             /** @var Builder $this */
@@ -55,7 +55,7 @@ class MagicMethodProxyTest extends IntegrationTestCase
         $this->assertNotEquals($fiction->first()->id, $nonFiction->first()->id);
     }
 
-    public function testTwoDifferentGlobalMacrosProduceDistinctCacheKeys(): void
+    public function test_two_different_global_macros_produce_distinct_cache_keys(): void
     {
         Builder::macro('ofType', function (string $type) {
             /** @var Builder $this */
@@ -78,7 +78,7 @@ class MagicMethodProxyTest extends IntegrationTestCase
         $this->assertNotEquals($byName->first()->id, $byEmail->first()->id);
     }
 
-    public function testGlobalMacroResultsAreCached(): void
+    public function test_global_macro_results_are_cached(): void
     {
         Builder::macro('type', function (string $type) {
             /** @var Builder $this */
@@ -100,7 +100,7 @@ class MagicMethodProxyTest extends IntegrationTestCase
         );
     }
 
-    public function testExistingBuilderMethodsStillWorkWithCachedBuilder(): void
+    public function test_existing_builder_methods_still_work_with_cached_builder(): void
     {
         Author::factory()->create(['name' => 'Alice']);
         Author::factory()->create(['name' => 'Bob']);
@@ -111,7 +111,7 @@ class MagicMethodProxyTest extends IntegrationTestCase
         $this->assertEquals('Alice', $result->first()->name);
     }
 
-    public function testLocalScopeStillWorksThroughCachedBuilder(): void
+    public function test_local_scope_still_works_through_cached_builder(): void
     {
         Author::factory()->create(['name' => 'Alpha Author']);
         Author::factory()->create(['name' => 'Beta Author']);

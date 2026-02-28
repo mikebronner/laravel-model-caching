@@ -1,11 +1,13 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class FirstOrCreateTest extends IntegrationTestCase
 {
-    public function testFirstOrCreateFlushesCacheForModel()
+    public function test_first_or_create_flushes_cache_for_model()
     {
         (new Author)->truncate();
 

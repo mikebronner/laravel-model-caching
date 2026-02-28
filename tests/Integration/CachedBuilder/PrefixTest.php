@@ -1,12 +1,14 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
-use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
+use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class PrefixTest extends IntegrationTestCase
 {
-    public function testCachePrefixIsAddedForPrefixedModel()
+    public function test_cache_prefix_is_added_for_prefixed_model()
     {
         $prefixKey = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:model-prefix:authors:genealabslaravelmodelcachingtestsfixturesprefixedauthor-authors.deleted_at_null-first");
         $prefixTags = [

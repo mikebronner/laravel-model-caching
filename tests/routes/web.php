@@ -6,7 +6,7 @@ Route::get('pagination-test', function () {
     $books = (new Book)
         ->paginate(10);
 
-    return view("model-caching-tests.pagination")
+    return view('model-caching-tests.pagination')
         ->with(compact(
             'books'
         ));
@@ -14,9 +14,9 @@ Route::get('pagination-test', function () {
 
 Route::get('pagination-test2', function () {
     $books = (new Book)
-        ->paginate(10, ["*"], "custom-page");
+        ->paginate(10, ['*'], 'custom-page');
 
-    return view("model-caching-tests.pagination")
+    return view('model-caching-tests.pagination')
         ->with(compact(
             'books'
         ));

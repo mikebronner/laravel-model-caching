@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
@@ -10,7 +12,7 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
      * AC 1: `Model::where(...)->first()` returns a non-stale result consistent
      *       with `->get()->first()` when the cache is warm.
      */
-    public function testFirstReturnsNonStaleResultAfterModelSaved()
+    public function test_first_returns_non_stale_result_after_model_saved()
     {
         // Warm the cache via first()
         $cachedAuthor = (new Author)->first();
@@ -20,7 +22,7 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
         $this->assertEquals($cachedAuthor->id, $viaGet->id);
 
         // Mutate the model
-        $newName = 'Updated Name ' . uniqid();
+        $newName = 'Updated Name '.uniqid();
         $cachedAuthor->name = $newName;
         $cachedAuthor->save();
 
@@ -29,7 +31,7 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
         $this->assertEquals($newName, $freshAuthor->name);
     }
 
-    public function testFirstReturnsNonStaleResultAfterModelCreated()
+    public function test_first_returns_non_stale_result_after_model_created()
     {
         // Truncate then cache the "no match" result
         (new Author)->truncate();
@@ -40,7 +42,7 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
 
         // Create a matching author — created event must flush the cache
         $author = Author::create([
-            'name'  => $uniqueName,
+            'name' => $uniqueName,
             'email' => 'x9y8z7@noemail.com',
         ]);
 
@@ -53,11 +55,11 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
     /**
      * AC 2: Cache key for ->first() is distinct from ->get() when results differ.
      */
-    public function testFirstCacheKeyIsDistinctFromGet()
+    public function test_first_cache_key_is_distinct_from_get()
     {
         // Warm both caches
         $collection = (new Author)->get();
-        $model      = (new Author)->first();
+        $model = (new Author)->first();
 
         // first() must return a single Model instance, not a Collection
         $this->assertInstanceOf(Author::class, $model);
@@ -65,19 +67,19 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
 
         // The cache keys must be different
         $firstKey = sha1(
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
-            ":authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first"
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite".
+            ':authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first'
         );
         $getKey = sha1(
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
-            ":authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null"
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite".
+            ':authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null'
         );
         $this->assertNotEquals($firstKey, $getKey);
 
         // The cached value under the -first key must be a single model, not a collection
         $tags = [
-            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
-            ":genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite".
+            ':genealabslaravelmodelcachingtestsfixturesauthor',
         ];
         $cached = $this->cache()->tags($tags)->get($firstKey);
         $this->assertNotNull($cached, 'No cache entry found for ->first()');
@@ -93,10 +95,10 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
      * AC 3: Regression — ->first() on composite where conditions (unique-key pattern)
      *       returns fresh data after model updates.
      */
-    public function testFirstOnCompositeWhereReturnsNonStaleResultAfterUpdate()
+    public function test_first_on_composite_where_returns_non_stale_result_after_update()
     {
-        $email = 'composite-' . uniqid() . '@noemail.com';
-        $name  = 'Composite Test Author';
+        $email = 'composite-'.uniqid().'@noemail.com';
+        $name = 'Composite Test Author';
 
         // Create an author matched by the composite where
         $author = Author::create(['name' => $name, 'email' => $email]);

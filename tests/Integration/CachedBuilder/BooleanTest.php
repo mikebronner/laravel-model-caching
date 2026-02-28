@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -8,7 +10,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class BooleanTest extends IntegrationTestCase
 {
-    public function testBooleanWhereTrueCreatesCorrectCacheKey()
+    public function test_boolean_where_true_creates_correct_cache_key()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-is_famous_=_1-authors.deleted_at_null");
         $tags = [
@@ -16,23 +18,23 @@ class BooleanTest extends IntegrationTestCase
         ];
 
         $authors = (new Author)
-            ->where("is_famous", true)
+            ->where('is_famous', true)
             ->get();
         $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
-            ->where("is_famous", true)
+            ->where('is_famous', true)
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $authors->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($authors);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testBooleanWhereFalseCreatesCorrectCacheKey()
+    public function test_boolean_where_false_creates_correct_cache_key()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-is_famous_=_-authors.deleted_at_null");
         $tags = [
@@ -40,23 +42,23 @@ class BooleanTest extends IntegrationTestCase
         ];
 
         $authors = (new Author)
-            ->where("is_famous", false)
+            ->where('is_famous', false)
             ->get();
         $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
-            ->where("is_famous", false)
+            ->where('is_famous', false)
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $authors->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($authors);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testBooleanWhereHasRelationWithFalseConditionAndAdditionalParentRawCondition()
+    public function test_boolean_where_has_relation_with_false_condition_and_additional_parent_raw_condition()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-exists-and_books.author_id_=_authors.id-is_famous_=_-authors.deleted_at_null-_and_title_=_Mixed_Clause");
         $tags = [
@@ -70,7 +72,7 @@ class BooleanTest extends IntegrationTestCase
             ->whereHas('author', function ($query) {
                 return $query->where('is_famous', false);
             })
-            ->whereRaw("title = ?", ['Mixed Clause']) // Test ensures this binding is included in the key
+            ->whereRaw('title = ?', ['Mixed Clause']) // Test ensures this binding is included in the key
             ->get();
         $cachedResults = $this->cache()
             ->tags($tags)
@@ -79,11 +81,11 @@ class BooleanTest extends IntegrationTestCase
             ->whereHas('author', function ($query) {
                 return $query->where('is_famous', false);
             })
-            ->whereRaw("title = ?", ['Mixed Clause'])
+            ->whereRaw('title = ?', ['Mixed Clause'])
             ->get();
 
-        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $books->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
         $this->assertNotEmpty($books);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);

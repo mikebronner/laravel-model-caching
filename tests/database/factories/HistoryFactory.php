@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\History;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
@@ -11,7 +13,7 @@ class HistoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'    => $this->faker->name(),
+            'name' => $this->faker->name(),
             'user_id' => User::factory(),
         ];
     }

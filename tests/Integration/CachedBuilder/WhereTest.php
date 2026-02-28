@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -8,25 +10,25 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WhereTest extends IntegrationTestCase
 {
-    public function testWithQuery()
+    public function test_with_query()
     {
         $books = (new Book)
             ->where(function ($query) {
-                $query->where("id", ">", "1")
-                    ->where("id", "<", "5");
+                $query->where('id', '>', '1')
+                    ->where('id', '<', '5');
             })
             ->get();
         $uncachedBooks = (new UncachedBook)
             ->where(function ($query) {
-                $query->where("id", ">", "1")
-                    ->where("id", "<", "5");
+                $query->where('id', '>', '1')
+                    ->where('id', '<', '5');
             })
             ->get();
 
-        $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+        $this->assertEquals($books->pluck('id'), $uncachedBooks->pluck('id'));
     }
 
-    public function testColumnsRelationshipWhereClauseParsing()
+    public function test_columns_relationship_where_clause_parsing()
     {
         $author = (new Author)
             ->orderBy('name')
@@ -60,7 +62,7 @@ class WhereTest extends IntegrationTestCase
             str_replace(' ', '_', strtolower($operator)),
             '_',
             $author->name,
-            "-authors.deleted_at_null"
+            '-authors.deleted_at_null',
         ];
         $key = sha1(implode('', $keyParts));
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
@@ -76,7 +78,7 @@ class WhereTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
-    public function testWhereClauseParsingOfOperators()
+    public function test_where_clause_parsing_of_operators()
     {
         $this->processWhereClauseTestWithOperator('=');
         $this->processWhereClauseTestWithOperator('!=');
@@ -87,46 +89,46 @@ class WhereTest extends IntegrationTestCase
         $this->processWhereClauseTestWithOperator('NOT LIKE');
     }
 
-    public function testTwoWhereClausesAfterEachOther()
+    public function test_two_where_clauses_after_each_other()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-id_>_0-id_<_100-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $authors = (new Author)
-            ->where("id", ">", 0)
-            ->where("id", "<", 100)
+            ->where('id', '>', 0)
+            ->where('id', '<', 100)
             ->get();
         $cachedResults = $this->cache()
             ->tags($tags)
             ->get($key)['value'];
         $liveResults = (new UncachedAuthor)
-            ->where("id", ">", 0)
-            ->where("id", "<", 100)
+            ->where('id', '>', 0)
+            ->where('id', '<', 100)
             ->get();
 
         $this->assertEmpty($authors->diffKeys($cachedResults));
         $this->assertEmpty($liveResults->diffKeys($cachedResults));
     }
 
-    public function testWhereUsesCorrectBinding()
+    public function test_where_uses_correct_binding()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-nested-name_like_B%-name_like_G%-authors.deleted_at_null");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $authors = (new Author)
-            ->where("name", "LIKE", "A%")
-            ->orWhere("name", "LIKE", "D%")
+            ->where('name', 'LIKE', 'A%')
+            ->orWhere('name', 'LIKE', 'D%')
             ->get();
         $authors = (new Author)
-            ->where("name", "LIKE", "B%")
-            ->orWhere("name", "LIKE", "G%")
+            ->where('name', 'LIKE', 'B%')
+            ->orWhere('name', 'LIKE', 'G%')
             ->get();
         $cachedResults = collect($this->cache()
             ->tags($tags)
             ->get($key)['value']);
         $liveResults = (new UncachedAuthor)
-            ->where("name", "LIKE", "B%")
-            ->orWhere("name", "LIKE", "G%")
+            ->where('name', 'LIKE', 'B%')
+            ->orWhere('name', 'LIKE', 'G%')
             ->get();
 
         $this->assertEquals($liveResults->toArray(), $authors->toArray());

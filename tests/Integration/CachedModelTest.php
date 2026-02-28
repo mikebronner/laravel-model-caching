@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
@@ -10,7 +12,7 @@ use ReflectionClass;
 
 class CachedModelTest extends IntegrationTestCase
 {
-    public function testAllModelResultsCreatesCache()
+    public function test_all_model_results_creates_cache()
     {
         $authors = (new Author)->all();
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null");
@@ -29,12 +31,12 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffAssoc($cachedResults));
     }
 
-    public function testScopeDisablesCaching()
+    public function test_scope_disables_caching()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
         $authors = (new Author)
-            ->where("name", "Bruno")
+            ->where('name', 'Bruno')
             ->disableCache()
             ->get();
 
@@ -47,13 +49,13 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertNotEquals($authors, $cachedResults);
     }
 
-    public function testScopeDisablesCachingWhenCalledOnModel()
+    public function test_scope_disables_caching_when_called_on_model()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:test-prefix:genealabslaravelmodelcachingtestsfixturesauthor"];
         $authors = (new PrefixedAuthor)
             ->disableCache()
-            ->where("name", "Bruno")
+            ->where('name', 'Bruno')
             ->get();
 
         $cachedResults = $this->cache()
@@ -65,13 +67,13 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertNotEquals($authors, $cachedResults);
     }
 
-    public function testScopeDisableCacheDoesntCrashWhenCachingIsDisabledInConfig()
+    public function test_scope_disable_cache_doesnt_crash_when_caching_is_disabled_in_config()
     {
         config(['laravel-model-caching.enabled' => false]);
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:test-prefix:authors:genealabslaravelmodelcachingtestsfixturesauthor");
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:test-prefix:genealabslaravelmodelcachingtestsfixturesauthor"];
         $authors = (new PrefixedAuthor)
-            ->where("name", "Bruno")
+            ->where('name', 'Bruno')
             ->disableCache()
             ->get();
 
@@ -84,7 +86,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertNotEquals($authors, $cachedResults);
     }
 
-    public function testAllMethodCachingCanBeDisabledViaConfig()
+    public function test_all_method_caching_can_be_disabled_via_config()
     {
         config(['laravel-model-caching.enabled' => false]);
         $authors = (new Author)
@@ -106,7 +108,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertCount(10, $authors);
     }
 
-    public function testWhereHasIsBeingCached()
+    public function test_where_has_is_being_cached()
     {
         $books = (new Book)
             ->with('author')
@@ -130,7 +132,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertEquals(1, $cachedResults->first()->author->id);
     }
 
-    public function testWhereHasWithClosureIsBeingCached()
+    public function test_where_has_with_closure_is_being_cached()
     {
         $books1 = (new Book)
             ->with('author')
@@ -150,7 +152,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertNotEmpty($books1->diffKeys($books2));
     }
 
-    public function testCooldownIsNotQueriedForNormalCachedModels()
+    public function test_cooldown_is_not_queried_for_normal_cached_models()
     {
         $class = new ReflectionClass(Author::class);
         $method = $class->getMethod('getModelCacheCooldown');
@@ -161,7 +163,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertEquals([null, null, null], $method->invokeArgs($author, [$author]));
     }
 
-    public function testCooldownIsQueriedForCooldownModels()
+    public function test_cooldown_is_queried_for_cooldown_models()
     {
         $class = new ReflectionClass(AuthorWithCooldown::class);
         $method = $class->getMethod('getModelCacheCooldown');
@@ -177,7 +179,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertNull($savedAt);
     }
 
-    public function testModelCacheDoesntInvalidateDuringCooldownPeriod()
+    public function test_model_cache_doesnt_invalidate_during_cooldown_period()
     {
         $authors = (new AuthorWithCooldown)
             ->withCacheCooldownSeconds(1)
@@ -198,7 +200,7 @@ class CachedModelTest extends IntegrationTestCase
         $this->assertCount(11, $authorsAfterCooldown);
     }
 
-    public function testModelCacheDoesInvalidateWhenNoCooldownPeriod()
+    public function test_model_cache_does_invalidate_when_no_cooldown_period()
     {
         $authors = (new AuthorWithCooldown)
             ->get();

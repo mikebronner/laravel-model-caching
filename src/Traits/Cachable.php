@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 

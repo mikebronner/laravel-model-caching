@@ -1,16 +1,18 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Console\Commands;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\Console\Commands;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Support\Str;
 
 class FlushTest extends IntegrationTestCase
 {
-    public function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,7 +21,7 @@ class FlushTest extends IntegrationTestCase
         }
     }
 
-    public function testGivenModelIsFlushed()
+    public function test_given_model_is_flushed()
     {
         $authors = (new Author)->all();
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null");
@@ -43,7 +45,7 @@ class FlushTest extends IntegrationTestCase
         $this->assertEquals($result, 0);
     }
 
-    public function testExtendedModelIsFlushed()
+    public function test_extended_model_is_flushed()
     {
         $authors = (new PrefixedAuthor)
             ->get();
@@ -69,7 +71,7 @@ class FlushTest extends IntegrationTestCase
         $this->assertEquals($result, 0);
     }
 
-    public function testGivenModelWithRelationshipIsFlushed()
+    public function test_given_model_with_relationship_is_flushed()
     {
         $authors = (new Author)->with('books')->get();
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-testing:{$this->testingSqlitePath}testing.sqlite:books");
@@ -97,18 +99,18 @@ class FlushTest extends IntegrationTestCase
         $this->assertEquals($result, 0);
     }
 
-    public function testNonCachedModelsCannotBeFlushed()
+    public function test_non_cached_models_cannot_be_flushed()
     {
         $result = $this->artisan(
-                'modelCache:clear',
-                ['--model' => UncachedAuthor::class]
-            )
+            'modelCache:clear',
+            ['--model' => UncachedAuthor::class]
+        )
             ->execute();
 
         $this->assertEquals($result, 1);
     }
 
-    public function testAllModelsAreFlushed()
+    public function test_all_models_are_flushed()
     {
         (new Author)->all();
         (new Book)->all();

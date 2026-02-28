@@ -1,27 +1,29 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class UpdateExistingPivotTest extends IntegrationTestCase
 {
-    public function testInRandomOrderCachesResults()
+    public function test_in_random_order_caches_results()
     {
         $book = (new Book)
-            ->with("stores")
-            ->whereHas("stores")
+            ->with('stores')
+            ->whereHas('stores')
             ->first();
         $book->stores()
             ->updateExistingPivot(
                 $book->stores->first()->id,
-                ["test" => "value"]
+                ['test' => 'value']
             );
         $updatedCount = (new Book)
-            ->with("stores")
-            ->whereHas("stores")
+            ->with('stores')
+            ->whereHas('stores')
             ->first()
             ->stores()
-            ->wherePivot("test", "value")
+            ->wherePivot('test', 'value')
             ->count();
 
         $this->assertEquals(1, $updatedCount);

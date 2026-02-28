@@ -1,20 +1,21 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UncachedHistory extends Model
 {
     protected $fillable = [
-        "name",
-        "user_id",
+        'name',
+        'user_id',
     ];
-    protected $table = "histories";
 
-    public function user() : BelongsTo
+    protected $table = 'histories';
+
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(UncachedUser::class, "user_id");
+        return $this->belongsTo(UncachedUser::class, 'user_id');
     }
 }

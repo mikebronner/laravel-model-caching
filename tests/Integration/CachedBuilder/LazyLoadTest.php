@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -10,7 +12,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class LazyLoadTest extends IntegrationTestCase
 {
-    public function testBelongsToRelationship()
+    public function test_belongs_to_relationship()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.id_=_1-authors.deleted_at_null-first");
         $tags = [
@@ -18,7 +20,7 @@ class LazyLoadTest extends IntegrationTestCase
         ];
 
         $result = (new Book)
-            ->where("id", 1)
+            ->where('id', 1)
             ->first()
             ->author;
         $cachedResult = $this
@@ -26,7 +28,7 @@ class LazyLoadTest extends IntegrationTestCase
             ->tags($tags)
             ->get($key)['value'];
         $uncachedResult = (new UncachedBook)
-            ->where("id", 1)
+            ->where('id', 1)
             ->first()
             ->author;
 
@@ -40,7 +42,7 @@ class LazyLoadTest extends IntegrationTestCase
         $this->assertNotNull($uncachedResult);
     }
 
-    public function testHasManyRelationship()
+    public function test_has_many_relationship()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.author_id_=_1-books.author_id_notnull");
         $tags = [
@@ -58,8 +60,8 @@ class LazyLoadTest extends IntegrationTestCase
             ->find(1)
             ->books;
 
-        $this->assertEquals($uncachedResult->pluck("id"), $result->pluck("id"));
-        $this->assertEquals($uncachedResult->pluck("id"), $cachedResult->pluck("id"));
+        $this->assertEquals($uncachedResult->pluck('id'), $result->pluck('id'));
+        $this->assertEquals($uncachedResult->pluck('id'), $cachedResult->pluck('id'));
         $this->assertEquals(Book::class, get_class($result->first()));
         $this->assertEquals(Book::class, get_class($cachedResult->first()));
         $this->assertEquals(UncachedBook::class, get_class($uncachedResult->first()));
@@ -68,7 +70,7 @@ class LazyLoadTest extends IntegrationTestCase
         $this->assertNotEmpty($uncachedResult);
     }
 
-    public function testHasOneRelationship()
+    public function test_has_one_relationship()
     {
         $authorId = (new UncachedProfile)
             ->first()

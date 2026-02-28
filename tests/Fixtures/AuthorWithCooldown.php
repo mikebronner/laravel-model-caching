@@ -1,12 +1,10 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 class AuthorWithCooldown extends Author
 {
-    protected $table = "authors";
+    protected $table = 'authors';
+
     protected $cacheCooldownSeconds = 1;
 }

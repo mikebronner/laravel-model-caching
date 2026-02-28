@@ -17,9 +17,13 @@ use Illuminate\Support\Carbon;
 trait Caching
 {
     protected $isCachable = true;
+
     protected $scopesAreApplied = false;
-    protected $macroKey = "";
+
+    protected $macroKey = '';
+
     protected $withoutGlobalScopes = [];
+
     protected $withoutAllGlobalScopes = false;
 
     public function __call($method, $parameters)
@@ -33,7 +37,7 @@ trait Caching
             $this->macroKey .= "-{$method}";
 
             if ($parameters) {
-                $this->macroKey .= implode("_", $parameters);
+                $this->macroKey .= implode('_', $parameters);
             }
         }
 
@@ -52,7 +56,7 @@ trait Caching
     protected function applyScopesToInstance()
     {
         if (
-            ! property_exists($this, "scopes")
+            ! property_exists($this, 'scopes')
             || $this->scopesAreApplied
             || $this->withoutAllGlobalScopes
         ) {
@@ -87,10 +91,10 @@ trait Caching
     public function cache(array $tags = [])
     {
         $cache = Container::getInstance()
-            ->make("cache");
+            ->make('cache');
         $config = Container::getInstance()
-            ->make("config")
-            ->get("laravel-model-caching.store");
+            ->make('config')
+            ->get('laravel-model-caching.store');
 
         if ($config) {
             $cache = $cache->store($config);
@@ -132,7 +136,6 @@ trait Caching
         }
     }
 
-
     /**
      * Get the cache key metadata needed for key generation.
      *
@@ -156,32 +159,32 @@ trait Caching
         $this->scopesAreApplied = $applied;
     }
 
-    protected function getCachePrefix() : string
+    protected function getCachePrefix(): string
     {
         $cachePrefix = Container::getInstance()
-            ->make("config")
-            ->get("laravel-model-caching.cache-prefix", "");
+            ->make('config')
+            ->get('laravel-model-caching.cache-prefix', '');
 
         if (
             $this->model
-            && property_exists($this->model, "cachePrefix")
+            && property_exists($this->model, 'cachePrefix')
         ) {
             $cachePrefix = $this->model->cachePrefix;
         }
 
         $cachePrefix = $cachePrefix
             ? "{$cachePrefix}:"
-            : "";
+            : '';
 
-        return "genealabs:laravel-model-caching:"
-            . $cachePrefix;
+        return 'genealabs:laravel-model-caching:'
+            .$cachePrefix;
     }
 
     protected function makeCacheKey(
         array $columns = ['*'],
         $idColumn = null,
         string $keyDifferentiator = ''
-    ) : string {
+    ): string {
         // When called from a Builder context, use clone-based generation
         // to avoid mutating the original builder during key computation
         if ($this instanceof \Illuminate\Database\Eloquent\Builder) {
@@ -199,22 +202,22 @@ trait Caching
         $eagerLoad = $this->eagerLoad ?? [];
         $model = $this;
 
-        if (property_exists($this, "model")) {
+        if (property_exists($this, 'model')) {
             $model = $this->model;
         }
 
-        if (method_exists($this, "getModel")) {
+        if (method_exists($this, 'getModel')) {
             $model = $this->getModel();
         }
 
         $query = $this->query
             ?? Container::getInstance()
-                ->make("db")
+                ->make('db')
                 ->query();
 
         if (
             $this->query
-            && method_exists($this->query, "getQuery")
+            && method_exists($this->query, 'getQuery')
         ) {
             $query = $this->query->getQuery();
         }
@@ -223,7 +226,7 @@ trait Caching
             ->make($columns, $idColumn, $keyDifferentiator);
     }
 
-    protected function makeCacheTags() : array
+    protected function makeCacheTags(): array
     {
         $eagerLoad = $this->eagerLoad ?? [];
         $model = $this->getModel() instanceof Model
@@ -232,7 +235,7 @@ trait Caching
         $query = $this->query instanceof Builder
             ? $this->query
             : Container::getInstance()
-                ->make("db")
+                ->make('db')
                 ->query();
         $tags = (new CacheTags($eagerLoad, $model, $query))
             ->make();
@@ -240,7 +243,7 @@ trait Caching
         return $tags;
     }
 
-    public function getModelCacheCooldown(Model $instance) : array
+    public function getModelCacheCooldown(Model $instance): array
     {
         if (! $instance->cacheCooldownSeconds) {
             return [null, null, null];
@@ -262,7 +265,7 @@ trait Caching
         Model $instance,
         string $cachePrefix,
         string $modelClassName
-    ) : array {
+    ): array {
         return [
             $instance
                 ->cache()
@@ -302,7 +305,7 @@ trait Caching
         $instance->flushCache();
     }
 
-    protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = "")
+    protected function checkCooldownAndFlushAfterPersisting(Model $instance, string $relationship = '')
     {
         if (! $this->isCachable()) {
             return;
@@ -325,7 +328,7 @@ trait Caching
         }
     }
 
-    protected function flushRelationshipCache(Model $instance, string $relationship = ""): void
+    protected function flushRelationshipCache(Model $instance, string $relationship = ''): void
     {
         if (! $relationship) {
             return;
@@ -334,7 +337,7 @@ trait Caching
         $relationObject = $instance->$relationship();
         $relationshipInstance = $relationObject->getModel();
 
-        if (method_exists($relationshipInstance, "flushCache")) {
+        if (method_exists($relationshipInstance, 'flushCache')) {
             $relationshipInstance->flushCache();
         } else {
             // Related model is not cacheable — build the cache tag for the
@@ -344,18 +347,18 @@ trait Caching
             $tags = (new CacheTags(
                 [],
                 $relationshipInstance,
-                Container::getInstance()->make("db")->query()
+                Container::getInstance()->make('db')->query()
             ))->make();
 
             $instance->cache($tags)->flush();
         }
     }
 
-    public function isCachable() : bool
+    public function isCachable(): bool
     {
         $isCacheDisabled = ! Container::getInstance()
-            ->make("config")
-            ->get("laravel-model-caching.enabled");
+            ->make('config')
+            ->get('laravel-model-caching.enabled');
 
         if ($isCacheDisabled) {
             return false;
@@ -364,7 +367,7 @@ trait Caching
         $allRelationshipsAreCachable = true;
 
         if (
-            property_exists($this, "eagerLoad")
+            property_exists($this, 'eagerLoad')
             && $this->eagerLoad
         ) {
             $allRelationshipsAreCachable = collect($this
@@ -381,7 +384,7 @@ trait Caching
                     $relatedModel = $this->model->$related()->getRelated();
 
                     if (
-                        ! method_exists($relatedModel, "isCachable")
+                        ! method_exists($relatedModel, 'isCachable')
                         || ! $relatedModel->isCachable()
                     ) {
                         return false;

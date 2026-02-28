@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\PrinterFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -17,11 +19,11 @@ class Printer extends Model
     }
 
     protected $fillable = [
-        "book_id",
+        'book_id',
         'name',
     ];
 
-    public function book() : BelongsTo
+    public function book(): BelongsTo
     {
         return $this->belongsTo(Book::class);
     }

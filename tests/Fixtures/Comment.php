@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\CommentFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
@@ -19,11 +21,11 @@ class Comment extends Model
     protected $fillable = [
         'description',
         'subject',
-        "commentable_id",
-        "commentable_type",
+        'commentable_id',
+        'commentable_type',
     ];
 
-    public function commentable() : MorphTo
+    public function commentable(): MorphTo
     {
         return $this->morphTo();
     }

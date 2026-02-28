@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -8,10 +10,10 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WithCountTest extends IntegrationTestCase
 {
-    public function testWithCountUpdatesAfterRecordIsAdded()
+    public function test_with_count_updates_after_record_is_added()
     {
         $author1 = (new Author)
-            ->withCount("books")
+            ->withCount('books')
             ->first();
         Book::factory()->count(1)
             ->make()
@@ -23,18 +25,18 @@ class WithCountTest extends IntegrationTestCase
             });
 
         $author2 = (new Author)
-            ->withCount("books")
-            ->where("id", $author1->id)
+            ->withCount('books')
+            ->where('id', $author1->id)
             ->first();
 
         $this->assertNotEquals($author1->books_count, $author2->books_count);
         $this->assertEquals($author1->books_count + 1, $author2->books_count);
     }
 
-    public function testWithCountOnMorphManyRelationshipUpdatesAfterRecordIsAdded()
+    public function test_with_count_on_morph_many_relationship_updates_after_record_is_added()
     {
         $book1 = (new Book)
-            ->withCount("comments")
+            ->withCount('comments')
             ->first();
         $comment = Comment::factory()->count(1)
             ->create()
@@ -43,8 +45,8 @@ class WithCountTest extends IntegrationTestCase
         $book1->comments()->save($comment);
 
         $book2 = (new Book)
-            ->withCount("comments")
-            ->where("id", $book1->id)
+            ->withCount('comments')
+            ->where('id', $book1->id)
             ->first();
 
         $this->assertNotEquals($book1->comments_count, $book2->comments_count);

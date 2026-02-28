@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,13 +8,13 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class FirstTest extends IntegrationTestCase
 {
-    public function testFirstReturnsAllAttributesForModel()
+    public function test_first_returns_all_attributes_for_model()
     {
         $author = (new Author)
-            ->where("id", "=", 1)
+            ->where('id', '=', 1)
             ->first();
         $uncachedAuthor = (new UncachedAuthor)
-            ->where("id", "=", 1)
+            ->where('id', '=', 1)
             ->first();
 
         $this->assertEquals($author->id, $uncachedAuthor->id);
@@ -22,7 +24,7 @@ class FirstTest extends IntegrationTestCase
         $this->assertEquals($author->name, $uncachedAuthor->name);
     }
 
-    public function testFirstIsNotTheSameAsAll()
+    public function test_first_is_not_the_same_as_all()
     {
         $authors = (new Author)
             ->all();

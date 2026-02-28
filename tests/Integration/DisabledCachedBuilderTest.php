@@ -1,16 +1,18 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 /**
-* @SuppressWarnings(PHPMD.TooManyPublicMethods)
-* @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
  */
 class DisabledCachedBuilderTest extends IntegrationTestCase
 {
-    public function testAvgModelResultsIsNotCached()
+    public function test_avg_model_results_is_not_cached()
     {
         $authorId = (new Author)
             ->with('books', 'profile')
@@ -34,7 +36,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testChunkModelResultsIsNotCached()
+    public function test_chunk_model_results_is_not_cached()
     {
         $cachedChunks = collect([
             'authors' => collect(),
@@ -80,7 +82,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         }
     }
 
-    public function testCountModelResultsIsNotCached()
+    public function test_count_model_results_is_not_cached()
     {
         $authors = (new Author)
             ->with('books', 'profile')
@@ -104,7 +106,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResults);
     }
 
-    public function testCursorModelResultsIsNotCached()
+    public function test_cursor_model_results_is_not_cached()
     {
         $authors = (new Author)
             ->with('books', 'profile')
@@ -130,7 +132,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResults);
     }
 
-    public function testFindModelResultsIsNotCached()
+    public function test_find_model_results_is_not_cached()
     {
         $author = (new Author)
             ->with('books')
@@ -151,7 +153,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testGetModelResultsIsNotCached()
+    public function test_get_model_results_is_not_cached()
     {
         $authors = (new Author)
             ->with('books', 'profile')
@@ -175,7 +177,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResults);
     }
 
-    public function testMaxModelResultsIsNotCached()
+    public function test_max_model_results_is_not_cached()
     {
         $authorId = (new Author)
             ->with('books', 'profile')
@@ -199,7 +201,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testMinModelResultsIsNotCached()
+    public function test_min_model_results_is_not_cached()
     {
         $authorId = (new Author)
             ->with('books', 'profile')
@@ -223,7 +225,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testPluckModelResultsIsNotCached()
+    public function test_pluck_model_results_is_not_cached()
     {
         $authors = (new Author)
             ->with('books', 'profile')
@@ -247,7 +249,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResults);
     }
 
-    public function testSumModelResultsIsNotCached()
+    public function test_sum_model_results_is_not_cached()
     {
         $authorId = (new Author)
             ->with('books', 'profile')
@@ -271,7 +273,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testValueModelResultsIsNotCached()
+    public function test_value_model_results_is_not_cached()
     {
         $author = (new Author)
             ->with('books', 'profile')
@@ -296,7 +298,7 @@ class DisabledCachedBuilderTest extends IntegrationTestCase
         $this->assertNull($cachedResult);
     }
 
-    public function testPaginationIsCached()
+    public function test_pagination_is_cached()
     {
         $authors = (new Author)
             ->disableCache()

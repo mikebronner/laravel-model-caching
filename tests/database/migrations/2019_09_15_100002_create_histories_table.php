@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateHistoriesTable extends Migration
 {
@@ -9,10 +9,10 @@ class CreateHistoriesTable extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger("user_id");
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
-            $table->string("name");
+            $table->string('name');
         });
     }
 }

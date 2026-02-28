@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SubQueryOrderByTest extends IntegrationTestCase
 {
-    public function testOrderByDesc()
+    public function test_order_by_desc()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-publisher_id_in_11_12_13_14_15_orderBy_(select \"name\" from \"publishers\" where \"id\" = \"books\".\"publisher_id\" limit 1)_desc");
         $tags = [
@@ -27,9 +29,9 @@ class SubQueryOrderByTest extends IntegrationTestCase
 
         $books = Book::whereIn('publisher_id', $publisherIds)->orderByDesc(
             Publisher::select('name')
-            ->whereColumn('id', 'books.publisher_id')
-            ->limit(1)
-        ) ->get()->pluck('id')->filter()->toArray();
+                ->whereColumn('id', 'books.publisher_id')
+                ->limit(1)
+        )->get()->pluck('id')->filter()->toArray();
 
         $cachedResults = $this
             ->cache()
@@ -38,8 +40,8 @@ class SubQueryOrderByTest extends IntegrationTestCase
 
         $liveResults = UncachedBook::whereIn('publisher_id', $publisherIds)->orderByDesc(
             UncachedPublisher::select('name')
-            ->whereColumn('id', 'books.publisher_id')
-            ->limit(1)
+                ->whereColumn('id', 'books.publisher_id')
+                ->limit(1)
         )->get()->pluck('id')->filter()->toArray();
 
         $this->assertCount(10, $books);

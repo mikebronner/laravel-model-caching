@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\UncachedPublisherFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,9 +19,10 @@ class UncachedPublisher extends Model
     protected $fillable = [
         'name',
     ];
+
     protected $table = 'publishers';
 
-    public function books() : HasMany
+    public function books(): HasMany
     {
         return $this->hasMany(Book::class, 'publisher_id', 'id');
     }

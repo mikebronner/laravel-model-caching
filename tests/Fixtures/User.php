@@ -1,14 +1,14 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\UserFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -21,33 +21,33 @@ class User extends Authenticatable
     }
 
     protected $fillable = [
-        "name",
-        "supplier_id",
+        'name',
+        'supplier_id',
     ];
 
-    public function roles() : BelongsToMany
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
     }
 
-    public function rolesWithCustomPivot() : BelongsToMany
+    public function rolesWithCustomPivot(): BelongsToMany
     {
         return $this->belongsToMany(Role::class)->using(RoleUser::class);
     }
 
-    public function uncachedRolesWithCustomPivot() : BelongsToMany
+    public function uncachedRolesWithCustomPivot(): BelongsToMany
     {
         return $this->belongsToMany(UncachedRole::class, 'role_user', 'user_id', 'role_id')
             ->using(RoleUser::class);
     }
 
-    public function supplier() : BelongsTo
+    public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
     }
 
-    public function image() : MorphOne
+    public function image(): MorphOne
     {
-        return $this->morphOne(Image::class, "imagable");
+        return $this->morphOne(Image::class, 'imagable');
     }
 }

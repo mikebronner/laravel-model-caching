@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
@@ -76,7 +78,7 @@ trait CachesOneOrManyThrough
             return parent::pluck($column, $key);
         }
 
-        $keyDifferentiator = "-pluck_{$column}" . ($key ? "_{$key}" : '');
+        $keyDifferentiator = "-pluck_{$column}".($key ? "_{$key}" : '');
         $cacheKey = $this->makeCacheKey([$column], null, $keyDifferentiator);
 
         return $this->cachedValue(func_get_args(), $cacheKey);

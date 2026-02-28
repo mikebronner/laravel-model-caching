@@ -8,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class CacheKeyGeneratorTest extends IntegrationTestCase
 {
-    public function testOriginalBuilderIsNotMutatedDuringKeyGeneration(): void
+    public function test_original_builder_is_not_mutated_during_key_generation(): void
     {
         $builder = (new Author)->newQuery()->where('name', 'Test');
 
@@ -27,7 +27,7 @@ class CacheKeyGeneratorTest extends IntegrationTestCase
         $this->assertNotEmpty($key);
     }
 
-    public function testCloneUsedForKeyGenerationIsDistinctFromOriginal(): void
+    public function test_clone_used_for_key_generation_is_distinct_from_original(): void
     {
         $builder = (new Author)->newQuery()->where('id', '>', 5);
 
@@ -44,7 +44,7 @@ class CacheKeyGeneratorTest extends IntegrationTestCase
         $this->assertNotSame($key1, $key3);
     }
 
-    public function testBuilderWithEagerLoadsGeneratesConsistentKeys(): void
+    public function test_builder_with_eager_loads_generates_consistent_keys(): void
     {
         $builder = (new Author)->newQuery()->with('books');
 
@@ -55,7 +55,7 @@ class CacheKeyGeneratorTest extends IntegrationTestCase
         $this->assertNotEmpty($key1);
     }
 
-    public function testKeyDifferentiatorChangesKey(): void
+    public function test_key_differentiator_changes_key(): void
     {
         $builder = (new Author)->newQuery();
 
@@ -68,7 +68,7 @@ class CacheKeyGeneratorTest extends IntegrationTestCase
         $this->assertNotSame($keyCount, $keyFirst);
     }
 
-    public function testColumnsAffectCacheKey(): void
+    public function test_columns_affect_cache_key(): void
     {
         $builder = (new Author)->newQuery();
 
@@ -78,7 +78,7 @@ class CacheKeyGeneratorTest extends IntegrationTestCase
         $this->assertNotSame($keyAll, $keySpecific);
     }
 
-    public function testOriginalBuilderScopesAreNotAppliedAfterKeyGeneration(): void
+    public function test_original_builder_scopes_are_not_applied_after_key_generation(): void
     {
         $builder = (new Author)->newQuery();
 

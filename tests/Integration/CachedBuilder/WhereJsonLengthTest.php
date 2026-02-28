@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WhereJsonLengthTest extends IntegrationTestCase
 {
-    public function testWithInUsingCollectionQueryNoOperator()
+    public function test_with_in_using_collection_query_no_operator()
     {
         $length = 2;
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->tags_=_$length-authors.deleted_at_null");
@@ -14,8 +16,8 @@ class WhereJsonLengthTest extends IntegrationTestCase
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
 
-        $authors = (new Author)->whereJsonLength("finances->tags", $length)->get();
-        $liveResults = (new UncachedAuthor)->whereJsonLength("finances->tags", $length)->get();
+        $authors = (new Author)->whereJsonLength('finances->tags', $length)->get();
+        $liveResults = (new UncachedAuthor)->whereJsonLength('finances->tags', $length)->get();
 
         $cachedResults = $this
             ->cache()
@@ -24,19 +26,19 @@ class WhereJsonLengthTest extends IntegrationTestCase
 
         $this->assertCount(10, $liveResults);
         $this->assertCount(10, $cachedResults);
-        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $authors->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 
-    public function testWithInUsingCollectionQueryWithOperator()
+    public function test_with_in_using_collection_query_with_operator()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->tags_>_1-authors.deleted_at_null");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
         ];
 
-        $authors = (new Author)->whereJsonLength("finances->tags", '>', 1)->get();
-        $liveResults = (new UncachedAuthor)->whereJsonLength("finances->tags", '>', 1)->get();
+        $authors = (new Author)->whereJsonLength('finances->tags', '>', 1)->get();
+        $liveResults = (new UncachedAuthor)->whereJsonLength('finances->tags', '>', 1)->get();
 
         $cachedResults = $this
             ->cache()
@@ -45,7 +47,7 @@ class WhereJsonLengthTest extends IntegrationTestCase
 
         $this->assertCount(10, $liveResults);
         $this->assertCount(10, $cachedResults);
-        $this->assertEquals($liveResults->pluck("id"), $authors->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $authors->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 }

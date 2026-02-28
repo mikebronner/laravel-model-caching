@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -8,7 +10,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WhereRawTest extends IntegrationTestCase
 {
-    public function testRawWhereClauseParsing()
+    public function test_raw_where_clause_parsing()
     {
         $authors = collect([(new Author)
             ->whereRaw('name <> \'\'')
@@ -26,32 +28,32 @@ class WhereRawTest extends IntegrationTestCase
         $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
     }
 
-    public function testWhereRawWithQueryParameters()
+    public function test_where_raw_with_query_parameters()
     {
         $authorName = (new Author)->first()->name;
         $authors = (new Author)
-            ->where("name", "!=", "test")
+            ->where('name', '!=', 'test')
             ->whereRaw("name != 'test3'")
-            ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
+            ->whereRaw('name = ? AND name != ?', [$authorName, 'test2'])
             ->get();
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_!=_test-_and_name_!=_'test3'-_and_name_=_" . str_replace(" ", "_", $authorName) . "__AND_name_!=_test2-authors.deleted_at_null");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-name_!=_test-_and_name_!=_'test3'-_and_name_=_".str_replace(' ', '_', $authorName).'__AND_name_!=_test2-authors.deleted_at_null');
         $tags = ["genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor"];
 
         $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
         $liveResults = (new UncachedAuthor)
-            ->where("name", "!=", "test")
+            ->where('name', '!=', 'test')
             ->whereRaw("name != 'test3'")
-            ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
+            ->whereRaw('name = ? AND name != ?', [$authorName, 'test2'])
             ->get();
 
         $this->assertTrue($authors->diffKeys($cachedResults)->isEmpty());
         $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
     }
 
-    public function testMultipleWhereRawCacheUniquely()
+    public function test_multiple_where_raw_cache_uniquely()
     {
         $book1 = (new UncachedBook)->first();
-        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+        $book2 = (new UncachedBook)->orderBy('id', 'DESC')->first();
         $cachedBook1 = (new Book)->whereRaw('title = ?', [$book1->title])->first();
         $cachedBook2 = (new Book)->whereRaw('title = ?', [$book2->title])->first();
 
@@ -59,7 +61,7 @@ class WhereRawTest extends IntegrationTestCase
         $this->assertEquals($cachedBook2->title, $book2->title);
     }
 
-    public function testNestedWhereRawClauses()
+    public function test_nested_where_raw_clauses()
     {
         $expectedIds = [
             1,
@@ -71,39 +73,39 @@ class WhereRawTest extends IntegrationTestCase
 
         $authors = (new Author)
             ->where(function ($query) {
-                $query->orWhereRaw("id BETWEEN 1 AND 3")
-                    ->orWhereRaw("id BETWEEN 5 AND 6");
+                $query->orWhereRaw('id BETWEEN 1 AND 3')
+                    ->orWhereRaw('id BETWEEN 5 AND 6');
             })
             ->get();
 
-        $this->assertEquals($expectedIds, $authors->pluck("id")->toArray());
+        $this->assertEquals($expectedIds, $authors->pluck('id')->toArray());
     }
 
-    public function testNestedWhereRawWithBindings()
+    public function test_nested_where_raw_with_bindings()
     {
         $books = (new Book)
             ->where(function ($query) {
-                $query->whereRaw("title like ? or description like ? or published_at like ? or price like ?", ['%larravel%', '%larravel%', '%larravel%', '%larravel%',]);
+                $query->whereRaw('title like ? or description like ? or published_at like ? or price like ?', ['%larravel%', '%larravel%', '%larravel%', '%larravel%']);
             })->get();
 
         $uncachedBooks = (new UncachedBook)
             ->where(function ($query) {
-                $query->whereRaw("title like ? or description like ? or published_at like ? or price like ?", ['%larravel%', '%larravel%', '%larravel%', '%larravel%',]);
+                $query->whereRaw('title like ? or description like ? or published_at like ? or price like ?', ['%larravel%', '%larravel%', '%larravel%', '%larravel%']);
             })->get();
 
-        $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+        $this->assertEquals($books->pluck('id'), $uncachedBooks->pluck('id'));
     }
 
-    public function testWhereRawParametersCacheUniquely()
+    public function test_where_raw_parameters_cache_uniquely()
     {
         $book1 = (new UncachedBook)->first();
-        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+        $book2 = (new UncachedBook)->orderBy('id', 'DESC')->first();
 
         $result1 = (new Book)
-            ->whereRaw("id = ?", [$book1->id])
+            ->whereRaw('id = ?', [$book1->id])
             ->get();
         $result2 = (new Book)
-            ->whereRaw("id = ?", [$book2->id])
+            ->whereRaw('id = ?', [$book2->id])
             ->get();
         $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book1->id}");
         $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book2->id}");
@@ -115,18 +117,18 @@ class WhereRawTest extends IntegrationTestCase
         $this->assertEquals($cachedBook2->first()->title, $result2->first()->title);
     }
 
-    public function testWhereRawParametersAfterWhereClause()
+    public function test_where_raw_parameters_after_where_clause()
     {
         $book1 = (new UncachedBook)->first();
-        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+        $book2 = (new UncachedBook)->orderBy('id', 'DESC')->first();
 
         $result1 = (new Book)
-            ->where("id", ">", 0)
-            ->whereRaw("id = ?", [$book1->id])
+            ->where('id', '>', 0)
+            ->whereRaw('id = ?', [$book1->id])
             ->get();
         $result2 = (new Book)
-            ->where("id", ">", 1)
-            ->whereRaw("id = ?", [$book2->id])
+            ->where('id', '>', 1)
+            ->whereRaw('id = ?', [$book2->id])
             ->get();
         $key1 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_>_0-_and_id_=_{$book1->id}");
         $key2 = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_>_1-_and_id_=_{$book2->id}");

@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -8,76 +10,76 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class WithTest extends IntegrationTestCase
 {
-    public function testWithLimitedQuery()
+    public function test_with_limited_query()
     {
         $authors = (new Author)
-            ->where("id", 1)
+            ->where('id', 1)
             ->with([
                 'books' => function ($query) {
-                    $query->where("id", "<", 100)
+                    $query->where('id', '<', 100)
                         ->offset(5)
                         ->limit(1);
-                }
+                },
             ])
             ->first();
         $uncachedAuthor = (new UncachedAuthor)->with([
-                'books' => function ($query) {
-                    $query->where("id", "<", 100)
-                        ->offset(5)
-                        ->limit(1);
-                }
-            ])
+            'books' => function ($query) {
+                $query->where('id', '<', 100)
+                    ->offset(5)
+                    ->limit(1);
+            },
+        ])
             ->first();
 
-        $this->assertEquals($uncachedAuthor->books()->pluck("id"), $authors->books()->pluck("id"));
+        $this->assertEquals($uncachedAuthor->books()->pluck('id'), $authors->books()->pluck('id'));
         $this->assertEquals($uncachedAuthor->id, $authors->id);
     }
 
-    public function testWithQuery()
+    public function test_with_query()
     {
         $author = (new Author)
-            ->where("id", 1)
+            ->where('id', 1)
             ->with([
                 'books' => function ($query) {
-                    $query->where("id", "<", 100);
-                }
+                    $query->where('id', '<', 100);
+                },
             ])
             ->first();
         $uncachedAuthor = (new UncachedAuthor)->with([
-                'books' => function ($query) {
-                    $query->where("id", "<", 100);
-                },
-            ])
-            ->where("id", 1)
+            'books' => function ($query) {
+                $query->where('id', '<', 100);
+            },
+        ])
+            ->where('id', 1)
             ->first();
 
         $this->assertEquals($uncachedAuthor->books()->count(), $author->books()->count());
         $this->assertEquals($uncachedAuthor->id, $author->id);
     }
 
-    public function testMultiLevelWithQuery()
+    public function test_multi_level_with_query()
     {
         $author = (new Author)
-            ->where("id", 1)
+            ->where('id', 1)
             ->with([
                 'books.publisher' => function ($query) {
-                    $query->where("id", "<", 100);
-                }
+                    $query->where('id', '<', 100);
+                },
             ])
             ->first();
         $uncachedAuthor = (new UncachedAuthor)->with([
-                'books.publisher' => function ($query) {
-                    $query->where("id", "<", 100);
-                },
-            ])
-            ->where("id", 1)
+            'books.publisher' => function ($query) {
+                $query->where('id', '<', 100);
+            },
+        ])
+            ->where('id', 1)
             ->first();
 
         $this->assertEquals($uncachedAuthor->books()->count(), $author->books()->count());
         $this->assertEquals($uncachedAuthor->id, $author->id);
     }
 
-    public function testWithBelongsToManyRelationshipQuery()
+    public function test_with_belongs_to_many_relationship_query()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-books.id_=_3-testing:{$this->testingSqlitePath}testing.sqlite:stores-first");
         $tags = [
@@ -86,7 +88,7 @@ class WithTest extends IntegrationTestCase
         ];
 
         $stores = (new Book)
-            ->with("stores")
+            ->with('stores')
             ->find(3)
             ->stores;
         $cachedResults = $this
@@ -95,11 +97,11 @@ class WithTest extends IntegrationTestCase
             ->get($key)['value']
             ->stores;
         $liveResults = (new UncachedBook)
-            ->with("stores")
+            ->with('stores')
             ->find(3)
             ->stores;
 
-        $this->assertEquals($liveResults->pluck("id"), $stores->pluck("id"));
-        $this->assertEquals($liveResults->pluck("id"), $cachedResults->pluck("id"));
+        $this->assertEquals($liveResults->pluck('id'), $stores->pluck('id'));
+        $this->assertEquals($liveResults->pluck('id'), $cachedResults->pluck('id'));
     }
 }

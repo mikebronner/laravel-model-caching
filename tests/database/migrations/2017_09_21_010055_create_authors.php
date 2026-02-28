@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateAuthors extends Migration
 {
@@ -13,9 +13,9 @@ class CreateAuthors extends Migration
             $table->softDeletes();
 
             $table->string('email');
-            $table->boolean("is_famous")->default(false);
+            $table->boolean('is_famous')->default(false);
             $table->string('name');
-            $table->json("finances")->nullable();
+            $table->json('finances')->nullable();
         });
     }
 }

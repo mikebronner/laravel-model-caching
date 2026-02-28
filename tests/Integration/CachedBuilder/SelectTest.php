@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
@@ -7,21 +9,21 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class SelectTest extends IntegrationTestCase
 {
-    public function testSelectWithRawColumns()
+    public function test_select_with_raw_columns()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook_author_id_AVG(id) AS averageIds_orderBy_author_id_asc");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
         ];
         $selectArray = [
-            app("db")->raw("author_id"),
-            app("db")->raw("AVG(id) AS averageIds"),
+            app('db')->raw('author_id'),
+            app('db')->raw('AVG(id) AS averageIds'),
         ];
 
         $books = (new Book)
             ->select($selectArray)
-            ->groupBy("author_id")
-            ->orderBy("author_id")
+            ->groupBy('author_id')
+            ->orderBy('author_id')
             ->get()
             ->toArray();
         $cachedResults = $this
@@ -31,8 +33,8 @@ class SelectTest extends IntegrationTestCase
             ->toArray();
         $liveResults = (new Book)
             ->select($selectArray)
-            ->groupBy("author_id")
-            ->orderBy("author_id")
+            ->groupBy('author_id')
+            ->orderBy('author_id')
             ->get()
             ->toArray();
 
@@ -40,7 +42,7 @@ class SelectTest extends IntegrationTestCase
         $this->assertEquals($liveResults, $cachedResults);
     }
 
-    public function testSelectFieldsAreCached()
+    public function test_select_fields_are_cached()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_id_name-authors.deleted_at_null-first");
         $tags = [
@@ -48,11 +50,11 @@ class SelectTest extends IntegrationTestCase
         ];
 
         $authorFields = (new Author)
-            ->select("id", "name")
+            ->select('id', 'name')
             ->first()
             ->getAttributes();
         $uncachedFields = (new UncachedAuthor)
-            ->select("id", "name")
+            ->select('id', 'name')
             ->first()
             ->getAttributes();
         $cachedFields = $this
@@ -65,7 +67,7 @@ class SelectTest extends IntegrationTestCase
         $this->assertEquals($cachedFields, $uncachedFields);
     }
 
-    public function testAddSelectMethodOnModel()
+    public function test_add_select_method_on_model()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_(SELECT id FROM authors WHERE id = 1)-authors.deleted_at_null-first");
         $tags = [
@@ -73,10 +75,10 @@ class SelectTest extends IntegrationTestCase
         ];
 
         $result = (new Author)
-            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->addSelect(app('db')->raw('(SELECT id FROM authors WHERE id = 1)'))
             ->first();
         $uncachedResult = (new UncachedAuthor)
-            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->addSelect(app('db')->raw('(SELECT id FROM authors WHERE id = 1)'))
             ->first();
         $uncachedResult = $this
             ->cache()
@@ -87,7 +89,7 @@ class SelectTest extends IntegrationTestCase
         $this->assertEquals($uncachedResult, $uncachedResult);
     }
 
-    public function testAddSelectMethodOnBuilder()
+    public function test_add_select_method_on_builder()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_(SELECT id FROM authors WHERE id = 1)_(SELECT id FROM authors WHERE id = 1)-id_=_1-authors.deleted_at_null-first");
         $tags = [
@@ -95,14 +97,14 @@ class SelectTest extends IntegrationTestCase
         ];
 
         $result = (new Author)
-            ->where("id", 1)
-            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
-            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->where('id', 1)
+            ->addSelect(app('db')->raw('(SELECT id FROM authors WHERE id = 1)'))
+            ->addSelect(app('db')->raw('(SELECT id FROM authors WHERE id = 1)'))
             ->first();
         $uncachedResult = (new UncachedAuthor)
-            ->where("id", 1)
-            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
-            ->addSelect(app("db")->raw("(SELECT id FROM authors WHERE id = 1)"))
+            ->where('id', 1)
+            ->addSelect(app('db')->raw('(SELECT id FROM authors WHERE id = 1)'))
+            ->addSelect(app('db')->raw('(SELECT id FROM authors WHERE id = 1)'))
             ->first();
         $uncachedResult = $this
             ->cache()

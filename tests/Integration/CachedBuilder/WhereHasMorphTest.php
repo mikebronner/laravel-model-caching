@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Comment;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post;
@@ -9,12 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class WhereHasMorphTest extends IntegrationTestCase
 {
-    public function testWithSingleMorphModel()
+    public function test_with_single_morph_model()
     {
         $comments = (new Comment)
             ->whereHasMorph('commentable', Post::class)
             ->get();
-        $uncachedComments = (new UncachedComment())
+        $uncachedComments = (new UncachedComment)
             ->whereHasMorph('commentable', Post::class)
             ->get();
 
@@ -26,16 +28,16 @@ class WhereHasMorphTest extends IntegrationTestCase
             ))['value'];
 
         $this->assertCount(5, $comments);
-        $this->assertEquals($comments->pluck("id"), $uncachedComments->pluck("id"));
-        $this->assertEquals($uncachedComments->pluck("id"), $cacheResults->pluck("id"));
+        $this->assertEquals($comments->pluck('id'), $uncachedComments->pluck('id'));
+        $this->assertEquals($uncachedComments->pluck('id'), $cacheResults->pluck('id'));
     }
 
-    public function testWithMultipleMorphModels()
+    public function test_with_multiple_morph_models()
     {
         $comments = (new Comment)
             ->whereHasMorph('commentable', [Post::class, UncachedPost::class])
             ->get();
-        $uncachedComments = (new UncachedComment())
+        $uncachedComments = (new UncachedComment)
             ->whereHasMorph('commentable', [Post::class, UncachedPost::class])
             ->get();
 
@@ -47,20 +49,20 @@ class WhereHasMorphTest extends IntegrationTestCase
             ))['value'];
 
         $this->assertCount(10, $comments);
-        $this->assertEquals($comments->pluck("id"), $uncachedComments->pluck("id"));
-        $this->assertEquals($uncachedComments->pluck("id"), $cacheResults->pluck("id"));
+        $this->assertEquals($comments->pluck('id'), $uncachedComments->pluck('id'));
+        $this->assertEquals($uncachedComments->pluck('id'), $cacheResults->pluck('id'));
     }
 
-    public function testWithMultipleMorphModelsWithClosure()
+    public function test_with_multiple_morph_models_with_closure()
     {
         $comments = (new Comment)
             ->whereHasMorph('commentable', [Post::class, UncachedPost::class], function (Builder $query) {
-                return $query->where('subject', 'like',  '%uncached post');
+                return $query->where('subject', 'like', '%uncached post');
             })
             ->get();
-        $uncachedComments = (new UncachedComment())
+        $uncachedComments = (new UncachedComment)
             ->whereHasMorph('commentable', [Post::class, UncachedPost::class], function (Builder $query) {
-                return $query->where('subject', 'like',  '%uncached post');
+                return $query->where('subject', 'like', '%uncached post');
             })
             ->get();
 
@@ -72,7 +74,7 @@ class WhereHasMorphTest extends IntegrationTestCase
             ))['value'];
 
         $this->assertCount(5, $comments);
-        $this->assertEquals($comments->pluck("id"), $uncachedComments->pluck("id"));
-        $this->assertEquals($uncachedComments->pluck("id"), $cacheResults->pluck("id"));
+        $this->assertEquals($comments->pluck('id'), $uncachedComments->pluck('id'));
+        $this->assertEquals($uncachedComments->pluck('id'), $cacheResults->pluck('id'));
     }
 }

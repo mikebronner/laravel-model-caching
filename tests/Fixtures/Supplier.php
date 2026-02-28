@@ -1,12 +1,13 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+
 use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\SupplierFactory;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplier extends Model
 {
@@ -22,12 +23,12 @@ class Supplier extends Model
         'name',
     ];
 
-    public function user() : HasOne
+    public function user(): HasOne
     {
         return $this->hasOne(User::class);
     }
 
-    public function history() : HasOneThrough
+    public function history(): HasOneThrough
     {
         return $this->hasOneThrough(History::class, User::class);
     }

@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Illuminate\Pagination\Paginator;
 
@@ -15,18 +17,18 @@ trait Buildable
             return parent::avg($column);
         }
 
-        $cacheKey = $this->makeCacheKey(["*"], null, "-avg_{$column}");
+        $cacheKey = $this->makeCacheKey(['*'], null, "-avg_{$column}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function count($columns = "*")
+    public function count($columns = '*')
     {
         if (! $this->isCachable()) {
             return parent::count($columns);
         }
 
-        $cacheKey = $this->makeCacheKey([$columns], null, "-count");
+        $cacheKey = $this->makeCacheKey([$columns], null, '-count');
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
@@ -37,7 +39,7 @@ trait Buildable
             return parent::exists();
         }
 
-        $cacheKey = $this->makeCacheKey(['*'], null, "-exists");
+        $cacheKey = $this->makeCacheKey(['*'], null, '-exists');
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
@@ -61,7 +63,7 @@ trait Buildable
     /**
      * @SuppressWarnings(PHPMD.ShortVariable)
      */
-    public function find($id, $columns = ["*"])
+    public function find($id, $columns = ['*'])
     {
         if (! $this->isCachable()) {
             return parent::find($id, $columns);
@@ -78,14 +80,14 @@ trait Buildable
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
-    public function first($columns = ["*"])
+    public function first($columns = ['*'])
     {
         if (! $this->isCachable()) {
             return parent::first($columns);
         }
 
         $columns = collect($columns)->toArray();
-        $cacheKey = $this->makeCacheKey($columns, null, "-first");
+        $cacheKey = $this->makeCacheKey($columns, null, '-first');
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
@@ -98,7 +100,7 @@ trait Buildable
         return parent::forceDelete();
     }
 
-    public function get($columns = ["*"])
+    public function get($columns = ['*'])
     {
         if (! $this->isCachable()) {
             return parent::get($columns);
@@ -127,7 +129,7 @@ trait Buildable
 
     public function insert(array $values)
     {
-        if (property_exists($this, "model")) {
+        if (property_exists($this, 'model')) {
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
 
@@ -140,7 +142,7 @@ trait Buildable
             return parent::max($column);
         }
 
-        $cacheKey = $this->makeCacheKey(["*"], null, "-max_{$column}");
+        $cacheKey = $this->makeCacheKey(['*'], null, "-max_{$column}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
@@ -151,15 +153,15 @@ trait Buildable
             return parent::min($column);
         }
 
-        $cacheKey = $this->makeCacheKey(["*"], null, "-min_{$column}");
+        $cacheKey = $this->makeCacheKey(['*'], null, "-min_{$column}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function paginate(
         $perPage = null,
-        $columns = ["*"],
-        $pageName = "page",
+        $columns = ['*'],
+        $pageName = 'page',
         $page = null,
         $total = null
     ) {
@@ -180,7 +182,7 @@ trait Buildable
             $total = value($total);
             $keyDifferentiator .= $total !== null
                 ? "_{$total}"
-                : "";
+                : '';
         }
 
         $cacheKey = $this->makeCacheKey($columns, null, $keyDifferentiator);
@@ -194,12 +196,12 @@ trait Buildable
         return $result;
     }
 
-    protected function recursiveImplodeWithKey(array $items, string $glue = "_") : string
+    protected function recursiveImplodeWithKey(array $items, string $glue = '_'): string
     {
-        $result = "";
+        $result = '';
 
         foreach ($items as $key => $value) {
-            $result .= $glue . $key . $glue . $value;
+            $result .= $glue.$key.$glue.$value;
         }
 
         return $result;
@@ -211,7 +213,7 @@ trait Buildable
             return parent::pluck($column, $key);
         }
 
-        $keyDifferentiator = "-pluck_{$column}" . ($key ? "_{$key}" : "");
+        $keyDifferentiator = "-pluck_{$column}".($key ? "_{$key}" : '');
         $cacheKey = $this->makeCacheKey([$column], null, $keyDifferentiator);
 
         return $this->cachedValue(func_get_args(), $cacheKey);
@@ -223,14 +225,14 @@ trait Buildable
             return parent::sum($column);
         }
 
-        $cacheKey = $this->makeCacheKey(["*"], null, "-sum_{$column}");
+        $cacheKey = $this->makeCacheKey(['*'], null, "-sum_{$column}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
     public function update(array $values)
     {
-        if (property_exists($this, "model")) {
+        if (property_exists($this, 'model')) {
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
 
@@ -243,9 +245,8 @@ trait Buildable
             return parent::value($column);
         }
 
-        $cacheKey = $this->makeCacheKey(["*"], null, "-value_{$column}");
+        $cacheKey = $this->makeCacheKey(['*'], null, "-value_{$column}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
-
 }

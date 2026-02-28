@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Model;
@@ -12,10 +14,11 @@ class StoreWithUncachedBooks extends Model
         'address',
         'name',
     ];
-    protected $table = "stores";
 
-    public function books() : BelongsToMany
+    protected $table = 'stores';
+
+    public function books(): BelongsToMany
     {
-        return $this->belongsToMany(UncachedBook::class, "book_store", "store_id", "book_id");
+        return $this->belongsToMany(UncachedBook::class, 'book_store', 'store_id', 'book_id');
     }
 }

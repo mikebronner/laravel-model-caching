@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Feature\Nova;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\NovaTestCase;
 
 class BelongsToManyTest extends NovaTestCase
 {
-    public function testAttachRelationFlushesCache()
+    public function test_attach_relation_flushes_cache()
     {
         $beforeStore = Store::with(['books'])->get()->first();
         $beforeBooks = $beforeStore->books;
@@ -15,9 +17,9 @@ class BelongsToManyTest extends NovaTestCase
         $beforeBook->title = 'new foo';
         $beforeBook->save();
 
-        $response = $this->postJson('nova-api/books/' . $beforeBook->id . '/attach/stores' , [
+        $response = $this->postJson('nova-api/books/'.$beforeBook->id.'/attach/stores', [
             'stores' => $beforeStore->id,
-            'viaRelationship' => 'stores'
+            'viaRelationship' => 'stores',
         ]);
 
         $response->assertStatus(200);
@@ -34,7 +36,7 @@ class BelongsToManyTest extends NovaTestCase
         $this->assertSame('new foo', $book->title);
     }
 
-    public function testDetachRelationFlushesCache()
+    public function test_detach_relation_flushes_cache()
     {
         $store = Store::with(['books'])->get()->first();
         $newBook = $store->books->first()->replicate();
@@ -47,7 +49,7 @@ class BelongsToManyTest extends NovaTestCase
         $beforeBooks = $beforeStore->books;
         $beforeBook = $beforeBooks->first();
 
-        $response = $this->deleteJson('/nova-api/stores/detach?viaResource=books&viaResourceId=' . $beforeBook->id  . '&viaRelationship=stores' , [
+        $response = $this->deleteJson('/nova-api/stores/detach?viaResource=books&viaResourceId='.$beforeBook->id.'&viaRelationship=stores', [
             'resources' => [$beforeStore->id],
         ]);
 
@@ -61,12 +63,12 @@ class BelongsToManyTest extends NovaTestCase
         $this->assertCount(1, $books);
     }
 
-    public function testUpdateRelationFlushesCache()
+    public function test_update_relation_flushes_cache()
     {
         $beforeStore = Store::with(['books'])->get()->first();
         $beforeBook = $beforeStore->books->first();
 
-        $response = $this->putJson('nova-api/books/' . $beforeBook->id, [
+        $response = $this->putJson('nova-api/books/'.$beforeBook->id, [
             'title' => 'foo',
         ]);
 
@@ -80,7 +82,7 @@ class BelongsToManyTest extends NovaTestCase
         $this->assertSame('foo', $book->title);
     }
 
-    public function testDeleteRelationFlushesCache()
+    public function test_delete_relation_flushes_cache()
     {
         $beforeStore = Store::with(['books'])->get()->first();
         $beforeBooks = $beforeStore->books;

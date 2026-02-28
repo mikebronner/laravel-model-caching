@@ -52,7 +52,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // Sanity check: relationship with custom pivot returns CachedBelongsToMany
     // -------------------------------------------------------------------------
 
-    public function testCustomPivotRelationshipReturnsCachedBelongsToMany(): void
+    public function test_custom_pivot_relationship_returns_cached_belongs_to_many(): void
     {
         $userId = $this->userIdWithRoles();
         $relation = (new User)->find($userId)->rolesWithCustomPivot();
@@ -68,7 +68,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // AC1 + AC2: Cache is invalidated on attach via custom pivot model
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenAttachingViaCustomPivot(): void
+    public function test_cache_is_invalidated_when_attaching_via_custom_pivot(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -95,7 +95,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // AC1 + AC2: Cache is invalidated on detach via custom pivot model
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenDetachingViaCustomPivot(): void
+    public function test_cache_is_invalidated_when_detaching_via_custom_pivot(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -121,7 +121,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // AC1 + AC2: Cache is invalidated on sync via custom pivot model
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenSyncingViaCustomPivot(): void
+    public function test_cache_is_invalidated_when_syncing_via_custom_pivot(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -153,7 +153,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // AC3: Existing (non-custom-pivot) invalidation still works
     // -------------------------------------------------------------------------
 
-    public function testExistingPivotInvalidationNotRegressed(): void
+    public function test_existing_pivot_invalidation_not_regressed(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -179,7 +179,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // Issue #551: Related model is NOT cacheable, only parent is
     // -------------------------------------------------------------------------
 
-    public function testCustomPivotWithUncachedRelatedReturnsCorrectRelation(): void
+    public function test_custom_pivot_with_uncached_related_returns_correct_relation(): void
     {
         $userId = $this->userIdWithRoles();
         $relation = (new User)->find($userId)->uncachedRolesWithCustomPivot();
@@ -191,7 +191,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
         );
     }
 
-    public function testCacheInvalidatedOnAttachWhenRelatedModelNotCacheable(): void
+    public function test_cache_invalidated_on_attach_when_related_model_not_cacheable(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -211,7 +211,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
         );
     }
 
-    public function testCacheInvalidatedOnDetachWhenRelatedModelNotCacheable(): void
+    public function test_cache_invalidated_on_detach_when_related_model_not_cacheable(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -228,7 +228,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
         );
     }
 
-    public function testCacheInvalidatedOnSyncWhenRelatedModelNotCacheable(): void
+    public function test_cache_invalidated_on_sync_when_related_model_not_cacheable(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -252,7 +252,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // Event-firing assertions for custom pivot operations
     // -------------------------------------------------------------------------
 
-    public function testPivotAttachedEventFiresWithCustomPivot(): void
+    public function test_pivot_attached_event_fires_with_custom_pivot(): void
     {
         Event::fake();
 
@@ -261,10 +261,10 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
 
         (new User)->find($userId)->rolesWithCustomPivot()->attach($newRole->id);
 
-        Event::assertDispatched("eloquent.pivotAttached: " . User::class);
+        Event::assertDispatched('eloquent.pivotAttached: '.User::class);
     }
 
-    public function testPivotDetachedEventFiresWithCustomPivot(): void
+    public function test_pivot_detached_event_fires_with_custom_pivot(): void
     {
         Event::fake();
 
@@ -274,10 +274,10 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
 
         $user->rolesWithCustomPivot()->detach($firstRoleId);
 
-        Event::assertDispatched("eloquent.pivotDetached: " . User::class);
+        Event::assertDispatched('eloquent.pivotDetached: '.User::class);
     }
 
-    public function testPivotSyncedEventFiresWithCustomPivot(): void
+    public function test_pivot_synced_event_fires_with_custom_pivot(): void
     {
         Event::fake();
 
@@ -286,14 +286,14 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
 
         (new User)->find($userId)->rolesWithCustomPivot()->sync($newRoles->pluck('id'));
 
-        Event::assertDispatched("eloquent.pivotSynced: " . User::class);
+        Event::assertDispatched('eloquent.pivotSynced: '.User::class);
     }
 
     // -------------------------------------------------------------------------
     // updateExistingPivot cache invalidation
     // -------------------------------------------------------------------------
 
-    public function testCacheIsInvalidatedWhenUpdatingExistingPivotViaCustomPivot(): void
+    public function test_cache_is_invalidated_when_updating_existing_pivot_via_custom_pivot(): void
     {
         $userId = $this->userIdWithRoles();
 
@@ -322,7 +322,7 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
     // Neither model cacheable: fallback to standard BelongsToMany
     // -------------------------------------------------------------------------
 
-    public function testNonCacheableModelsReturnStandardBelongsToMany(): void
+    public function test_non_cacheable_models_return_standard_belongs_to_many(): void
     {
         $userId = $this->userIdWithRoles();
         $user = UncachedUser::find($userId);

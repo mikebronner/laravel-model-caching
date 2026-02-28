@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPost;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class PolymorphicOneToManyTest extends IntegrationTestCase
 {
-    public function testEagerloadedRelationship()
+    public function test_eagerloaded_relationship()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-comments.commentable_id_inraw_1-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post");
         $tags = [
@@ -14,8 +16,8 @@ class PolymorphicOneToManyTest extends IntegrationTestCase
         ];
 
         $result = (new Post)
-            ->with("comments")
-            ->whereHas("comments")
+            ->with('comments')
+            ->whereHas('comments')
             ->first()
             ->comments;
         $cachedResults = $this->cache()
@@ -23,8 +25,8 @@ class PolymorphicOneToManyTest extends IntegrationTestCase
             ->get($key)['value']
             ->first();
         $liveResults = (new UncachedPost)
-            ->with("comments")
-            ->whereHas("comments")
+            ->with('comments')
+            ->whereHas('comments')
             ->first()
             ->comments;
 
@@ -35,7 +37,7 @@ class PolymorphicOneToManyTest extends IntegrationTestCase
         $this->assertNotEmpty($liveResults);
     }
 
-    public function testLazyloadedRelationship()
+    public function test_lazyloaded_relationship()
     {
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post-comments.commentable_id_=_1-comments.commentable_id_notnull");
         $tags = [
@@ -53,8 +55,8 @@ class PolymorphicOneToManyTest extends IntegrationTestCase
             ->first()
             ->comments;
 
-        $this->assertEquals($liveResults->pluck("commentable_id")->values()->toArray(), $result->pluck("commentable_id")->values()->toArray());
-        $this->assertEquals($liveResults->pluck("commentable_id")->values()->toArray(), $cachedResults->pluck("commentable_id")->values()->toArray());
+        $this->assertEquals($liveResults->pluck('commentable_id')->values()->toArray(), $result->pluck('commentable_id')->values()->toArray());
+        $this->assertEquals($liveResults->pluck('commentable_id')->values()->toArray(), $cachedResults->pluck('commentable_id')->values()->toArray());
         $this->assertNotEmpty($result);
         $this->assertNotEmpty($cachedResults);
         $this->assertNotEmpty($liveResults);

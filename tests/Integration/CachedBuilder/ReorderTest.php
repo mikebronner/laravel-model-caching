@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
@@ -6,7 +8,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class ReorderTest extends IntegrationTestCase
 {
-    public function testReorderWithNoArgumentsClearsOrderAndProducesDifferentCacheKey()
+    public function test_reorder_with_no_arguments_clears_order_and_produces_different_cache_key()
     {
         $orderedAuthors = (new Author)
             ->orderBy('name')
@@ -14,8 +16,8 @@ class ReorderTest extends IntegrationTestCase
 
         $orderedKey = sha1(
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:"
-            . "authors:genealabslaravelmodelcachingtestsfixturesauthor"
-            . "-authors.deleted_at_null_orderBy_name_asc"
+            .'authors:genealabslaravelmodelcachingtestsfixturesauthor'
+            .'-authors.deleted_at_null_orderBy_name_asc'
         );
 
         $reorderedAuthors = (new Author)
@@ -25,8 +27,8 @@ class ReorderTest extends IntegrationTestCase
 
         $reorderedKey = sha1(
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:"
-            . "authors:genealabslaravelmodelcachingtestsfixturesauthor"
-            . "-authors.deleted_at_null"
+            .'authors:genealabslaravelmodelcachingtestsfixturesauthor'
+            .'-authors.deleted_at_null'
         );
 
         $tags = [
@@ -43,7 +45,7 @@ class ReorderTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($reorderedAuthors));
     }
 
-    public function testReorderWithColumnProducesDifferentCacheKeyFromOrderBy()
+    public function test_reorder_with_column_produces_different_cache_key_from_order_by()
     {
         // First query: orderBy('name', 'asc') without reorder
         $orderedAuthors = (new Author)
@@ -52,8 +54,8 @@ class ReorderTest extends IntegrationTestCase
 
         $orderedKey = sha1(
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:"
-            . "authors:genealabslaravelmodelcachingtestsfixturesauthor"
-            . "-authors.deleted_at_null_orderBy_name_asc"
+            .'authors:genealabslaravelmodelcachingtestsfixturesauthor'
+            .'-authors.deleted_at_null_orderBy_name_asc'
         );
 
         // Second query: orderBy('id', 'desc') then reorder('name', 'asc')
@@ -67,8 +69,8 @@ class ReorderTest extends IntegrationTestCase
         // So the cache key should be the same as a simple orderBy('name', 'asc')
         $reorderedKey = sha1(
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:"
-            . "authors:genealabslaravelmodelcachingtestsfixturesauthor"
-            . "-authors.deleted_at_null_orderBy_name_asc"
+            .'authors:genealabslaravelmodelcachingtestsfixturesauthor'
+            .'-authors.deleted_at_null_orderBy_name_asc'
         );
 
         $tags = [
@@ -83,7 +85,7 @@ class ReorderTest extends IntegrationTestCase
         $this->assertEmpty($liveResults->diffKeys($reorderedAuthors));
     }
 
-    public function testReorderDoesNotReturnStaleCachedResults()
+    public function test_reorder_does_not_return_stale_cached_results()
     {
         // Execute an ordered query first to populate cache
         $orderedAuthors = (new Author)
@@ -115,7 +117,7 @@ class ReorderTest extends IntegrationTestCase
         // At minimum, the cache keys are different (verified by the cache retrieval working)
     }
 
-    public function testMultipleReorderCallsProduceCorrectResults()
+    public function test_multiple_reorder_calls_produce_correct_results()
     {
         $authors = (new Author)
             ->orderBy('id', 'desc')
@@ -131,8 +133,8 @@ class ReorderTest extends IntegrationTestCase
 
         $expectedKey = sha1(
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:"
-            . "authors:genealabslaravelmodelcachingtestsfixturesauthor"
-            . "-authors.deleted_at_null_orderBy_name_desc"
+            .'authors:genealabslaravelmodelcachingtestsfixturesauthor'
+            .'-authors.deleted_at_null_orderBy_name_desc'
         );
 
         $tags = [
