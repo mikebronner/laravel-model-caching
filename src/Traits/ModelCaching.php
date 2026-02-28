@@ -8,7 +8,9 @@ use GeneaLabs\LaravelModelCaching\EloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Container\Container;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 trait ModelCaching
 {
@@ -54,13 +56,27 @@ trait ModelCaching
 		    return parent::all($columns);
 	    }
 
-        $tags = $instance->makeCacheTags();
-        $key = $instance->makeCacheKey();
+        try {
+            $tags = $instance->makeCacheTags();
+            $key = $instance->makeCacheKey();
 
-        return $instance->cache($tags)
-            ->rememberForever($key, function () use ($columns) {
-                return parent::all($columns);
-            });
+            return $instance->cache($tags)
+                ->rememberForever($key, function () use ($columns) {
+                    return parent::all($columns);
+                });
+        } catch (\Exception $exception) {
+            $shouldFallback = Container::getInstance()
+                ->make("config")
+                ->get("laravel-model-caching.fallback-to-database", false);
+
+            if (! $shouldFallback) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache read failed, falling back to database — {$exception->getMessage()}");
+
+            return parent::all($columns);
+        }
     }
 
     public static function bootCachable()
@@ -103,7 +119,20 @@ trait ModelCaching
     {
         $class = get_called_class();
         $instance = new $class;
-        $instance->flushCache();
+
+        try {
+            $instance->flushCache();
+        } catch (\Exception $exception) {
+            $shouldFallback = Container::getInstance()
+                ->make("config")
+                ->get("laravel-model-caching.fallback-to-database", false);
+
+            if (! $shouldFallback) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache flush failed during destroy — {$exception->getMessage()}");
+        }
 
         return parent::destroy($ids);
     }
@@ -250,20 +279,32 @@ trait ModelCaching
             $seconds = $this->cacheCooldownSeconds;
         }
 
-        $cachePrefix = $this->getCachePrefix();
-        $modelClassName = get_class($this);
-        $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";
+        try {
+            $cachePrefix = $this->getCachePrefix();
+            $modelClassName = get_class($this);
+            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";
 
-        $this->cache()
-            ->rememberForever($cacheKey, function () use ($seconds) {
-                return $seconds;
-            });
+            $this->cache()
+                ->rememberForever($cacheKey, function () use ($seconds) {
+                    return $seconds;
+                });
 
-        $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at";
-        $this->cache()
-            ->rememberForever($cacheKey, function () {
-                return (new Carbon)->now();
-            });
+            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at";
+            $this->cache()
+                ->rememberForever($cacheKey, function () {
+                    return (new Carbon)->now();
+                });
+        } catch (\Exception $exception) {
+            $shouldFallback = Container::getInstance()
+                ->make("config")
+                ->get("laravel-model-caching.fallback-to-database", false);
+
+            if (! $shouldFallback) {
+                throw $exception;
+            }
+
+            Log::warning("laravel-model-caching: cache cooldown write failed — {$exception->getMessage()}");
+        }
 
         return $query;
     }
