@@ -1,12 +1,18 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Supplier;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(User::class, function (Faker $faker) {
-    return [
-        'name' => $faker->name,
-        "supplier_id" => factory(Supplier::class)->create()->id,
-    ];
-});
+class UserFactory extends Factory
+{
+    protected $model = User::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->name,
+            'supplier_id' => SupplierFactory::new()->create()->id,
+        ];
+    }
+}

@@ -1,11 +1,17 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Profile;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Profile::class, function (Faker $faker) {
-    return [
-        'first_name' => $faker->firstName,
-        'last_name' => $faker->lastName,
-    ];
-});
+class ProfileFactory extends Factory
+{
+    protected $model = Profile::class;
+
+    public function definition(): array
+    {
+        return [
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ];
+    }
+}

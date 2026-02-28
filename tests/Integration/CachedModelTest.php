@@ -183,7 +183,7 @@ class CachedModelTest extends IntegrationTestCase
             ->withCacheCooldownSeconds(1)
             ->get();
 
-        factory(Author::class, 1)->create();
+        Author::factory()->count(1)->create();
         $authorsDuringCooldown = (new AuthorWithCooldown)
             ->get();
         $uncachedAuthors = (new UncachedAuthor)
@@ -203,7 +203,7 @@ class CachedModelTest extends IntegrationTestCase
         $authors = (new AuthorWithCooldown)
             ->get();
 
-        factory(Author::class, 1)->create();
+        Author::factory()->count(1)->create();
         $authorsAfterCreate = (new Author)
             ->get();
         $uncachedAuthors = (new UncachedAuthor)

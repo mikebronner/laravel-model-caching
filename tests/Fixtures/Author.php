@@ -1,7 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
+use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\AuthorFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -11,7 +13,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Author extends Model
 {
     use Cachable;
+    use HasFactory;
     use SoftDeletes;
+
+    protected static function newFactory(): AuthorFactory
+    {
+        return AuthorFactory::new();
+    }
 
     protected $casts = [
         "finances" => "array",

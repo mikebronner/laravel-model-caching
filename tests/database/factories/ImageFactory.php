@@ -1,10 +1,16 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Image;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Image::class, function (Faker $faker) {
-    return [
-        'path' => $faker->imageUrl(),
-    ];
-});
+class ImageFactory extends Factory
+{
+    protected $model = Image::class;
+
+    public function definition(): array
+    {
+        return [
+            'path' => $this->faker->imageUrl(),
+        ];
+    }
+}

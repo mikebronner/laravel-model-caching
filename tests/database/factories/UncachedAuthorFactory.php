@@ -1,16 +1,22 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(UncachedAuthor::class, function (Faker $faker) {
-    return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        "finances" => [
-            "total" => 5000,
-            "weekly" => 100,
-            "daily" => 20,
-        ],
-    ];
-});
+class UncachedAuthorFactory extends Factory
+{
+    protected $model = UncachedAuthor::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail,
+            'finances' => [
+                'total' => 5000,
+                'weekly' => 100,
+                'daily' => 20,
+            ],
+        ];
+    }
+}

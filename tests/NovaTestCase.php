@@ -14,10 +14,8 @@ use Inertia\ServiceProvider;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaCoreServiceProvider;
 
-abstract class NovaTestCase extends FeatureTestCase
+abstract class NovaTestCase extends IntegrationTestCase
 {
-    protected $response;
-
     protected $authenticatedAs;
 
     public function setUp(): void
