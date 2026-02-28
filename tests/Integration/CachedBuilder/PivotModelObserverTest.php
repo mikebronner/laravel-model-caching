@@ -56,7 +56,7 @@ class PivotModelObserverTest extends IntegrationTestCase
         $user->rolesWithCustomPivot;
 
         // Sync to new roles — should fire creating/created on the pivot observer.
-        $newRoles = factory(Role::class, 2)->create();
+        $newRoles = Role::factory()->count(2)->create();
         RoleUserObserver::reset();
         $user->rolesWithCustomPivot()->sync($newRoles->pluck('id')->toArray());
 
@@ -81,7 +81,7 @@ class PivotModelObserverTest extends IntegrationTestCase
         $userId = $this->userIdWithRoles();
         $user = (new User)->find($userId);
 
-        $newRole = factory(Role::class)->create();
+        $newRole = Role::factory()->create();
         RoleUserObserver::reset();
         $user->rolesWithCustomPivot()->attach($newRole->id);
 
