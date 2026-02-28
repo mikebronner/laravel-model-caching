@@ -35,6 +35,7 @@ class CachedBelongsToMany extends BelongsToMany
 
     public function sync($ids, $detaching = true)
     {
+        $wasCachable = $this->isCachable;
         $this->isCachable = false;
         $this->isSyncing = true;
 
@@ -42,7 +43,7 @@ class CachedBelongsToMany extends BelongsToMany
             $result = $this->traitSync($ids, $detaching);
         } finally {
             $this->isSyncing = false;
-            $this->isCachable = true;
+            $this->isCachable = $wasCachable;
         }
 
         $this->flushCacheForPivotOperation();
