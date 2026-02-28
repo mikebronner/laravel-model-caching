@@ -14,9 +14,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [8.3, 8.4, 8.5]
+        include:
+          - php: '8.3'
+            laravel: '11.*'
+            coverage: false
+          - php: '8.3'
+            laravel: '12.*'
+            coverage: false
+          - php: '8.4'
+            laravel: '11.*'
+            coverage: false
+          - php: '8.4'
+            laravel: '12.*'
+            coverage: false
+          - php: '8.4'
+            laravel: '13.*'
+            coverage: false
+          - php: '8.5'
+            laravel: '13.*'
+            coverage: true
 
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
     services:
       redis:
@@ -43,20 +61,24 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.composer/cache
-        key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+        key: dependencies-php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-composer-${{ hashFiles('composer.json') }}
         restore-keys: |
-          dependencies-php-${{ matrix.php }}-composer-
+          dependencies-php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-composer-
 
     - name: Setup PHP ${{ matrix.php }}
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, pgsql, pdo_pgsql
-        coverage: none
+        coverage: ${{ matrix.coverage && 'xdebug' || 'none' }}
 
     - name: Remove Nova on a pull request
       if: github.event_name == 'pull_request'
       run: composer remove laravel/nova --no-update --no-interaction --dev
+
+    - name: Install specific Laravel version
+      run: |
+        composer require "illuminate/support:${{ matrix.laravel }}" "illuminate/database:${{ matrix.laravel }}" "illuminate/cache:${{ matrix.laravel }}" "illuminate/config:${{ matrix.laravel }}" "illuminate/console:${{ matrix.laravel }}" "illuminate/container:${{ matrix.laravel }}" "illuminate/http:${{ matrix.laravel }}" --no-update --no-interaction
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -67,7 +89,16 @@ jobs:
         composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Execute Integration and Feature tests via PHPUnit
-      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature
+      run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature ${{ matrix.coverage && '--coverage-clover coverage.xml' || '' }}
+
+    - name: Upload coverage to Codecov
+      if: matrix.coverage
+      uses: codecov/codecov-action@v5
+      with:
+        files: coverage.xml
+        fail_ci_if_error: true
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Execute Nova tests via PHPUnit
       if: github.event_name != 'pull_request'
