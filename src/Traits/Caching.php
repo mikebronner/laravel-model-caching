@@ -8,6 +8,11 @@ use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use ReflectionClass;
+use ReflectionNamedType;
+use ReflectionMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
@@ -274,6 +279,7 @@ trait Caching
 
         if (! $cacheCooldown) {
             $instance->flushCache();
+            $this->flushMorphToRelatedCaches($instance);
             $this->flushRelationshipCache($instance, $relationship);
 
             return;
@@ -283,7 +289,58 @@ trait Caching
 
         if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
             $instance->flushCache();
+            $this->flushMorphToRelatedCaches($instance);
             $this->flushRelationshipCache($instance, $relationship);
+        }
+    }
+
+    protected static $morphToMethodCache = [];
+
+    protected function flushMorphToRelatedCaches(Model $instance): void
+    {
+        $className = get_class($instance);
+
+        if (! isset(static::$morphToMethodCache[$className])) {
+            static::$morphToMethodCache[$className] = [];
+            $reflection = new ReflectionClass($instance);
+
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                if ($method->class !== $className
+                    || $method->getNumberOfParameters() > 0
+                ) {
+                    continue;
+                }
+
+                $returnType = $method->getReturnType();
+
+                if (! $returnType
+                    || ! $returnType instanceof ReflectionNamedType
+                    || $returnType->getName() !== MorphTo::class
+                ) {
+                    continue;
+                }
+
+                static::$morphToMethodCache[$className][] = $method->getName();
+            }
+        }
+
+        foreach (static::$morphToMethodCache[$className] as $morphToName) {
+            $relation = $instance->{$morphToName}();
+            $typeColumn = $relation->getMorphType();
+            $idColumn = $relation->getForeignKeyName();
+            $parentType = $instance->getAttribute($typeColumn);
+            $parentId = $instance->getAttribute($idColumn);
+
+            if (! $parentType || ! $parentId) {
+                continue;
+            }
+
+            $parentClass = Relation::getMorphedModel($parentType) ?? $parentType;
+            $parentModel = new $parentClass;
+
+            if (method_exists($parentModel, 'flushCache')) {
+                $parentModel->flushCache();
+            }
         }
     }
 
