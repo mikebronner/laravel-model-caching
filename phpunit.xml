@@ -21,7 +21,7 @@
         <testsuite name="Nova">
             <directory suffix="Test.php">./tests/Nova</directory>
         </testsuite>
-            <testsuite name="Unit">
+        <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
     </testsuites>

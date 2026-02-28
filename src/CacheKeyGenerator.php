@@ -30,9 +30,7 @@ class CacheKeyGenerator
         $eagerLoad = $clone->getEagerLoads();
         $model = $clone->getModel();
 
-        $metadata = method_exists($clone, 'getCacheKeyMetadata')
-            ? $clone->getCacheKeyMetadata()
-            : ['macroKey' => '', 'withoutGlobalScopes' => [], 'withoutAllGlobalScopes' => false];
+        $metadata = $clone->getCacheKeyMetadata();
 
         $query = $clone->getQuery();
 

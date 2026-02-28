@@ -35,7 +35,9 @@ class CachingScope implements Scope
     protected function addDisableModelCaching(Builder $builder): void
     {
         $builder->macro('disableModelCaching', function (Builder $builder) {
-            $builder->isCachable = false;
+            if ($builder instanceof \GeneaLabs\LaravelModelCaching\CachedBuilder) {
+                $builder->isCachable = false;
+            }
 
             return $builder;
         });
@@ -53,6 +55,4 @@ class CachingScope implements Scope
             return $builder;
         });
     }
-
-
 }
