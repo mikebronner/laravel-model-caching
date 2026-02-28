@@ -356,7 +356,7 @@ trait Caching
 
         $hasLock = property_exists($this, 'query')
             && $this->query
-            && $this->query->lock;
+            && $this->query->lock !== null;
 
         return $this->isCachable
             && $allRelationshipsAreCachable
