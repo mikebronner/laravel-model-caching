@@ -14,7 +14,7 @@ on:
 
 jobs:
   sync:
-    uses: GeneaLabs/.github/.github/workflows/sync-issue-status.yml@main
+    uses: GeneaLabs/.github/.github/workflows/sync-issue-status.yml@master
     with:
       pr_body: ${{ github.event.pull_request.body || '' }}
       pr_merged: ${{ toJSON(github.event.pull_request.merged) }}
