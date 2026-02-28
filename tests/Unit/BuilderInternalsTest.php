@@ -29,8 +29,8 @@ class BuilderInternalsTest extends TestCase
         $reflection = new ReflectionClass(Builder::class);
 
         $this->assertTrue(
-            $reflection->hasProperty('withoutGlobalScopes'),
-            'Eloquent Builder no longer has a protected $withoutGlobalScopes property — CacheKeyGenerator::applyScopesOnClone() must be updated.'
+            $reflection->hasProperty('removedScopes'),
+            'Eloquent Builder no longer has a protected $removedScopes property — CacheKeyGenerator::applyScopesOnClone() must be updated.'
         );
     }
 

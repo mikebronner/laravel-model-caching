@@ -77,10 +77,10 @@ class CacheKeyGenerator
         // Bind to the clone's actual class to access protected $scopes and callScope()
         $applier = Closure::bind(function () {
             $scopes = $this->scopes ?? [];
-            $withoutGlobalScopes = $this->withoutGlobalScopes ?? [];
+            $removedScopes = $this->removedScopes ?? [];
 
             foreach ($scopes as $identifier => $scope) {
-                if (isset($withoutGlobalScopes[$identifier])) {
+                if (isset($removedScopes[$identifier])) {
                     continue;
                 }
 

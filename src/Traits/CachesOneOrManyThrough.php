@@ -150,6 +150,46 @@ trait CachesOneOrManyThrough
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
+    protected function retrieveCachedValue(
+        array $arguments,
+        string $cacheKey,
+        array $cacheTags,
+        string $hashedCacheKey,
+        string $method
+    ) {
+        if (property_exists($this, 'model')) {
+            $this->checkCooldownAndRemoveIfExpired($this->model);
+        }
+
+        if (method_exists($this, 'getModel')) {
+            $this->checkCooldownAndRemoveIfExpired($this->getModel());
+        }
+
+        $cache = $this->cache($cacheTags);
+        $cachedResult = $cache->get($hashedCacheKey);
+
+        if ($cachedResult !== null) {
+            $this->fireRetrievedEvents($cachedResult['value'] ?? null);
+
+            return $cachedResult;
+        }
+
+        // Disable caching on the inner Eloquent builder to prevent
+        // double-caching. Without this, the CachedBuilder stores a
+        // separate entry with only the end-model's tag, which won't
+        // be invalidated when the through-model changes.
+        $this->getQuery()->disableModelCaching();
+
+        $result = [
+            'key' => $cacheKey,
+            'value' => parent::{$method}(...$arguments),
+        ];
+
+        $cache->forever($hashedCacheKey, $result);
+
+        return $result;
+    }
+
     protected function makeCacheKey(
         array $columns = ['*'],
         $idColumn = null,
