@@ -1,9 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Feature;
 
-use GeneaLabs\LaravelModelCaching\Tests\FeatureTestCase;
+use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 
-class PaginationTest extends FeatureTestCase
+class PaginationTest extends IntegrationTestCase
 {
     public function testPaginationProvidesDifferentLinksOnDifferentPages()
     {
@@ -11,25 +11,25 @@ class PaginationTest extends FeatureTestCase
             ->take(11)
             ->get()
             ->last();
-        $page1 = $this->visit("pagination-test");
+        $page1 = $this->get("pagination-test");
 
-        $page1->see('aria-current="page"');
-        $page2 = $page1->click("2");
-        $page2->see('aria-current="page"');
-        $page2->see($book->title);
+        $page1->assertSee('aria-current="page"', false);
+        $page2 = $this->get("pagination-test?page=2");
+        $page2->assertSee('aria-current="page"', false);
+        $page2->assertSee($book->title, false);
     }
 
     public function testAdvancedPagination()
     {
-        $response = $this->visit("pagination-test?page[size]=1");
+        $response = $this->get("pagination-test?page[size]=1");
 
-        $response->see('aria-current="page"');
+        $response->assertSee('aria-current="page"', false);
     }
 
     public function testCustomPagination()
     {
-        $response = $this->visit("pagination-test2?custom-page=2");
+        $response = $this->get("pagination-test2?custom-page=2");
 
-        $response->see('aria-current="page"');
+        $response->assertSee('aria-current="page"', false);
     }
 }

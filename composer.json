@@ -29,7 +29,6 @@
         "doctrine/dbal": "^3.3|^4.2",
         "fakerphp/faker": "^1.11",
         "laravel/nova": "^5.0|^6.0",
-        "orchestra/testbench-browser-kit": "^9.0|^10.0|^11.0",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "phpunit/phpunit": "^10.5|^11.5.3|^12.5.12",
         "slevomat/coding-standard": "^7.0|^8.14",

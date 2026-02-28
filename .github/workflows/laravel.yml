@@ -21,6 +21,13 @@ jobs:
             laravel: '11.*'
           - php: '8.2'
             laravel: '13.*'
+        include:
+          - laravel: '11.*'
+            testbench: '9.*'
+          - laravel: '12.*'
+            testbench: '10.*'
+          - laravel: '13.*'
+            testbench: '11.*'
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
@@ -66,7 +73,7 @@ jobs:
 
     - name: Install specific Laravel version
       run: |
-        composer require "illuminate/support:${{ matrix.laravel }}" "illuminate/database:${{ matrix.laravel }}" "illuminate/cache:${{ matrix.laravel }}" "illuminate/config:${{ matrix.laravel }}" "illuminate/console:${{ matrix.laravel }}" "illuminate/container:${{ matrix.laravel }}" "illuminate/http:${{ matrix.laravel }}" --no-update --no-interaction
+        composer require "illuminate/support:${{ matrix.laravel }}" "illuminate/database:${{ matrix.laravel }}" "illuminate/cache:${{ matrix.laravel }}" "illuminate/config:${{ matrix.laravel }}" "illuminate/console:${{ matrix.laravel }}" "illuminate/container:${{ matrix.laravel }}" "illuminate/http:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-update --no-interaction
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -74,7 +81,7 @@ jobs:
     - name: Install Dependencies
       run: |
         composer config "http-basic.nova.laravel.com" "${{ secrets.NOVA_USERNAME }}" "${{ secrets.NOVA_LICENSE_KEY }}"
-        composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Execute Integration and Feature tests via PHPUnit
       run: vendor/bin/phpunit --configuration phpunit.xml.dist --testsuite Integration,Feature ${{ matrix.php == '8.5' && matrix.laravel == '13.*' && '--coverage-clover coverage.xml' || '' }}
