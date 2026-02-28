@@ -50,19 +50,19 @@ class CursorPaginationTest extends IntegrationTestCase
 
     public function testRowValuesWhereProducesDifferentCacheKeys()
     {
-        // Two different RowValues queries should produce different cached results
-        $results1 = (new Author)
+        $query1 = (new Author)
             ->whereRowValues(['id', 'name'], '>', [1, 'a'])
-            ->orderBy('id')
-            ->get();
+            ->orderBy('id');
 
-        $results2 = (new Author)
+        $query2 = (new Author)
             ->whereRowValues(['id', 'name'], '>', [2, 'b'])
-            ->orderBy('id')
-            ->get();
+            ->orderBy('id');
 
-        // They should at least not error — and if data differs, results differ
-        $this->assertNotNull($results1);
-        $this->assertNotNull($results2);
+        $cacheKey1 = (new \ReflectionMethod($query1, 'makeCacheKey'))
+            ->invoke($query1);
+        $cacheKey2 = (new \ReflectionMethod($query2, 'makeCacheKey'))
+            ->invoke($query2);
+
+        $this->assertNotEquals($cacheKey1, $cacheKey2);
     }
 }
