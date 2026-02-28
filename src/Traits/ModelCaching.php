@@ -1,4 +1,6 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
@@ -52,7 +54,7 @@ trait ModelCaching
         $class = get_called_class();
         $instance = new $class;
 
-	    if (!$instance->isCachable()) {
+	    if (! $instance->isCachable()) {
 		    return parent::all($columns);
 	    }
 
@@ -110,12 +112,84 @@ trait ModelCaching
         return parent::destroy($ids);
     }
 
+    /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * When caching is disabled the model's custom builder (if any) is returned
+     * as-is.  When caching is enabled the method delegates to
+     * {@see newModelCachingEloquentBuilder()} so that custom-builder support and
+     * caching are composed correctly.
+     *
+     * **Trait collision (AC6 / #535):** If another trait used on your model also
+     * defines `newEloquentBuilder` you will encounter a PHP fatal "collision"
+     * error.  Resolve it by explicitly overriding the method on the model class
+     * and calling `newModelCachingEloquentBuilder()`:
+     *
+     * ```php
+     * use Cachable, NodeTrait {
+     *     Cachable::newEloquentBuilder insteadof NodeTrait;
+     * }
+     * ```
+     *
+     * Or, if you need *both* trait builders composed:
+     *
+     * ```php
+     * use Cachable, NodeTrait {
+     *     Cachable::newEloquentBuilder as newCachableEloquentBuilder;
+     *     NodeTrait::newEloquentBuilder  as newNodeTraitEloquentBuilder;
+     * }
+     *
+     * public function newEloquentBuilder($query)
+     * {
+     *     return $this->newModelCachingEloquentBuilder($query);
+     * }
+     * ```
+     */
     public function newEloquentBuilder($query)
+    {
+        return $this->newModelCachingEloquentBuilder($query);
+    }
+
+    /**
+     * Core implementation for building a caching-aware Eloquent builder.
+     *
+     * Extracted from {@see newEloquentBuilder()} so that it can be called
+     * directly from model classes that need to resolve a trait collision by
+     * overriding `newEloquentBuilder` themselves (AC6).
+     *
+     * Behaviour:
+     * - Caching disabled → delegate to parent (custom builder returned as-is, AC1).
+     * - Caching enabled + custom builder already extends CachedBuilder → return it
+     *   directly so both custom query methods and caching are preserved (AC2).
+     * - Caching enabled + custom builder does NOT extend CachedBuilder → wrap it
+     *   inside a CachedBuilder via composition; the wrapper's `__call` proxy
+     *   delegates unknown method calls to the inner builder so custom methods
+     *   remain callable at runtime (AC3).
+     * - No custom builder → plain CachedBuilder (existing behaviour).
+     *
+     * **Larastan / PHPStan (AC5):** When a custom builder is wrapped rather than
+     * returned directly, static analysis tools cannot infer the custom methods
+     * from the `CachedBuilder` return type.  Add a `@return CustomBuilder`
+     * override annotation on your model's `newQuery()` (or `query()`) call-site,
+     * or use the `@mixin` approach described in the package README to suppress
+     * false-positive "undefined method" errors at level 5+.
+     */
+    public function newModelCachingEloquentBuilder($query)
     {
         if (! $this->isCachable()) {
             $this->isCachable = false;
 
-            return new EloquentBuilder($query);
+            return parent::newEloquentBuilder($query);
+        }
+
+        $customBuilder = parent::newEloquentBuilder($query);
+
+        if ($customBuilder instanceof CachedBuilder) {
+            return $customBuilder;
+        }
+
+        if ($customBuilder::class !== Builder::class) {
+            return (new CachedBuilder($query))->setInnerBuilder($customBuilder);
         }
 
         return new CachedBuilder($query);
@@ -203,7 +277,7 @@ trait ModelCaching
         $relatedPivotKey,
         $parentKey,
         $relatedKey,
-        $relationName = null
+        $relationName = null,
     ) {
         $relatedIsCachable = method_exists($query->getModel(), "isCachable")
             && $query->getModel()->isCachable();
@@ -219,7 +293,7 @@ trait ModelCaching
                 $relatedPivotKey,
                 $parentKey,
                 $relatedKey,
-                $relationName
+                $relationName,
             );
         }
 
@@ -231,7 +305,7 @@ trait ModelCaching
             $relatedPivotKey,
             $parentKey,
             $relatedKey,
-            $relationName
+            $relationName,
         );
     }
 
@@ -292,8 +366,8 @@ trait ModelCaching
 
     public function scopeWithCacheCooldownSeconds(
         EloquentBuilder $query,
-        ?int $seconds = null
-    ) : EloquentBuilder {
+        ?int $seconds = null,
+    ): EloquentBuilder {
         if (! $seconds) {
             $seconds = $this->cacheCooldownSeconds;
         }

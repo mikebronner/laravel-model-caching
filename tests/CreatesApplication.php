@@ -162,6 +162,12 @@ trait CreatesApplication
 
     public function appVersionEleven(): bool
     {
-        return version_compare(app()->version(), '11.0.0', '>=');
+        return version_compare(app()->version(), '11.0.0', '>=')
+            && version_compare(app()->version(), '12.0.0', '<');
+    }
+
+    public function appVersionTwelve(): bool
+    {
+        return version_compare(app()->version(), '12.0.0', '>=');
     }
 }
