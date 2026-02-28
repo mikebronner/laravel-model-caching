@@ -12,9 +12,9 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
 {
     public function testConstrainedEagerLoadsProduceDifferentResults(): void
     {
-        $publisher = factory(Publisher::class)->create();
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Jason Bourne']);
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Bason Journe']);
+        $publisher = Publisher::factory()->create();
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Jason Bourne']);
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Bason Journe']);
 
         $jasonBourneBooks = Publisher::with(['books' => function ($q) {
             $q->where('title', 'Jason Bourne');
@@ -37,7 +37,7 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
 
     public function testConstrainedEagerLoadsProduceDistinctCacheKeys(): void
     {
-        $publisher = factory(Publisher::class)->create(['name' => 'ZZZUNIQUE-Publisher']);
+        $publisher = Publisher::factory()->create(['name' => 'ZZZUNIQUE-Publisher']);
         sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:publishers:" .
             (new \GeneaLabs\LaravelModelCaching\CacheKey(
                 ['books' => function ($q) { $q->where('title', 'Jason Bourne'); }],
@@ -49,8 +49,8 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
             ))
             ->make(['*']));
 
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Jason Bourne 2']);
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Bason Journe 2']);
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Jason Bourne 2']);
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Bason Journe 2']);
 
         $jasonResult = Publisher::where('name', 'ZZZUNIQUE-Publisher')
             ->with(['books' => fn($q) => $q->where('title', 'Jason Bourne 2')])->get()
@@ -67,8 +67,8 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
 
     public function testUnconstrainedEagerLoadStillWorks(): void
     {
-        $publisher = factory(Publisher::class)->create();
-        factory(Book::class, 3)->create(['publisher_id' => $publisher->id]);
+        $publisher = Publisher::factory()->create();
+        Book::factory()->count(3)->create(['publisher_id' => $publisher->id]);
 
         $publishers = Publisher::where('id', $publisher->id)->with('books')->get();
         $uncached   = (new UncachedPublisher)->where('id', $publisher->id)->with('books')->get();
@@ -81,10 +81,10 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
 
     public function testThreeDistinctConstraintsReturnDistinctResults(): void
     {
-        $publisher = factory(Publisher::class)->create();
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Alpha Title']);
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Beta Title']);
-        factory(Book::class)->create(['publisher_id' => $publisher->id, 'title' => 'Gamma Title']);
+        $publisher = Publisher::factory()->create();
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Alpha Title']);
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Beta Title']);
+        Book::factory()->create(['publisher_id' => $publisher->id, 'title' => 'Gamma Title']);
 
         $getBooks = fn(string $title) => Publisher::where('id', $publisher->id)
             ->with(['books' => fn($q) => $q->where('title', $title)])
@@ -106,8 +106,8 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
 
     public function testConstrainedEagerLoadCacheIsInvalidatedOnRelationChange(): void
     {
-        $publisher = factory(Publisher::class)->create();
-        $book = factory(Book::class)->create([
+        $publisher = Publisher::factory()->create();
+        $book = Book::factory()->create([
             'publisher_id' => $publisher->id,
             'title' => 'Original Title',
         ]);
@@ -134,11 +134,11 @@ class ConstrainedEagerLoadTest extends IntegrationTestCase
 
     public function testDynamicLocalScopeInWithClosureProducesDistinctCacheKeys(): void
     {
-        $authorA = factory(Author::class)->create(['name' => 'Author A']);
-        $authorB = factory(Author::class)->create(['name' => 'Author B']);
+        $authorA = Author::factory()->create(['name' => 'Author A']);
+        $authorB = Author::factory()->create(['name' => 'Author B']);
 
-        factory(Book::class)->create(['author_id' => $authorA->id, 'title' => 'Book for A']);
-        factory(Book::class)->create(['author_id' => $authorB->id, 'title' => 'Book for B']);
+        Book::factory()->create(['author_id' => $authorA->id, 'title' => 'Book for A']);
+        Book::factory()->create(['author_id' => $authorB->id, 'title' => 'Book for B']);
 
         $getBooksForAuthor = fn(int $authorId) => Author::with([
             'books' => function (HasMany $q) use ($authorId) {

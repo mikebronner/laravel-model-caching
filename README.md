@@ -45,6 +45,8 @@ It will not work with non-taggable drivers:
 - DynamoDB
 ```
 
+> **Note:** Cache invalidation for `BelongsToMany` relationships with custom pivot models (via `->using(CustomPivot::class)`) is supported even when only the parent model uses the `Cachable` trait.
+
 ## Requirements
 - PHP 7.3+
 - Laravel 8.0+
@@ -60,6 +62,10 @@ likely conflict with this package. Of course, any packages that implement their
 own Querybuilder class effectively circumvent this package, rendering them
 incompatible.
 
+### Pivot Model Compatibility
+When using `BelongsToMany` with a custom pivot model via `->using(CustomPivot::class)`, cache invalidation now works correctly as long as **either** the parent or the related model uses the `Cachable` trait. Previously, both models needed to be cacheable for pivot operations (`attach`, `detach`, `sync`, `updateExistingPivot`) to properly invalidate cached relationship results.
+
+### Packages That Conflict
 The following are packages we have identified as conflicting:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
 - [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
@@ -77,6 +83,9 @@ The following items currently do no work with this package:
 - using select() clauses in Eloquent queries, see #238 (work-around discussed in the issue)
 - using transactions. If you are using transactions, you will likely have to manually flush the cache, see [issue #305](https://github.com/GeneaLabs/laravel-model-caching/issues/305).
 ```
+
+### Model Events on Cache Hits
+Model `retrieved` events are now fired for models and collections returned from the cache, ensuring consistent event behaviour whether or not results came from the database.
 
 [![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
 
@@ -240,6 +249,24 @@ You can disable a given query by using `disableCache()` anywhere in the query ch
 ```php
 $results = $myModel->disableCache()->where('field', $value)->get();
 ```
+
+### BelongsToMany with Custom Pivot Models
+When defining a `BelongsToMany` relationship that uses a custom pivot model, cache invalidation works correctly as long as the parent model (or the related model) uses the `Cachable` trait:
+
+```php
+class User extends Model
+{
+    use Cachable;
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class)
+            ->using(UserRole::class); // custom pivot model
+    }
+}
+```
+
+Pivot operations such as `attach()`, `detach()`, `sync()`, and `updateExistingPivot()` will automatically invalidate the relevant cached relationship results, even when the related model (`Role` in this example) does not itself use the `Cachable` trait.
 
 ### Manual Flushing of Specific Model
 You can flush the cache of a specific model using the following artisan command:
