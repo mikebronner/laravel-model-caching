@@ -28,8 +28,8 @@ class MagicMethodProxyTest extends IntegrationTestCase
             return $this->where('name', 'like', "%{$type}%");
         });
 
-        factory(Author::class, 3)->create(['name' => 'ZZZFICTION-UNIQUE-TEST Author']);
-        factory(Author::class, 2)->create(['name' => 'ZZZOTHER-UNIQUE-TEST Author']);
+        Author::factory()->count(3)->create(['name' => 'ZZZFICTION-UNIQUE-TEST Author']);
+        Author::factory()->count(2)->create(['name' => 'ZZZOTHER-UNIQUE-TEST Author']);
 
         $fictionAuthors = Author::type('ZZZFICTION-UNIQUE-TEST')->get();
 
@@ -44,8 +44,8 @@ class MagicMethodProxyTest extends IntegrationTestCase
             return $this->where('name', 'like', "%{$type}%");
         });
 
-        factory(Author::class)->create(['name' => 'ZZZFICTION-UNIQUE Author']);
-        factory(Author::class)->create(['name' => 'ZZZNONFICTION-UNIQUE Author']);
+        Author::factory()->create(['name' => 'ZZZFICTION-UNIQUE Author']);
+        Author::factory()->create(['name' => 'ZZZNONFICTION-UNIQUE Author']);
 
         $fiction = Author::type('ZZZFICTION-UNIQUE')->get();
         $nonFiction = Author::type('ZZZNONFICTION-UNIQUE')->get();
@@ -67,8 +67,8 @@ class MagicMethodProxyTest extends IntegrationTestCase
             return $this->where('email', 'like', "%{$value}%");
         });
 
-        factory(Author::class)->create(['name' => 'ZZZSCIENCE-UNIQUE Author', 'email' => 'zzzsci-unique@example.com']);
-        factory(Author::class)->create(['name' => 'ZZZHISTORY-UNIQUE Author', 'email' => 'zzzhistory-unique@example.com']);
+        Author::factory()->create(['name' => 'ZZZSCIENCE-UNIQUE Author', 'email' => 'zzzsci-unique@example.com']);
+        Author::factory()->create(['name' => 'ZZZHISTORY-UNIQUE Author', 'email' => 'zzzhistory-unique@example.com']);
 
         $byName = Author::ofType('ZZZSCIENCE-UNIQUE')->get();
         $byEmail = Author::customFilter('zzzhistory-unique')->get();
@@ -85,8 +85,8 @@ class MagicMethodProxyTest extends IntegrationTestCase
             return $this->where('name', 'like', "%{$type}%");
         });
 
-        factory(Author::class)->create(['name' => 'ZZZCACHED-UNIQUE Author']);
-        factory(Author::class)->create(['name' => 'ZZZCACHED-UNIQUE Author 2']);
+        Author::factory()->create(['name' => 'ZZZCACHED-UNIQUE Author']);
+        Author::factory()->create(['name' => 'ZZZCACHED-UNIQUE Author 2']);
 
         $first = Author::type('ZZZCACHED-UNIQUE')->get();
         $second = Author::type('ZZZCACHED-UNIQUE')->get();
@@ -102,8 +102,8 @@ class MagicMethodProxyTest extends IntegrationTestCase
 
     public function testExistingBuilderMethodsStillWorkWithCachedBuilder(): void
     {
-        factory(Author::class)->create(['name' => 'Alice']);
-        factory(Author::class)->create(['name' => 'Bob']);
+        Author::factory()->create(['name' => 'Alice']);
+        Author::factory()->create(['name' => 'Bob']);
 
         $result = Author::where('name', 'Alice')->get();
 
@@ -113,8 +113,8 @@ class MagicMethodProxyTest extends IntegrationTestCase
 
     public function testLocalScopeStillWorksThroughCachedBuilder(): void
     {
-        factory(Author::class)->create(['name' => 'Alpha Author']);
-        factory(Author::class)->create(['name' => 'Beta Author']);
+        Author::factory()->create(['name' => 'Alpha Author']);
+        Author::factory()->create(['name' => 'Beta Author']);
 
         $alphas = Author::startsWithA()->get();
         $uncachedAlphas = (new UncachedAuthor)->startsWithA()->get();

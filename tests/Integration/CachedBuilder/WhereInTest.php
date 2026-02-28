@@ -165,4 +165,54 @@ class WhereInTest extends IntegrationTestCase
 
         $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
     }
+
+    public function testNestedWhereNotInWithSubqueryDoesNotCrashWithUuidException()
+    {
+        $books = (new Book)
+            ->whereNotIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "John");
+            })
+            ->whereNotIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "Mike");
+            })
+            ->get();
+
+        $liveResults = (new UncachedBook)
+            ->whereNotIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "John");
+            })
+            ->whereNotIn("author_id", function ($query) {
+                $query->select("id")
+                    ->from("authors")
+                    ->where("name", "=", "Mike");
+            })
+            ->get();
+
+        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
+    }
+
+    public function testWhereInWithNonUuidStringValuesSkipsFromBytes()
+    {
+        $books = (new Book)
+            ->whereIn("author_id", function ($query) {
+                $query->selectRaw("distinct id")
+                    ->from("authors");
+            })
+            ->get();
+
+        $liveResults = (new UncachedBook)
+            ->whereIn("author_id", function ($query) {
+                $query->selectRaw("distinct id")
+                    ->from("authors");
+            })
+            ->get();
+
+        $this->assertEquals($liveResults->pluck("id"), $books->pluck("id"));
+    }
 }

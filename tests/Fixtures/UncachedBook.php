@@ -1,5 +1,8 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
 
+use GeneaLabs\LaravelModelCaching\Tests\Database\Factories\UncachedBookFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -8,6 +11,13 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class UncachedBook extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory(): Factory
+    {
+        return UncachedBookFactory::new();
+    }
+
     protected $casts = [
         'price' => 'float',
         'published_at' => 'datetime',
