@@ -1,10 +1,16 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Publisher;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Publisher::class, function (Faker $faker) {
-    return [
-        'name' => $faker->name,
-    ];
-});
+class PublisherFactory extends Factory
+{
+    protected $model = Publisher::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->name,
+        ];
+    }
+}

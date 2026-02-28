@@ -1,10 +1,16 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Role;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Role::class, function (Faker $faker) {
-    return [
-        'name' => $faker->unique()->word,
-    ];
-});
+class RoleFactory extends Factory
+{
+    protected $model = Role::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->unique()->word,
+        ];
+    }
+}

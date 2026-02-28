@@ -22,25 +22,25 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        $roles = factory(Role::class, 3)->create();
-        factory(History::class)->create();
-        $user = factory(User::class)->create();
+        $roles = Role::factory()->count(3)->create();
+        History::factory()->create();
+        $user = User::factory()->create();
         $user->roles()->sync($roles->pluck('id'));
-        $image = factory(Image::class)->create([
+        $image = Image::factory()->create([
             "imagable_id" => $user->id,
             "imagable_type" => User::class,
         ]);
-        factory(Image::class)->create([
+        Image::factory()->create([
             "imagable_id" => $user->id,
             "imagable_type" => UncachedUser::class,
             "path" => $image->path,
         ]);
-        factory(Tag::class, 5)->create();
-        $post = factory(Post::class)->create();
+        Tag::factory()->count(5)->create();
+        $post = Post::factory()->create();
         $uncachedPost = (new UncachedPost)->first();
         $post->tags()->attach(1);
         $uncachedPost->tags()->attach(1);
-        factory(Comment::class, 5)
+        Comment::factory()->count(5)
             ->create([
                 "commentable_id" => $post->id,
                 "commentable_type" => Post::class,
@@ -53,31 +53,30 @@ class DatabaseSeeder extends Seeder
                     "subject" => $comment->subject . ' - uncached post',
                 ]);
             });
-        $publishers = factory(Publisher::class, 10)->create();
+        $publishers = Publisher::factory()->count(10)->create();
         (new Author)->observe(AuthorObserver::class);
-        factory(Author::class, 10)->create()
+        Author::factory()->count(10)->create()
             ->each(function ($author) use ($publishers) {
-                $profile = factory(Profile::class)
-                    ->make();
+                $profile = Profile::factory()->make();
                 $profile->author_id = $author->id;
                 $profile->save();
-                factory(Book::class, random_int(5, 25))
+                Book::factory()->count(random_int(5, 25))
                     ->create([
                         "author_id" => $author->id,
                         "publisher_id" => $publishers[rand(0, 9)]->id,
                     ])
-                    ->each(function ($book) use ($author, $publishers) {
-                        factory(Printer::class)->create([
+                    ->each(function ($book) {
+                        Printer::factory()->create([
                             "book_id" => $book->id,
                         ]);
                     });
-                factory(Profile::class)->make([
+                Profile::factory()->make([
                     'author_id' => $author->id,
                 ]);
             });
 
         $bookIds = (new Book)->all()->pluck('id');
-        factory(Store::class, 10)->create()
+        Store::factory()->count(10)->create()
             ->each(function ($store) use ($bookIds) {
                 $store->books()->sync(rand($bookIds->min(), $bookIds->max()));
             });

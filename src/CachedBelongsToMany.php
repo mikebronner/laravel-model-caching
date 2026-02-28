@@ -11,32 +11,97 @@ class CachedBelongsToMany extends BelongsToMany
     use Buildable;
     use BuilderCaching;
     use Caching;
-    use FiresPivotEventsTrait;
+    use FiresPivotEventsTrait {
+        FiresPivotEventsTrait::sync as traitSync;
+        FiresPivotEventsTrait::attach as traitAttach;
+        FiresPivotEventsTrait::detach as traitDetach;
+        FiresPivotEventsTrait::updateExistingPivot as traitUpdateExistingPivot;
+    }
 
-    /**
-     * Sync the intermediate tables with a list of IDs or collection of models.
-     *
-     * Overrides FiresPivotEventsTrait::sync() to avoid using withoutEvents(),
-     * which suppresses ALL model events globally — including events on custom
-     * pivot models, preventing their observers from firing.
-     *
-     * @param  mixed  $ids
-     * @param  bool  $detaching
-     * @return array
-     */
-    public function sync($ids, $detaching = true)
+    protected $isSyncing = false;
+
+    protected function flushCacheForPivotOperation(): void
     {
-        if (false === $this->parent->fireModelEvent('pivotSyncing', true, $this->getRelationName())) {
-            return [];
+        if (method_exists($this->parent, 'flushCache')) {
+            $this->parent->flushCache();
         }
 
-        // Call the base BelongsToMany::sync() directly instead of wrapping in
-        // withoutEvents(). This allows custom pivot model events (and their
-        // observers) to fire correctly during attach/detach operations.
-        $parentResult = parent::sync($ids, $detaching);
+        $relatedModel = $this->getRelated();
 
-        $this->parent->fireModelEvent('pivotSynced', false, $this->getRelationName(), $parentResult);
+        if (method_exists($relatedModel, 'flushCache')) {
+            $relatedModel->flushCache();
+        }
+    }
 
-        return $parentResult;
+    public function sync($ids, $detaching = true)
+    {
+        $wasCachable = $this->isCachable;
+        $this->isCachable = false;
+        $this->isSyncing = true;
+
+        try {
+            $result = $this->traitSync($ids, $detaching);
+        } finally {
+            $this->isSyncing = false;
+            $this->isCachable = $wasCachable;
+        }
+
+        $this->flushCacheForPivotOperation();
+
+        return $result;
+    }
+
+    public function attach($ids, array $attributes = [], $touch = true)
+    {
+        $wasCachable = $this->isCachable;
+        $this->isCachable = false;
+
+        try {
+            $result = $this->traitAttach($ids, $attributes, $touch);
+        } finally {
+            $this->isCachable = $wasCachable;
+        }
+
+        if (! $this->isSyncing) {
+            $this->flushCacheForPivotOperation();
+        }
+
+        return $result;
+    }
+
+    public function detach($ids = null, $touch = true)
+    {
+        $wasCachable = $this->isCachable;
+        $this->isCachable = false;
+
+        try {
+            $result = $this->traitDetach($ids, $touch);
+        } finally {
+            $this->isCachable = $wasCachable;
+        }
+
+        if (! $this->isSyncing) {
+            $this->flushCacheForPivotOperation();
+        }
+
+        return $result;
+    }
+
+    public function updateExistingPivot($id, array $attributes, $touch = true)
+    {
+        $wasCachable = $this->isCachable;
+        $this->isCachable = false;
+
+        try {
+            $result = $this->traitUpdateExistingPivot($id, $attributes, $touch);
+        } finally {
+            $this->isCachable = $wasCachable;
+        }
+
+        if (! $this->isSyncing) {
+            $this->flushCacheForPivotOperation();
+        }
+
+        return $result;
     }
 }
