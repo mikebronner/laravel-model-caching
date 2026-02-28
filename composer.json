@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": ">=8.1",
-        "mikebronner/laravel-pivot-events": "^10.0|^11.0|^12.0",
+        "mikebronner/laravel-pivot-events": "*",
         "illuminate/cache": "^10.0|^11.0|^12.0",
         "illuminate/config": "^10.0|^11.0|^12.0",
         "illuminate/console": "^10.0|^11.0|^12.0",

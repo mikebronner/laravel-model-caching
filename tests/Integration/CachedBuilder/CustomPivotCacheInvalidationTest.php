@@ -7,9 +7,12 @@ namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Role;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedRole;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedUser;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 /**
  * Regression tests for issue #481: Cache invalidation when using custom
@@ -243,5 +246,111 @@ class CustomPivotCacheInvalidationTest extends IntegrationTestCase
             $freshResult->pluck('id')->toArray(),
             $newRoles->pluck('id')->toArray()
         ), 'After sync via uncached related model with custom pivot, fresh query should reflect synced roles.');
+    }
+
+    // -------------------------------------------------------------------------
+    // Event-firing assertions for custom pivot operations
+    // -------------------------------------------------------------------------
+
+    public function testPivotAttachedEventFiresWithCustomPivot(): void
+    {
+        Event::fake();
+
+        $userId = $this->userIdWithRoles();
+        $newRole = factory(Role::class)->create();
+
+        (new User)->find($userId)->rolesWithCustomPivot()->attach($newRole->id);
+
+        Event::assertDispatched("eloquent.pivotAttached: " . User::class);
+    }
+
+    public function testPivotDetachedEventFiresWithCustomPivot(): void
+    {
+        Event::fake();
+
+        $userId = $this->userIdWithRoles();
+        $user = (new User)->find($userId);
+        $firstRoleId = $user->rolesWithCustomPivot->first()->id;
+
+        $user->rolesWithCustomPivot()->detach($firstRoleId);
+
+        Event::assertDispatched("eloquent.pivotDetached: " . User::class);
+    }
+
+    public function testPivotSyncedEventFiresWithCustomPivot(): void
+    {
+        Event::fake();
+
+        $userId = $this->userIdWithRoles();
+        $newRoles = factory(Role::class, 2)->create();
+
+        (new User)->find($userId)->rolesWithCustomPivot()->sync($newRoles->pluck('id'));
+
+        Event::assertDispatched("eloquent.pivotSynced: " . User::class);
+    }
+
+    // -------------------------------------------------------------------------
+    // updateExistingPivot cache invalidation
+    // -------------------------------------------------------------------------
+
+    public function testCacheIsInvalidatedWhenUpdatingExistingPivotViaCustomPivot(): void
+    {
+        $userId = $this->userIdWithRoles();
+
+        $relation = (new User)->find($userId)->rolesWithCustomPivot();
+        [$tags, $hashedKey] = $this->getCacheTagsAndKey($relation);
+
+        // Warm the cache.
+        $result = (new User)->find($userId)->rolesWithCustomPivot;
+        $this->assertNotEmpty($result);
+
+        $firstRoleId = $result->first()->id;
+        (new User)->find($userId)->rolesWithCustomPivot()->updateExistingPivot(
+            $firstRoleId,
+            ['updated_at' => now()]
+        );
+
+        $cachedResult = $this->cache()->tags($tags)->get($hashedKey);
+
+        $this->assertNull(
+            $cachedResult,
+            'Expected cache to be invalidated after updateExistingPivot via custom pivot, but a cached value was found.'
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // Neither model cacheable: fallback to standard BelongsToMany
+    // -------------------------------------------------------------------------
+
+    public function testNonCacheableModelsReturnStandardBelongsToMany(): void
+    {
+        $userId = $this->userIdWithRoles();
+        $user = UncachedUser::find($userId);
+
+        $relation = $user->roles();
+
+        $this->assertInstanceOf(BelongsToMany::class, $relation);
+        $this->assertNotInstanceOf(
+            CachedBelongsToMany::class,
+            $relation,
+            'UncachedUser->roles() should return a standard BelongsToMany, not CachedBelongsToMany.'
+        );
+
+        // Verify attach/detach still work correctly.
+        $newRole = UncachedRole::create(['name' => 'fallback-test-role']);
+        $user->roles()->attach($newRole->id);
+
+        $this->assertTrue(
+            $user->roles->contains('id', $newRole->id),
+            'Attach should work on standard BelongsToMany for non-cacheable models.'
+        );
+
+        $user->roles()->detach($newRole->id);
+        $user->unsetRelation('roles');
+
+        $this->assertFalse(
+            $user->roles->contains('id', $newRole->id),
+            'Detach should work on standard BelongsToMany for non-cacheable models.'
+        );
     }
 }
