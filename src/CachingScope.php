@@ -16,7 +16,6 @@ class CachingScope implements Scope
     protected $extensions = [
         'DisableModelCaching',
         'FlushCache',
-        'WithCacheCooldownSeconds',
     ];
 
     public function apply(Builder $builder, Model $model): void
@@ -55,16 +54,5 @@ class CachingScope implements Scope
         });
     }
 
-    protected function addWithCacheCooldownSeconds(Builder $builder): void
-    {
-        $builder->macro('withCacheCooldownSeconds', function (Builder $builder, ?int $seconds = null) {
-            $model = $builder->getModel();
 
-            if (method_exists($model, 'scopeWithCacheCooldownSeconds')) {
-                $model->scopeWithCacheCooldownSeconds($builder, $seconds);
-            }
-
-            return $builder;
-        });
-    }
 }

@@ -182,12 +182,45 @@ trait Caching
         $idColumn = null,
         string $keyDifferentiator = ''
     ) : string {
-        return CacheKeyGenerator::generate(
-            $this,
-            $columns,
-            $idColumn,
-            $keyDifferentiator
-        );
+        // When called from a Builder context, use clone-based generation
+        // to avoid mutating the original builder during key computation
+        if ($this instanceof \Illuminate\Database\Eloquent\Builder) {
+            return CacheKeyGenerator::generate(
+                $this,
+                $columns,
+                $idColumn,
+                $keyDifferentiator
+            );
+        }
+
+        // For Relation and Model contexts, apply scopes in-place (legacy behavior)
+        // and generate key directly
+        $this->applyScopesToInstance();
+        $eagerLoad = $this->eagerLoad ?? [];
+        $model = $this;
+
+        if (property_exists($this, "model")) {
+            $model = $this->model;
+        }
+
+        if (method_exists($this, "getModel")) {
+            $model = $this->getModel();
+        }
+
+        $query = $this->query
+            ?? Container::getInstance()
+                ->make("db")
+                ->query();
+
+        if (
+            $this->query
+            && method_exists($this->query, "getQuery")
+        ) {
+            $query = $this->query->getQuery();
+        }
+
+        return (new CacheKey($eagerLoad, $model, $query, $this->macroKey, $this->withoutGlobalScopes, $this->withoutAllGlobalScopes))
+            ->make($columns, $idColumn, $keyDifferentiator);
     }
 
     protected function makeCacheTags() : array
