@@ -63,7 +63,7 @@ class CachableTest extends IntegrationTestCase
     public function testAllReturnsCollection()
     {
         (new Author)->truncate();
-        factory(Author::class, 1)->create();
+        Author::factory()->count(1)->create();
         $authors = (new Author)->all();
 
         $cachedResults = $this
