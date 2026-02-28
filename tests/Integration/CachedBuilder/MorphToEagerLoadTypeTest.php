@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Comment;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post;
@@ -117,5 +118,76 @@ class MorphToEagerLoadTypeTest extends IntegrationTestCase
         // Key regression: calling a method on the morph target must not throw
         $tags = $cached->commentable->tags;
         $this->assertNotNull($tags);
+    }
+
+    public function testUpdatingPostInvalidatesCommentWithCommentableCache(): void
+    {
+        $post = (new Post)->first();
+
+        $comment = Comment::create([
+            'commentable_id' => $post->id,
+            'commentable_type' => Post::class,
+            'description' => 'Original comment',
+            'subject' => 'Invalidation test',
+        ]);
+
+        $this->cache()->flush();
+
+        $cached = (new Comment)
+            ->with('commentable')
+            ->where('id', $comment->id)
+            ->first();
+
+        $this->assertSame($post->title, $cached->commentable->title);
+
+        $post->title = 'Updated post title ' . uniqid();
+        $post->save();
+
+        $fresh = (new Comment)
+            ->with('commentable')
+            ->where('id', $comment->id)
+            ->first();
+
+        $this->assertSame(
+            $post->title,
+            $fresh->commentable->title,
+            'Comment cache should be invalidated when an eager-loaded Post is updated.'
+        );
+    }
+
+    public function testUpdatingBookInvalidatesCommentWithCommentableCache(): void
+    {
+        $book = (new Book)->first();
+        $originalTitle = $book->title;
+
+        $comment = Comment::create([
+            'commentable_id' => $book->id,
+            'commentable_type' => Book::class,
+            'description' => 'Comment on book',
+            'subject' => 'Book invalidation test',
+        ]);
+
+        $this->cache()->flush();
+
+        $cached = (new Comment)
+            ->with('commentable')
+            ->where('id', $comment->id)
+            ->first();
+
+        $this->assertSame($originalTitle, $cached->commentable->title);
+
+        $book->title = 'Updated book title ' . uniqid();
+        $book->save();
+
+        $fresh = (new Comment)
+            ->with('commentable')
+            ->where('id', $comment->id)
+            ->first();
+
+        $this->assertSame(
+            $book->title,
+            $fresh->commentable->title,
+            'Comment cache should be invalidated when an eager-loaded Book is updated.'
+        );
     }
 }
