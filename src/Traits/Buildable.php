@@ -52,10 +52,14 @@ trait Buildable
 
     public function delete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = parent::delete();
 
-        return parent::delete();
+        if ($result) {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }
+
+        return $result;
     }
 
     /**
@@ -92,10 +96,14 @@ trait Buildable
 
     public function forceDelete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = parent::forceDelete();
 
-        return parent::forceDelete();
+        if ($result) {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }
+
+        return $result;
     }
 
     public function get($columns = ["*"])
