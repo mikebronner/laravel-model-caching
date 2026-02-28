@@ -8,6 +8,8 @@ use GeneaLabs\LaravelModelCaching\EloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use GeneaLabs\LaravelModelCaching\CachedMorphToMany;
 use Illuminate\Support\Carbon;
 
 trait ModelCaching

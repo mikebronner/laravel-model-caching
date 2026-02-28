@@ -8,6 +8,9 @@ use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use ReflectionClass;
+use ReflectionMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
@@ -274,6 +277,7 @@ trait Caching
 
         if (! $cacheCooldown) {
             $instance->flushCache();
+            $this->flushMorphToRelatedCaches($instance);
             $this->flushRelationshipCache($instance, $relationship);
 
             return;
@@ -283,7 +287,43 @@ trait Caching
 
         if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
             $instance->flushCache();
+            $this->flushMorphToRelatedCaches($instance);
             $this->flushRelationshipCache($instance, $relationship);
+        }
+    }
+
+    protected function flushMorphToRelatedCaches(Model $instance): void
+    {
+        $reflection = new ReflectionClass($instance);
+
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->class !== get_class($instance)
+                || $method->getNumberOfParameters() > 0
+            ) {
+                continue;
+            }
+
+            $returnType = $method->getReturnType();
+
+            if (! $returnType || $returnType->getName() !== MorphTo::class) {
+                continue;
+            }
+
+            $morphToName = $method->getName();
+            $typeColumn = $instance->{$morphToName}()->getMorphType();
+            $idColumn = $instance->{$morphToName}()->getForeignKeyName();
+            $parentType = $instance->getAttribute($typeColumn);
+            $parentId = $instance->getAttribute($idColumn);
+
+            if (! $parentType || ! $parentId) {
+                continue;
+            }
+
+            $parentModel = new $parentType;
+
+            if (method_exists($parentModel, 'flushCache')) {
+                $parentModel->flushCache();
+            }
         }
     }
 
