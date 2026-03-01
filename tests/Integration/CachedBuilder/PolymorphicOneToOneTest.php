@@ -11,6 +11,7 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images:genealabslaravelmodelcachingtestsfixturesimage-images.imagable_id_inraw_2-images.imagable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\User");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesimage",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images",
         ];
 
         $result = (new User)
@@ -37,9 +38,10 @@ class PolymorphicOneToOneTest extends IntegrationTestCase
 
     public function testLazyloadedHasOneThrough()
     {
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images:genealabslaravelmodelcachingtestsfixturesimage-images.imagable_id_=_2-images.imagable_id_notnull-images.imagable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\User-limit_1");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images:genealabslaravelmodelcachingtestsfixturesimage-images.imagable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\User-images.imagable_id_=_2-images.imagable_id_notnull-limit_1");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesimage",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:images",
         ];
 
         $result = (new User)

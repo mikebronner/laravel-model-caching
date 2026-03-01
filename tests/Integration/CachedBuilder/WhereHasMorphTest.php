@@ -20,6 +20,7 @@ class WhereHasMorphTest extends IntegrationTestCase
 
         $cacheResults = $this->cache()->tags([
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturescomment",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments",
         ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-nested-nested-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post-exists-and_comments.commentable_id_=_posts.id"
@@ -41,6 +42,7 @@ class WhereHasMorphTest extends IntegrationTestCase
 
         $cacheResults = $this->cache()->tags([
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturescomment",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments",
         ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-nested-nested-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post-exists-and_comments.commentable_id_=_posts.id-nested-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPost-exists-and_comments.commentable_id_=_posts.id"
@@ -66,6 +68,7 @@ class WhereHasMorphTest extends IntegrationTestCase
 
         $cacheResults = $this->cache()->tags([
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturescomment",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments",
         ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-nested-nested-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post-exists-and_comments.commentable_id_=_posts.id-subject_like_%uncached post-nested-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedPost-exists-and_comments.commentable_id_=_posts.id-subject_like_%uncached post"

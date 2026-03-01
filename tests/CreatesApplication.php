@@ -42,8 +42,6 @@ trait CreatesApplication
 
         require(__DIR__ . '/routes/web.php');
 
-        $this->withFactories(__DIR__ . '/database/factories');
-
         view()->addLocation(__DIR__ . '/resources/views', 'laravel-model-caching');
 
         $this->cache = app('cache')
@@ -83,7 +81,6 @@ trait CreatesApplication
             ?: unlink($file);
         touch($file);
 
-        $this->withFactories(__DIR__ . '/database/factories');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         Artisan::call('db:seed', [
@@ -137,5 +134,40 @@ trait CreatesApplication
             ],
             'pagination' => 'simple',
         ]);
+    }
+
+    public function appVersionEightAndNine(): bool
+    {
+        return version_compare(app()->version(), '8.0.0', '>=')
+            && version_compare(app()->version(), '10.0.0', '<');
+    }
+
+    public function appVersionFiveBetweenSeven(): bool
+    {
+        return version_compare(app()->version(), '5.6.0', '>=')
+            && version_compare(app()->version(), '8.0.0', '<');
+    }
+
+    public function appVersionOld(): bool
+    {
+        return version_compare(app()->version(), '5.4.0', '>=')
+            && version_compare(app()->version(), '5.6.0', '<');
+    }
+
+    public function appVersionTen(): bool
+    {
+        return version_compare(app()->version(), '10.0.0', '>=')
+            && version_compare(app()->version(), '11.0.0', '<');
+    }
+
+    public function appVersionEleven(): bool
+    {
+        return version_compare(app()->version(), '11.0.0', '>=')
+            && version_compare(app()->version(), '12.0.0', '<');
+    }
+
+    public function appVersionTwelve(): bool
+    {
+        return version_compare(app()->version(), '12.0.0', '>=');
     }
 }

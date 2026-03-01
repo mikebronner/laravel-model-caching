@@ -1,11 +1,19 @@
-<?php namespace GeneaLabs\LaravelModelCaching;
+<?php
 
-use Exception;
+declare(strict_types=1);
+
+namespace GeneaLabs\LaravelModelCaching;
+
+use BackedEnum;
+use DateTimeInterface;
 use GeneaLabs\LaravelModelCaching\Traits\CachePrefixing;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
+use Throwable;
+use UnitEnum;
 
 class CacheKey
 {
@@ -16,17 +24,23 @@ class CacheKey
     protected $macroKey;
     protected $model;
     protected $query;
+    protected $withoutGlobalScopes = [];
+    protected $withoutAllGlobalScopes = false;
 
     public function __construct(
         array $eagerLoad,
         $model,
         $query,
-        $macroKey
+        $macroKey,
+        array $withoutGlobalScopes,
+        $withoutAllGlobalScopes
     ) {
         $this->eagerLoad = $eagerLoad;
         $this->macroKey = $macroKey;
         $this->model = $model;
         $this->query = $query;
+        $this->withoutGlobalScopes = $withoutGlobalScopes;
+        $this->withoutAllGlobalScopes = $withoutAllGlobalScopes;
     }
 
     public function make(
@@ -40,6 +54,7 @@ class CacheKey
         $key .= $this->getIdColumn($idColumn ?: "");
         $key .= $this->getQueryColumns($columns);
         $key .= $this->getWhereClauses();
+        $key .= $this->getHavingClauses();
         $key .= $this->getWithModels();
         $key .= $this->getOrderByClauses();
         $key .= $this->getOffsetClause();
@@ -47,13 +62,122 @@ class CacheKey
         $key .= $this->getBindingsSlug();
         $key .= $keyDifferentiator;
         $key .= $this->macroKey;
-// dump($key);
+
         return $key;
+    }
+
+    protected function getBindingsSlug() : string
+    {
+        if (! method_exists($this->model, 'query')) {
+            return '';
+        }
+
+        if ($this->withoutAllGlobalScopes) {
+            return Arr::query($this->model->query()->withoutGlobalScopes()->getBindings());
+        }
+
+        if (count($this->withoutGlobalScopes) > 0) {
+            return Arr::query($this->model->query()->withoutGlobalScopes($this->withoutGlobalScopes)->getBindings());
+        }
+
+        return Arr::query($this->model->query()->getBindings());
+    }
+
+    protected function getColumnClauses(array $where) : string
+    {
+        if ($where["type"] !== "Column") {
+            return "";
+        }
+
+        if ($where["first"] instanceof Expression) {
+            $where["first"] = $this->expressionToString($where["first"]);
+        }
+
+        if ($where["second"] instanceof Expression) {
+	    $where["second"] = $this->expressionToString($where["second"]);
+        }
+
+        return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
+    }
+
+    protected function getCurrentBinding(string $type, $bindingFallback = null)
+    {
+        return data_get($this->query->bindings, "{$type}.{$this->currentBinding}", $bindingFallback);
+    }
+
+    protected function getHavingClauses()
+    {
+        return Collection::make($this->query->havings)->reduce(function ($carry, $having) {
+            $value = $carry;
+            $value .= $this->getHavingClause($having);
+
+            return $value;
+        });
+    }
+
+    protected function getHavingClause(array $having): string
+    {
+        $return = '-having';
+
+        foreach ($having as $key => $value) {
+            $return .= '_' . $key . '_' . str_replace(' ', '_', $value);
+        }
+
+        return $return;
     }
 
     protected function getIdColumn(string $idColumn) : string
     {
         return $idColumn ? "_{$idColumn}" : "";
+    }
+
+    protected function getInAndNotInClauses(array $where) : string
+    {
+        if (! in_array($where["type"], ["In", "NotIn", "InRaw"])) {
+            return "";
+        }
+
+        $type = strtolower($where["type"]);
+        $subquery = $this->getValuesFromWhere($where);
+
+        if (
+            ! is_numeric($subquery)
+            && ! is_numeric(str_replace("_", "", $subquery))
+            && strlen($subquery) === 16
+        ) {
+            try {
+                $subquery = Uuid::fromBytes($subquery);
+                $values = $this->recursiveImplode([$subquery], "_");
+
+                return "-{$where["column"]}_{$type}{$values}";
+            } catch (Throwable) {
+                // do nothing
+            }
+        }
+
+        $placeholderCount = preg_match_all('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', $subquery);
+
+        if ($placeholderCount === 0) {
+            if (data_get($where, "values")) {
+                $this->currentBinding += count(data_get($where, "values"));
+            }
+
+            $values = $this->recursiveImplode([$subquery], "_");
+
+            return "-{$where["column"]}_{$type}{$values}";
+        }
+
+        $values = collect(data_get($this->query->bindings, "where"))
+            ->slice($this->currentBinding, $placeholderCount)
+            ->values();
+        $this->currentBinding += $placeholderCount;
+
+        $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
+        $subquery = str_replace('%', '%%', $subquery);
+        $subquery = collect(vsprintf(str_replace("_??_", "%s", $subquery), $values->toArray()));
+        $values = $this->recursiveImplode($subquery->toArray(), "_");
+
+        return "-{$where["column"]}_{$type}{$values}";
     }
 
     protected function getLimitClause() : string
@@ -67,15 +191,18 @@ class CacheKey
         return "-limit_{$this->query->limit}";
     }
 
-    protected function getTableSlug() : string
-    {
-        return (new Str)->slug($this->model->getTable())
-            . ":";
-    }
-
     protected function getModelSlug() : string
     {
         return (new Str)->slug(get_class($this->model));
+    }
+
+    protected function getNestedClauses(array $where) : string
+    {
+        if (! in_array($where["type"], ["Exists", "Nested", "NotExists"])) {
+            return "";
+        }
+
+        return "-" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
     }
 
     protected function getOffsetClause() : string
@@ -105,9 +232,55 @@ class CacheKey
                     return $carry . "_orderByRaw_" . (new Str)->slug($order["sql"]);
                 }
 
-                return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
+                return sprintf(
+                    '%s_orderBy_%s_%s',
+                    $carry,
+                    $this->expressionToString($order["column"]),
+                    $order["direction"]
+                );
             })
             ?: "";
+    }
+
+    protected function getRowValuesClauses(array $where) : string
+    {
+        if ($where["type"] !== "RowValues") {
+            return "";
+        }
+
+        $columns = implode("_", $where["columns"]);
+        $operator = str_replace(" ", "_", $where["operator"]);
+        $values = implode("_", array_map(function ($value) {
+            return $this->processEnum($value);
+        }, $where["values"]));
+
+        // Advance binding pointer for each value in the RowValues clause
+        foreach ($where["values"] as $ignored) {
+            $this->currentBinding++;
+        }
+
+        return "-{$where["boolean"]}_{$columns}_{$operator}_{$values}";
+    }
+
+    protected function getOtherClauses(array $where) : string
+    {
+        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn", "InRaw", "RowValues"])) {
+            return "";
+        }
+
+        $value = $this->getTypeClause($where);
+        $value .= $this->getValuesClause($where);
+
+        $column = "";
+
+	if (data_get($where, "column") instanceof Expression) {
+            $where["column"] = $this->expressionToString(data_get($where, "column"));
+        }
+
+        $column .= isset($where["column"]) ? $where["column"] : "";
+        $column .= isset($where["columns"]) ? implode("-", $where["columns"]) : "";
+
+        return "-{$column}_{$value}";
     }
 
     protected function getQueryColumns(array $columns) : string
@@ -123,15 +296,53 @@ class CacheKey
         if (property_exists($this->query, "columns")
             && $this->query->columns
         ) {
-            return "_" . implode("_", $this->query->columns);
+            $columns = array_map(function ($column) {
+                return $this->expressionToString($column);
+            }, $this->query->columns);
+
+            return "_" . implode("_", $columns);
         }
+
+        $columns = array_map(function ($column) {
+            return $this->expressionToString($column);
+        }, $columns);
 
         return "_" . implode("_", $columns);
     }
 
+    protected function getRawClauses(array $where) : string
+    {
+        if (! in_array($where["type"], ["raw"])) {
+            return "";
+        }
+
+        $queryParts = explode("?", $where["sql"]);
+        $clause = "_{$where["boolean"]}";
+
+        while (count($queryParts) > 1) {
+            $clause .= "_" . array_shift($queryParts);
+            $clause .= $this->getCurrentBinding("where");
+            $this->currentBinding++;
+        }
+
+        $lastPart = array_shift($queryParts);
+
+        if ($lastPart) {
+            $clause .= "_" . $lastPart;
+        }
+
+        return "-" . str_replace(" ", "_", $clause);
+    }
+
+    protected function getTableSlug() : string
+    {
+        return (new Str)->slug($this->query->from)
+            . ":";
+    }
+
     protected function getTypeClause($where) : string
     {
-        $type = in_array($where["type"], ["InRaw", "In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub", "JsonContains"])
+        $type = in_array($where["type"], ["InRaw", "In", "NotIn", "Null", "NotNull", "between", "NotInSub", "InSub", "JsonContains", "Fulltext", "JsonContainsKey"])
             ? strtolower($where["type"])
             : strtolower($where["operator"]);
 
@@ -162,24 +373,31 @@ class CacheKey
         }
 
         if (is_array((new Arr)->get($where, "values"))) {
-            return implode("_", collect($where["values"])->flatten()->toArray());
+            $values = collect($where["values"])->flatten()->toArray();
+            return implode("_", $this->processEnums($values));
         }
 
         if (is_array((new Arr)->get($where, "value"))) {
-            return implode("_", collect($where["value"])->flatten()->toArray());
+            $values = collect($where["value"])->flatten()->toArray();
+            return implode("_", $this->processEnums($values));
         }
 
-        return (new Arr)->get($where, "value", "");
+        $value = (new Arr)->get($where, "value", "");
+
+        return $this->processEnum($value);
     }
 
     protected function getValuesFromBindings(array $where, string $values) : string
     {
-        if (($this->query->bindings["where"][$this->currentBinding] ?? false) !== false) {
-            $values = $this->query->bindings["where"][$this->currentBinding];
+        $bindingFallback = __CLASS__ . ':UNKNOWN_BINDING';
+        $currentBinding = $this->getCurrentBinding("where", $bindingFallback);
+
+        if ($currentBinding !== $bindingFallback) {
+            $values = $currentBinding;
             $this->currentBinding++;
 
             if ($where["type"] === "between") {
-                $values .= "_" . $this->query->bindings["where"][$this->currentBinding];
+                $values .= "_" . $this->getCurrentBinding("where");
                 $this->currentBinding++;
             }
         }
@@ -190,7 +408,7 @@ class CacheKey
             $values = $values->format("Y-m-d-H-i-s");
         }
 
-        return $values;
+        return (string) $values;
     }
 
     protected function getWhereClauses(array $wheres = []) : string
@@ -202,60 +420,80 @@ class CacheKey
                 $value .= $this->getColumnClauses($where);
                 $value .= $this->getRawClauses($where);
                 $value .= $this->getInAndNotInClauses($where);
+                $value .= $this->getRowValuesClauses($where);
                 $value .= $this->getOtherClauses($where);
 
                 return $value;
             });
     }
 
-    protected function getNestedClauses(array $where) : string
+    protected function getWheres(array $wheres) : Collection
     {
-        if (! in_array($where["type"], ["Exists", "Nested", "NotExists"])) {
-            return "";
+        $wheres = collect($wheres);
+
+        if ($wheres->isEmpty()
+            && property_exists($this->query, "wheres")
+        ) {
+            $wheres = collect($this->query->wheres);
         }
 
-        return "-" . strtolower($where["type"]) . $this->getWhereClauses($where["query"]->wheres);
+        return $wheres;
     }
 
-    protected function getColumnClauses(array $where) : string
+    protected function getWithModels() : string
     {
-        if ($where["type"] !== "Column") {
+        $eagerLoads = collect($this->eagerLoad);
+
+        if ($eagerLoads->isEmpty()) {
             return "";
         }
 
-        return "-{$where["boolean"]}_{$where["first"]}_{$where["operator"]}_{$where["second"]}";
-    }
+        return $eagerLoads->reduce(function ($carry, $constraint, $related) {
+            if (! method_exists($this->model, $related)) {
+                $carry .= "-{$related}";
+            } else {
+                $relatedModel = $this->model->$related()->getRelated();
+                $relatedConnection = $relatedModel->getConnection()->getName();
+                $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
 
-    protected function getInAndNotInClauses(array $where) : string
-    {
-        if (! in_array($where["type"], ["In", "NotIn", "InRaw"])) {
-            return "";
-        }
-
-        $type = strtolower($where["type"]);
-        $subquery = $this->getValuesFromWhere($where);
-        $values = collect($this->query->bindings["where"][$this->currentBinding] ?? []);
-
-        if (Str::startsWith($subquery, $values->first())) {
-            $this->currentBinding += count($where["values"]);
-        }
-
-        if (! is_numeric($subquery) && ! is_numeric(str_replace("_", "", $subquery))) {
-            try {
-                $subquery = Uuid::fromBytes($subquery);
-                $values = $this->recursiveImplode([$subquery], "_");
-
-                return "-{$where["column"]}_{$type}{$values}";
-            } catch (Exception $exception) {
-                // do nothing
+                $carry .= "-{$relatedConnection}:{$relatedDatabase}:{$related}";
             }
+
+            $carry .= $this->getEagerLoadConstraintKey($related, $constraint);
+
+            return $carry;
+        }, "");
+    }
+
+    protected function getEagerLoadConstraintKey(string $related, $constraint) : string
+    {
+        if (! ($constraint instanceof \Closure)) {
+            return "";
         }
 
-        $subquery = preg_replace('/\?(?=(?:[^"]*"[^"]*")*[^"]*\Z)/m', "_??_", $subquery);
-        $subquery = collect(vsprintf(str_replace("_??_", "%s", $subquery), $values->toArray()));
-        $values = $this->recursiveImplode($subquery->toArray(), "_");
+        if (! method_exists($this->model, $related)) {
+            return "";
+        }
 
-        return "-{$where["column"]}_{$type}{$values}";
+        try {
+            $freshModel = (new \ReflectionClass($this->model))->newInstanceWithoutConstructor();
+            $relation = $freshModel->$related();
+            $baseWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $baseBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
+            $constraint($relation);
+            $afterWheres   = $relation->getQuery()->getQuery()->wheres ?? [];
+            $afterBindings = $relation->getQuery()->getQuery()->bindings['where'] ?? [];
+            $addedWheres   = array_slice($afterWheres,   count($baseWheres));
+            $addedBindings = array_slice($afterBindings, count($baseBindings));
+
+            if (empty($addedWheres)) {
+                return "";
+            }
+
+            return "=" . sha1(json_encode($addedWheres) . json_encode($addedBindings));
+        } catch (Throwable) {
+            return "";
+        }
     }
 
     protected function recursiveImplode(array $items, string $glue = ",") : string
@@ -284,82 +522,33 @@ class CacheKey
         return $result;
     }
 
-    protected function getRawClauses(array $where) : string
-    {
-        if (! in_array($where["type"], ["raw"])) {
-            return "";
+    private function processEnum(
+        BackedEnum|UnitEnum|Expression|DateTimeInterface|int|float|bool|string|null $value,
+    ): string {
+        if ($value instanceof BackedEnum) {
+            return $value->value;
+        } elseif ($value instanceof UnitEnum) {
+            return $value->name;
+        } elseif ($value instanceof Expression) {
+            return $this->expressionToString($value);
+        } elseif ($value instanceof DateTimeInterface) {
+            return $value->format("Y-m-d-H-i-s");
         }
 
-        $queryParts = explode("?", $where["sql"]);
-        $clause = "_{$where["boolean"]}";
-
-        while (count($queryParts) > 1) {
-            $clause .= "_" . array_shift($queryParts);
-            $clause .= $this->query->bindings["where"][$this->currentBinding];
-            $this->currentBinding++;
-        }
-
-        $lastPart = array_shift($queryParts);
-
-        if ($lastPart) {
-            $clause .= "_" . $lastPart;
-        }
-
-        return "-" . str_replace(" ", "_", $clause);
+        return "{$value}";
     }
 
-    protected function getOtherClauses(array $where) : string
+    private function processEnums(array $values): array
     {
-        if (in_array($where["type"], ["Exists", "Nested", "NotExists", "Column", "raw", "In", "NotIn", "InRaw"])) {
-            return "";
-        }
-
-        $value = $this->getTypeClause($where);
-        $value .= $this->getValuesClause($where);
-
-        return "-{$where["column"]}_{$value}";
+        return array_map(fn($value) => $this->processEnum($value), $values);
     }
 
-    protected function getWheres(array $wheres) : Collection
+    private function expressionToString(Expression|string $value): string
     {
-        $wheres = collect($wheres);
-
-        if ($wheres->isEmpty()
-            && property_exists($this->query, "wheres")
-        ) {
-            $wheres = collect($this->query->wheres);
+        if (is_string($value)) {
+            return $value;
         }
 
-        return $wheres;
-    }
-
-    protected function getWithModels() : string
-    {
-        $eagerLoads = collect($this->eagerLoad);
-
-        if ($eagerLoads->isEmpty()) {
-            return "";
-        }
-
-        return $eagerLoads->keys()->reduce(function ($carry, $related) {
-            if (! method_exists($this->model, $related)) {
-                return "{$carry}-{$related}";
-            }
-
-            $relatedModel = $this->model->$related()->getRelated();
-            $relatedConnection = $relatedModel->getConnection()->getName();
-            $relatedDatabase = $relatedModel->getConnection()->getDatabaseName();
-
-            return "{$carry}-{$relatedConnection}:{$relatedDatabase}:{$related}";
-        });
-    }
-
-    protected function getBindingsSlug() : string
-    {
-        if (! method_exists($this->model, 'query')) {
-            return '';
-        }
-        
-        return Arr::query($this->model->query()->getBindings());
+        return $value->getValue($this->query->getConnection()->getQueryGrammar());
     }
 }

@@ -1,4 +1,8 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
+<?php
+
+declare(strict_types=1);
+
+namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\BookWithUncachedStore;
@@ -8,7 +12,7 @@ use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 
 class BelongsToManyTest extends IntegrationTestCase
 {
-    public function testLazyLoadingRelationship()
+    public function testLazyLoadingRelationship(): void
     {
         $bookId = (new Store)
             ->disableModelCaching()
@@ -17,9 +21,10 @@ class BelongsToManyTest extends IntegrationTestCase
             ->books
             ->first()
             ->id;
-        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores",
         ];
 
         $stores = (new Book)
@@ -51,9 +56,9 @@ class BelongsToManyTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores:genealabslaravelmodelcachingtestsfixturesstore-testing:{$this->testingSqlitePath}testing.sqlite:books-first");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores",
         ];
-        $newStore = factory(Store::class)
-            ->create();
+        $newStore = Store::factory()->create();
         $result = (new Book)
             ->find($bookId)
             ->stores;
@@ -84,6 +89,7 @@ class BelongsToManyTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores",
         ];
         $result = (new Book)
             ->find($bookId)
@@ -115,6 +121,7 @@ class BelongsToManyTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores",
         ];
         $result = (new Book)
             ->find($bookId)
@@ -145,6 +152,7 @@ class BelongsToManyTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuncachedstore",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores",
         ];
 
         $result = (new BookWithUncachedStore)
@@ -165,76 +173,41 @@ class BelongsToManyTest extends IntegrationTestCase
         $this->assertNotNull($uncachedResult);
     }
 
-    // /** @group test */
-    // public function testUncachedDetachesFromCached()
-    // {
-    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
-    //     // $tags = [
-    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
-    //     // ];
+    public function testInvalidatingCacheWhenSyncing()
+    {
+        $bookId = (new Store)
+            ->disableModelCaching()
+            ->with("books")
+            ->first()
+            ->books
+            ->first()
+            ->id;
+        $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores:genealabslaravelmodelcachingtestsfixturesstore-testing:{$this->testingSqlitePath}testing.sqlite:books-first");
+        $tags = [
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:stores",
+        ];
+        $newStores = Store::factory()->count(2)->create();
+        $result = Book::find($bookId)
+            ->stores;
 
-    //     $store = (new StoreWithUncachedBooks)
-    //         ->with("books")
-    //         ->has("books")
-    //         ->first();
-    //     $store->books()
-    //         ->detach();
-    //     // $store->delete();
-    //     // dd($results);
-    //     // $cachedResult = $this
-    //     //     ->cache()
-    //     //     ->tags($tags)
-    //     //     ->get($key)['value'];
+        Book::find($bookId)
+            ->stores()
+            ->attach($newStores[0]->id);
+        Book::find($bookId)
+            ->stores()
+            ->sync($newStores->pluck('id'));
+        $cachedResult = $this
+            ->cache()
+            ->tags($tags)
+            ->get($key)['value']
+            ?? null;
 
-    //     // $this->assertNotEmpty($result);
-    //     // $this->assertNull($cachedResult);
-    // }
-
-    // /** @group test */
-    // public function testCachedDetachesFromUncached()
-    // {
-    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
-    //     // $tags = [
-    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
-    //     // ];
-    //     $book = (new UncachedBookWithStores)
-    //         ->with("stores")
-    //         ->has("stores")
-    //         ->first();
-    //     $book->stores()
-    //         ->detach();
-    //     // $book->delete();
-    //     // dd($results);
-    //     // $cachedResult = $this
-    //     //     ->cache()
-    //     //     ->tags($tags)
-    //     //     ->get($key)['value'];
-
-    //     // $this->assertNotEmpty($result);
-    //     // $this->assertNull($cachedResult);
-    // }
-
-    // public function testDetachingFiresEvent()
-    // {
-    //     // $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:book-store:genealabslaravelmodelcachingcachedbelongstomany-book_store.book_id_=_{$bookId}");
-    //     // $tags = [
-    //     //     "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesstore",
-    //     // ];
-
-    //     $store = (new Store)
-    //         ->with("books")
-    //         ->has("books")
-    //         ->first();
-    //     $store->books()
-    //         ->detach();
-    //     $store->delete();
-    //     // dd($results);
-    //     // $cachedResult = $this
-    //     //     ->cache()
-    //     //     ->tags($tags)
-    //     //     ->get($key)['value'];
-
-    //     // $this->assertNotEmpty($result);
-    //     // $this->assertNull($cachedResult);
-    // }
+        $this->assertEmpty(array_diff(
+            Book::find($bookId)->stores()->pluck((new Store)->getTable() . '.id')->toArray(),
+            $newStores->pluck('id')->toArray()
+        ));
+        $this->assertNotEmpty($result);
+        $this->assertNull($cachedResult);
+    }
 }

@@ -12,6 +12,7 @@ class PolymorphicManyToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturestag",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
 
         $result = (new Post)
@@ -39,25 +40,25 @@ class PolymorphicManyToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturestag",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
 
-        // $result = (new Post)
-        //     ->with("tags")
-        //     ->first()
-        //     ->tags;
-        // $cachedResults = $this->cache()
-        //     ->tags($tags)
-        //     ->get($key)['value'];
-        // $liveResults = (new UncachedPost)
-        //     ->with("tags")
-        //     ->first()
-        //     ->tags;
+        $result = (new Post)
+            ->with("tags")
+            ->first()
+            ->tags;
+        $cachedResults = $this->cache()
+            ->tags($tags)
+            ->get($key)['value'];
+        $liveResults = (new UncachedPost)
+            ->with("tags")
+            ->first()
+            ->tags;
 
-        // $this->assertEquals($liveResults->pluck("id")->toArray(), $result->pluck("id")->toArray());
-        // $this->assertEquals($liveResults->pluck("id")->toArray(), $cachedResults->pluck("id")->toArray());
-        // $this->assertNotEmpty($result);
-        // $this->assertNotEmpty($cachedResults);
-        // $this->assertNotEmpty($liveResults);
-        $this->markTestSkipped();
+        $this->assertEquals($liveResults->pluck("id")->toArray(), $result->pluck("id")->toArray());
+        $this->assertEquals($liveResults->pluck("id")->toArray(), $cachedResults->pluck("id")->toArray());
+        $this->assertNotEmpty($result);
+        $this->assertNotEmpty($cachedResults);
+        $this->assertNotEmpty($liveResults);
     }
 }

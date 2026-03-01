@@ -1,11 +1,17 @@
-<?php
+<?php namespace GeneaLabs\LaravelModelCaching\Tests\Database\Factories;
 
-use Faker\Generator as Faker;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Store;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Store::class, function (Faker $faker) {
-    return [
-        'address' => $faker->address,
-        'name' => $faker->company,
-    ];
-});
+class StoreFactory extends Factory
+{
+    protected $model = Store::class;
+
+    public function definition(): array
+    {
+        return [
+            'address' => $this->faker->address(),
+            'name'    => $this->faker->company(),
+        ];
+    }
+}

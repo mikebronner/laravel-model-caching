@@ -49,7 +49,8 @@ class WhereHasTest extends IntegrationTestCase
         $store->save();
         $results = $this->cache()->tags([
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
-                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuncachedstore"
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuncachedstore",
+                "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
             ])
             ->get(sha1(
                 "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-exists-" .

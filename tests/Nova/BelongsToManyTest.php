@@ -15,12 +15,12 @@ class BelongsToManyTest extends NovaTestCase
         $beforeBook->title = 'new foo';
         $beforeBook->save();
 
-        $this->postJson('nova-api/books/' . $beforeBook->id . '/attach/stores' , [
+        $response = $this->postJson('nova-api/books/' . $beforeBook->id . '/attach/stores' , [
             'stores' => $beforeStore->id,
             'viaRelationship' => 'stores'
         ]);
 
-        $this->response->assertStatus(200);
+        $response->assertStatus(200);
 
         $store = Store::with(['books'])->all()->first();
         $books = $store->books;
@@ -47,11 +47,11 @@ class BelongsToManyTest extends NovaTestCase
         $beforeBooks = $beforeStore->books;
         $beforeBook = $beforeBooks->first();
 
-        $this->deleteJson('/nova-api/stores/detach?viaResource=books&viaResourceId=' . $beforeBook->id  . '&viaRelationship=stores' , [
+        $response = $this->deleteJson('/nova-api/stores/detach?viaResource=books&viaResourceId=' . $beforeBook->id  . '&viaRelationship=stores' , [
             'resources' => [$beforeStore->id],
         ]);
 
-        $this->response->assertStatus(200);
+        $response->assertStatus(200);
 
         $store = Store::with(['books'])->all()->first();
         $books = $store->books;
@@ -66,14 +66,14 @@ class BelongsToManyTest extends NovaTestCase
         $beforeStore = Store::with(['books'])->get()->first();
         $beforeBook = $beforeStore->books->first();
 
-        $this->putJson('nova-api/books/' . $beforeBook->id, [
+        $response = $this->putJson('nova-api/books/' . $beforeBook->id, [
             'title' => 'foo',
         ]);
 
         $store = Store::with(['books'])->all()->first();
         $book = $store->books->first();
 
-        $this->response->assertStatus(200);
+        $response->assertStatus(200);
 
         $this->assertTrue($beforeStore->is($store));
         $this->assertTrue($beforeBook->is($book));
@@ -86,12 +86,12 @@ class BelongsToManyTest extends NovaTestCase
         $beforeBooks = $beforeStore->books;
         $beforeBook = $beforeBooks->first();
 
-        $this->deleteJson('nova-api/books', ['resources' => [$beforeBook->id]]);
+        $response = $this->deleteJson('nova-api/books', ['resources' => [$beforeBook->id]]);
 
         $store = Store::with(['books'])->all()->first();
         $books = $store->books;
 
-        $this->response->assertStatus(200);
+        $response->assertStatus(200);
 
         $this->assertTrue($beforeStore->is($store));
         $this->assertCount(1, $beforeBooks);

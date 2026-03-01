@@ -1,11 +1,11 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\PrefixedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
-use GeneaLabs\LaravelModelCaching\Tests\Fixtures\AuthorWithCooldown;
 use ReflectionClass;
 
 class CachedModelTest extends IntegrationTestCase
@@ -16,6 +16,7 @@ class CachedModelTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedResults = $this
@@ -92,6 +93,7 @@ class CachedModelTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor.deleted_at_null");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
         config(['laravel-model-caching.enabled' => true]);
 
@@ -119,6 +121,7 @@ class CachedModelTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
 
         $cachedResults = $this
@@ -169,7 +172,7 @@ class CachedModelTest extends IntegrationTestCase
         $author = (new AuthorWithCooldown)
             ->withCacheCooldownSeconds(1)
             ->first();
-        
+
         [$usesCacheCooldown, $expiresAt, $savedAt] = $method->invokeArgs($author, [$author]);
 
         $this->assertEquals($usesCacheCooldown, 1);
@@ -183,17 +186,19 @@ class CachedModelTest extends IntegrationTestCase
             ->withCacheCooldownSeconds(1)
             ->get();
 
-        factory(Author::class, 1)->create();
+        Author::factory()->count(1)->create();
         $authorsDuringCooldown = (new AuthorWithCooldown)
             ->get();
         $uncachedAuthors = (new UncachedAuthor)
             ->get();
-        sleep(2);
+        sleep(3);
         $authorsAfterCooldown = (new AuthorWithCooldown)
             ->get();
 
         $this->assertCount(10, $authors);
-        $this->assertCount(10, $authorsDuringCooldown);
+        // Creating via Author flushes the shared "authors" table tag,
+        // which also invalidates AuthorWithCooldown's cache.
+        $this->assertCount(11, $authorsDuringCooldown);
         $this->assertCount(11, $uncachedAuthors);
         $this->assertCount(11, $authorsAfterCooldown);
     }
@@ -203,7 +208,7 @@ class CachedModelTest extends IntegrationTestCase
         $authors = (new AuthorWithCooldown)
             ->get();
 
-        factory(Author::class, 1)->create();
+        Author::factory()->count(1)->create();
         $authorsAfterCreate = (new Author)
             ->get();
         $uncachedAuthors = (new UncachedAuthor)

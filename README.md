@@ -12,6 +12,10 @@
 ## Supporting This Package
 This is an MIT-licensed open source project with its ongoing development made possible by the support of the community. If you'd like to support this, and our other packages, please consider [becoming a sponsor](https://github.com/sponsors/mikebronner).
 
+We thank the following sponsors for their generosity, please take a moment to check them out:
+
+- [LIX](https://lix-it.com)
+
 ## Impetus
 I created this package in response to a client project that had complex, nested
 forms with many `<select>`'s that resulted in over 700 database queries on one
@@ -41,9 +45,11 @@ It will not work with non-taggable drivers:
 - DynamoDB
 ```
 
+> **Note:** Cache invalidation for `BelongsToMany` relationships with custom pivot models (via `->using(CustomPivot::class)`) is supported even when only the parent model uses the `Cachable` trait.
+
 ## Requirements
 - PHP 7.3+
-- Laravel 7.0+
+- Laravel 8.0+
     ```diff
     - Please note that prior Laravel versions are not supported and the package
     - versions that are compatible with prior versions of Laravel contain bugs.
@@ -56,6 +62,10 @@ likely conflict with this package. Of course, any packages that implement their
 own Querybuilder class effectively circumvent this package, rendering them
 incompatible.
 
+### Pivot Model Compatibility
+When using `BelongsToMany` with a custom pivot model via `->using(CustomPivot::class)`, cache invalidation now works correctly as long as **either** the parent or the related model uses the `Cachable` trait. Previously, both models needed to be cacheable for pivot operations (`attach`, `detach`, `sync`, `updateExistingPivot`) to properly invalidate cached relationship results.
+
+### Packages That Conflict
 The following are packages we have identified as conflicting:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
 - [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
@@ -63,27 +73,8 @@ The following are packages we have identified as conflicting:
 - [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
 - [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
 - [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
-
-#### Override
-It may be possible to insert the custom querybuilder of the conflicting package
-into this package by adding the following to your AppServiceProvider, in this
-example we are implementing the NestedSet QueryBuilder:
-```php
-//...
-use GeneaLabs\LaravelModelCaching\ModelCaching;
-use Kalnoy\Nestedset\QueryBuilder;
-
-class AppServiceProvider extends ServiceProvider
-{
-    public function boot()
-    {
-        ModelCaching::useBuilder(QueryBuilder::class);
-        //...
-    }
-
-    //...
-}
-```
+- [laravel-adjacency-list](https://github.com/staudenmeir/laravel-adjacency-list)
+- [archtechx/virtualcolumn](https://github.com/archtechx/virtualcolumn)
 
 ### Things That Don't Work Currently
 The following items currently do no work with this package:
@@ -93,20 +84,27 @@ The following items currently do no work with this package:
 - using transactions. If you are using transactions, you will likely have to manually flush the cache, see [issue #305](https://github.com/GeneaLabs/laravel-model-caching/issues/305).
 ```
 
+### Model Events on Cache Hits
+Model `retrieved` events are now fired for models and collections returned from the cache, ensuring consistent event behaviour whether or not results came from the database.
+
 [![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
 
 ## Installation
 Be sure to not require a specific version of this package when requiring it:
 ```
-composer require genealabs/laravel-model-caching
+composer require mikebronner/laravel-model-caching
 ```
 
 ### Gotchas If Using With Lumen
 The following steps need to be figured out by you and implemented in your Lumen
 app. Googling for ways to do this provided various approaches to this.
 
-1. Make sure your Lumen app can load config files.
-2. Publish this package's config file to the location your app loads config
+1. Register the package to load in Lumen:
+    ```php
+    $app->register(GeneaLabs\LaravelModelCaching\Providers\Service::class);
+    ```
+2. Make sure your Lumen app can load config files.
+3. Publish this package's config file to the location your app loads config
    files from.
 
 ## Upgrade Notes
@@ -252,6 +250,24 @@ You can disable a given query by using `disableCache()` anywhere in the query ch
 $results = $myModel->disableCache()->where('field', $value)->get();
 ```
 
+### BelongsToMany with Custom Pivot Models
+When defining a `BelongsToMany` relationship that uses a custom pivot model, cache invalidation works correctly as long as the parent model (or the related model) uses the `Cachable` trait:
+
+```php
+class User extends Model
+{
+    use Cachable;
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class)
+            ->using(UserRole::class); // custom pivot model
+    }
+}
+```
+
+Pivot operations such as `attach()`, `detach()`, `sync()`, and `updateExistingPivot()` will automatically invalidate the relevant cached relationship results, even when the related model (`Role` in this example) does not itself use the `Cachable` trait.
+
 ### Manual Flushing of Specific Model
 You can flush the cache of a specific model using the following artisan command:
 ```sh
@@ -261,6 +277,26 @@ php artisan modelCache:clear --model=App\Model
 This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
+
+### Programmatic Cache Invalidation
+You can also invalidate model caches programmatically using the `ModelCache`
+Facade, without requiring the Artisan kernel:
+
+```php
+use GeneaLabs\LaravelModelCaching\Facades\ModelCache;
+
+// Invalidate a single model's cache
+ModelCache::invalidate(App\Models\User::class);
+
+// Invalidate multiple models at once
+ModelCache::invalidate([
+    App\Models\User::class,
+    App\Models\Post::class,
+]);
+```
+
+This is especially useful after mass updates, in queued jobs or event listeners,
+and in tests where calling Artisan is an anti-pattern.
 
 ## Summary
 **That's all you need to do. All model queries and relationships are now
