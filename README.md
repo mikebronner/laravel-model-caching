@@ -1,14 +1,14 @@
 # Model Caching for Laravel
 
-[![Laravel Package](https://github.com/mikebronner/laravel-model-caching/workflows/Laravel%20Package/badge.svg?branch=master)](https://github.com/GeneaLabs/laravel-model-caching/actions?query=workflow%3A%22Laravel+Package%22)
+[![Laravel Package](https://github.com/mikebronner/laravel-model-caching/workflows/Laravel%20Package/badge.svg?branch=master)](https://github.com/mikebronner/laravel-model-caching/actions?query=workflow%3A%22Laravel+Package%22)
 [![Packagist](https://img.shields.io/packagist/dt/GeneaLabs/laravel-model-caching.svg)](https://packagist.org/packages/genealabs/laravel-model-caching)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/mikebronner/laravel-model-caching/master/LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/mikebronner/laravel-model-caching)](https://packagist.org/packages/mikebronner/laravel-model-caching)
 [![Laravel](https://img.shields.io/badge/Laravel-11%20%7C%2012%20%7C%2013-FF2D20)](https://laravel.com)
 [![Latest Stable Version](https://img.shields.io/packagist/v/mikebronner/laravel-model-caching)](https://packagist.org/packages/mikebronner/laravel-model-caching)
-[![GitHub Stars](https://img.shields.io/github/stars/GeneaLabs/laravel-model-caching)](https://github.com/GeneaLabs/laravel-model-caching/stargazers)
-[![Codecov](https://codecov.io/gh/GeneaLabs/laravel-model-caching/graph/badge.svg)](https://codecov.io/gh/GeneaLabs/laravel-model-caching)
-[![Tests](https://img.shields.io/badge/tests-335%2B-brightgreen)](https://github.com/GeneaLabs/laravel-model-caching/tree/master/tests)
+[![GitHub Stars](https://img.shields.io/github/stars/mikebronner/laravel-model-caching)](https://github.com/mikebronner/laravel-model-caching/stargazers)
+[![codecov](https://codecov.io/gh/mikebronner/laravel-model-caching/branch/master/graph/badge.svg?token=ACk1Kk4OLO)](https://codecov.io/gh/mikebronner/laravel-model-caching)
+[![Tests](https://img.shields.io/badge/tests-335%2B-brightgreen)](https://github.com/mikebronner/laravel-model-caching/tree/master/tests)
 
 ![Model Caching for Laravel masthead image](https://repository-images.githubusercontent.com/103836049/b0d89480-f1b1-11e9-8e13-a7055f008fe6)
 
