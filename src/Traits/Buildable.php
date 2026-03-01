@@ -1,4 +1,8 @@
-<?php namespace GeneaLabs\LaravelModelCaching\Traits;
+<?php
+
+declare(strict_types=1);
+
+namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Illuminate\Pagination\Paginator;
 
@@ -44,18 +48,26 @@ trait Buildable
 
     public function decrement($column, $amount = 1, array $extra = [])
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $this->withCacheFallback(function () {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }, 'cache flush failed during decrement');
 
-        return parent::decrement($column, $amount, $extra);
+        return $this->executeOnInnerOrParent('decrement', [$column, $amount, $extra]);
     }
 
     public function delete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = $this->executeOnInnerOrParent('delete', []);
 
-        return parent::delete();
+        if ($result) {
+            $this->withCacheFallback(function () {
+                $this->cache($this->makeCacheTags())
+                    ->flush();
+            }, 'cache flush failed during delete');
+        }
+
+        return $result;
     }
 
     /**
@@ -92,10 +104,16 @@ trait Buildable
 
     public function forceDelete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = $this->executeOnInnerOrParent('forceDelete', []);
 
-        return parent::forceDelete();
+        if ($result) {
+            $this->withCacheFallback(function () {
+                $this->cache($this->makeCacheTags())
+                    ->flush();
+            }, 'cache flush failed during forceDelete');
+        }
+
+        return $result;
     }
 
     public function get($columns = ["*"])
@@ -112,10 +130,12 @@ trait Buildable
 
     public function increment($column, $amount = 1, array $extra = [])
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $this->withCacheFallback(function () {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }, 'cache flush failed during increment');
 
-        return parent::increment($column, $amount, $extra);
+        return $this->executeOnInnerOrParent('increment', [$column, $amount, $extra]);
     }
 
     public function inRandomOrder($seed = '')
@@ -131,7 +151,7 @@ trait Buildable
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
 
-        return parent::insert($values);
+        return $this->executeOnInnerOrParent('insert', [$values]);
     }
 
     public function max($column)
@@ -234,7 +254,7 @@ trait Buildable
             $this->checkCooldownAndFlushAfterPersisting($this->model);
         }
 
-        return parent::update($values);
+        return $this->executeOnInnerOrParent('update', [$values]);
     }
 
     public function value($column)
@@ -248,4 +268,129 @@ trait Buildable
         return $this->cachedValue(func_get_args(), $cacheKey);
     }
 
+    public function cachedValue(array $arguments, string $cacheKey)
+    {
+        $method = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
+        $cacheTags = $this->makeCacheTags();
+        $hashedCacheKey = sha1($cacheKey);
+
+        return $this->withCacheFallback(
+            function () use ($arguments, $cacheKey, $cacheTags, $hashedCacheKey, $method) {
+                $result = $this->retrieveCachedValue(
+                    $arguments,
+                    $cacheKey,
+                    $cacheTags,
+                    $hashedCacheKey,
+                    $method
+                );
+
+                return $this->preventHashCollision(
+                    $result,
+                    $arguments,
+                    $cacheKey,
+                    $cacheTags,
+                    $hashedCacheKey,
+                    $method
+                );
+            },
+            'cache read failed, falling back to database',
+            function () use ($arguments, $method) {
+                return $this->executeOnInnerOrParent($method, $arguments);
+            }
+        );
+    }
+
+    protected function preventHashCollision(
+        array $result,
+        array $arguments,
+        string $cacheKey,
+        array $cacheTags,
+        string $hashedCacheKey,
+        string $method
+    ) {
+        if ($result["key"] === $cacheKey) {
+            return $result["value"];
+        }
+
+        $this->cache()
+            ->tags($cacheTags)
+            ->forget($hashedCacheKey);
+
+        return $this->retrieveCachedValue(
+            $arguments,
+            $cacheKey,
+            $cacheTags,
+            $hashedCacheKey,
+            $method
+        );
+    }
+
+    protected function retrieveCachedValue(
+        array $arguments,
+        string $cacheKey,
+        array $cacheTags,
+        string $hashedCacheKey,
+        string $method
+    ) {
+        if (property_exists($this, "model")) {
+            $this->checkCooldownAndRemoveIfExpired($this->model);
+        }
+
+        if (method_exists($this, "getModel")) {
+            $this->checkCooldownAndRemoveIfExpired($this->getModel());
+        }
+
+        $closureRan = false;
+
+        $result = $this->cache($cacheTags)
+            ->rememberForever(
+                $hashedCacheKey,
+                function () use ($arguments, $cacheKey, $method, &$closureRan) {
+                    $closureRan = true;
+
+                    return [
+                        "key" => $cacheKey,
+                        "value" => $this->executeOnInnerOrParent($method, $arguments),
+                    ];
+                }
+            );
+
+        if (! $closureRan) {
+            $this->fireRetrievedEvents($result["value"] ?? null);
+        }
+
+        return $result;
+    }
+
+    protected function fireRetrievedEvents($value): void
+    {
+        $dispatcher = \Illuminate\Database\Eloquent\Model::getEventDispatcher();
+
+        if (! $dispatcher) {
+            return;
+        }
+
+        $models = [];
+
+        if ($value instanceof \Illuminate\Database\Eloquent\Model) {
+            $models = [$value];
+        } elseif ($value instanceof \Illuminate\Support\Collection || $value instanceof \Illuminate\Pagination\AbstractPaginator) {
+            $models = $value->filter(fn ($item) => $item instanceof \Illuminate\Database\Eloquent\Model);
+        }
+
+        foreach ($models as $model) {
+            $dispatcher->dispatch("eloquent.retrieved: " . get_class($model), $model);
+        }
+    }
+
+    protected function executeOnInnerOrParent(string $method, array $arguments)
+    {
+        if (property_exists($this, 'innerBuilder') && $this->innerBuilder) {
+            $this->syncStateToInner();
+
+            return $this->innerBuilder->{$method}(...$arguments);
+        }
+
+        return parent::{$method}(...$arguments);
+    }
 }

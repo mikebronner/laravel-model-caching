@@ -8,6 +8,7 @@ trait Cachable
     use ModelCaching;
     use PivotEventTrait {
         ModelCaching::newBelongsToMany insteadof PivotEventTrait;
+        ModelCaching::newMorphToMany insteadof PivotEventTrait;
     }
 
     public function __wakeup(): void
@@ -25,5 +26,7 @@ trait Cachable
         $this->relations = $relations;
         $this->exists = $exists;
         $this->connection = $connection;
+
+        parent::__wakeup();
     }
 }

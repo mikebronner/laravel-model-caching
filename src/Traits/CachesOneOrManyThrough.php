@@ -6,7 +6,9 @@ use Illuminate\Pagination\Paginator;
 
 trait CachesOneOrManyThrough
 {
-    use CachedValueRetrievable;
+    use CachedValueRetrievable {
+        CachedValueRetrievable::retrieveCachedValue as baseRetrieveCachedValue;
+    }
 
     public function get($columns = ['*'])
     {
@@ -146,6 +148,55 @@ trait CachesOneOrManyThrough
         $cacheKey = $this->makeCacheKey(['*'], null, "-value_{$column}");
 
         return $this->cachedValue(func_get_args(), $cacheKey);
+    }
+
+    /**
+     * Override the base retrieveCachedValue to disable caching on the inner
+     * Eloquent builder, preventing double-caching. Without this, the inner
+     * CachedBuilder stores a separate cache entry tagged only with the
+     * end-model, which is not invalidated when the through-model changes.
+     */
+    protected function retrieveCachedValue(
+        array $arguments,
+        string $cacheKey,
+        array $cacheTags,
+        string $hashedCacheKey,
+        string $method
+    ) {
+        if (property_exists($this, "model")) {
+            $this->checkCooldownAndRemoveIfExpired($this->model);
+        }
+
+        if (method_exists($this, "getModel")) {
+            $this->checkCooldownAndRemoveIfExpired($this->getModel());
+        }
+
+        $cache = $this->cache($cacheTags);
+        $cachedResult = $cache->get($hashedCacheKey);
+
+        if ($cachedResult !== null) {
+            $this->fireRetrievedEvents($cachedResult["value"] ?? null);
+
+            return $cachedResult;
+        }
+
+        // Disable caching on the inner Eloquent builder so that the
+        // parent call hits the database directly instead of returning
+        // a stale inner-cached value.
+        $innerBuilder = $this->getQuery();
+
+        if (method_exists($innerBuilder, 'disableModelCaching')) {
+            $innerBuilder->disableModelCaching();
+        }
+
+        $result = [
+            "key" => $cacheKey,
+            "value" => parent::{$method}(...$arguments),
+        ];
+
+        $cache->forever($hashedCacheKey, $result);
+
+        return $result;
     }
 
     protected function makeCacheKey(
