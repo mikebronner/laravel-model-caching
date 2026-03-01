@@ -1,7 +1,9 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests\Integration\CachedBuilder;
 
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Author;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\Book;
 use GeneaLabs\LaravelModelCaching\Tests\Fixtures\ThrowingCacheStore;
+use GeneaLabs\LaravelModelCaching\Tests\Fixtures\User;
 use GeneaLabs\LaravelModelCaching\Tests\IntegrationTestCase;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
@@ -200,5 +202,202 @@ class CacheFallbackTest extends IntegrationTestCase
 
         $this->assertNotEmpty($authors);
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $authors);
+    }
+
+    public function testDeleteSucceedsWhenCacheFlushFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $author = Author::factory()->create(['name' => 'DeleteTest']);
+        $authorId = $author->id;
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $result = Author::where('id', $authorId)->delete();
+
+        $this->assertGreaterThanOrEqual(1, $result);
+    }
+
+    public function testForceDeleteSucceedsWhenCacheFlushFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $author = Author::factory()->create(['name' => 'ForceDeleteTest']);
+        $authorId = $author->id;
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $result = Author::where('id', $authorId)->forceDelete();
+
+        $this->assertGreaterThanOrEqual(1, $result);
+    }
+
+    public function testIncrementSucceedsWhenCacheFlushFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $book = Book::first();
+        $originalPrice = $book->price;
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        Book::where('id', $book->id)->increment('price', 10);
+
+        $book->refresh();
+        $this->assertEquals($originalPrice + 10, $book->price);
+    }
+
+    public function testDecrementSucceedsWhenCacheFlushFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $book = Book::first();
+        $originalPrice = $book->price;
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        Book::where('id', $book->id)->decrement('price', 5);
+
+        $book->refresh();
+        $this->assertEquals($originalPrice - 5, $book->price);
+    }
+
+    public function testModelSaveFlushesGracefullyWhenCacheFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $author = Author::first();
+        $author->name = 'Updated via Save';
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $result = $author->save();
+
+        $this->assertTrue($result);
+    }
+
+    public function testModelCreateFlushesGracefullyWhenCacheFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $author = Author::create([
+            'name' => 'Created During Outage',
+            'email' => 'outage@test.com',
+        ]);
+
+        $this->assertNotNull($author);
+        $this->assertNotNull($author->id);
+    }
+
+    public function testPivotSyncSucceedsWhenCacheFlushFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $pivotRow = \Illuminate\Support\Facades\DB::table('role_user')->first();
+        $this->assertNotNull($pivotRow, 'Pivot table should have seeded data');
+
+        $user = (new User)->newQueryWithoutScopes()->find($pivotRow->user_id);
+        $this->assertNotNull($user);
+
+        $roleIds = \Illuminate\Support\Facades\DB::table('role_user')
+            ->where('user_id', $user->id)
+            ->pluck('role_id')
+            ->toArray();
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $result = $user->roles()->sync($roleIds);
+
+        $this->assertIsArray($result);
+    }
+
+    public function testHasManyThroughFallsBackWhenCacheFails(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $author = (new Author)->newQueryWithoutScopes()->first();
+        $printers = $author->printers()->get();
+
+        $this->assertNotNull($printers);
+        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $printers);
+    }
+
+    public function testQueryGetFallsBackWithBrokenCacheAndCooldown(): void
+    {
+        config(['laravel-model-caching.fallback-to-database' => true]);
+
+        $this->breakCacheConnection();
+
+        Log::shouldReceive('warning')
+            ->atLeast()
+            ->once()
+            ->withArgs(function ($message) {
+                return str_contains($message, 'laravel-model-caching');
+            });
+
+        $authors = Author::all();
+
+        $this->assertNotNull($authors);
+        $this->assertNotEmpty($authors);
     }
 }

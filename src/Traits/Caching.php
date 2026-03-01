@@ -241,7 +241,7 @@ trait Caching
         return $tags;
     }
 
-    public function getModelCacheCooldown(Model $instance) : array
+    protected function getModelCacheCooldown(Model $instance) : array
     {
         if (! $instance->cacheCooldownSeconds) {
             return [null, null, null];
@@ -312,7 +312,7 @@ trait Caching
         }
 
         $this->withCacheFallback(function () use ($instance, $relationship) {
-            [$cacheCooldown, $invalidatedAt] = $instance->getModelCacheCooldown($instance);
+            [$cacheCooldown, $invalidatedAt] = $this->getModelCacheCooldown($instance);
 
             if (! $cacheCooldown) {
                 $instance->flushCache();
@@ -486,6 +486,8 @@ trait Caching
 
     public function withCacheFallback(callable $operation, string $context, ?callable $fallback = null)
     {
+        static $inFallback = false;
+
         try {
             return $operation();
         } catch (\Throwable $exception) {
@@ -493,9 +495,17 @@ trait Caching
                 throw $exception;
             }
 
-            Log::warning("laravel-model-caching: {$context} — {$exception->getMessage()}");
+            if (! $inFallback) {
+                Log::warning("laravel-model-caching: {$context} — {$exception->getMessage()}");
+            }
 
-            return $fallback ? $fallback() : null;
+            $inFallback = true;
+
+            try {
+                return $fallback ? $fallback() : null;
+            } finally {
+                $inFallback = false;
+            }
         }
     }
 
