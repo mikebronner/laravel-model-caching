@@ -14,6 +14,7 @@ class LimitTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-limit_5");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedResults = $this

@@ -12,6 +12,7 @@ class FindTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor_1");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedResults = collect()->push($this->cache()->tags($tags)
@@ -29,6 +30,7 @@ class FindTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-find_list_1_2_3");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedResults = $this

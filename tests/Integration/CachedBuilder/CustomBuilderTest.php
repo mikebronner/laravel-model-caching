@@ -74,6 +74,7 @@ class CustomBuilderTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
             ":genealabslaravelmodelcachingtestsfixturesauthorwithcachedcustombuilder",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cached = $this->cache()->tags($tags)->get($cacheKey);
@@ -134,6 +135,7 @@ class CustomBuilderTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
             ":genealabslaravelmodelcachingtestsfixturesauthorwithcustombuilder",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cached = $this->cache()->tags($tags)->get($cacheKey);
@@ -157,6 +159,7 @@ class CustomBuilderTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
             ":genealabslaravelmodelcachingtestsfixturesauthorwithcustombuilder",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cached = $this->cache()->tags($tags)->get($cacheKey);
@@ -198,6 +201,7 @@ class CustomBuilderTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
             ":genealabslaravelmodelcachingtestsfixturesauthorwithtraitcollision",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cached = $this->cache()->tags($tags)->get($cacheKey);

@@ -27,6 +27,7 @@ class MorphOneTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesimage",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
 
         $books1 = (new Book)

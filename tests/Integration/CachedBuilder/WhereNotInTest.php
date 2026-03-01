@@ -12,6 +12,7 @@ class WhereNotInTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-author_id_notin_1_2_3_4");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
         $authors = (new UncachedAuthor)
             ->where("id", "<", 5)
@@ -37,6 +38,7 @@ class WhereNotInTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_1_2");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
 
         $results = (new Book)
@@ -58,6 +60,7 @@ class WhereNotInTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:genealabslaravelmodelcachingtestsfixturesbook-id_notin_select_id_from_authors_where_id_<_10");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
         $results = (new Book)
             ->whereNotIn("id", function ($query) {

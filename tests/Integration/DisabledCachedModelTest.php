@@ -30,6 +30,7 @@ class DisabledCachedModelTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
         $authors = (new Author)
             ->with('books')

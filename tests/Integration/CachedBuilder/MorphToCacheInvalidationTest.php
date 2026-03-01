@@ -30,6 +30,7 @@ class MorphToCacheInvalidationTest extends IntegrationTestCase
         // Build the cache tag for Post
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
 
         // Verify cache is populated (any key with this tag)
@@ -64,6 +65,7 @@ class MorphToCacheInvalidationTest extends IntegrationTestCase
 
         $tagCacheTags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturestag",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:tags",
         ];
 
         $tagKey = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:tags:genealabslaravelmodelcachingtestsfixturestag");
@@ -77,6 +79,7 @@ class MorphToCacheInvalidationTest extends IntegrationTestCase
         // Both Post and Tag caches should be flushed
         $postCacheTags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
         $postKey = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts:genealabslaravelmodelcachingtestsfixturespost-first");
         $afterAttachPost = $this->cache()->tags($postCacheTags)->get($postKey);
@@ -110,6 +113,7 @@ class MorphToCacheInvalidationTest extends IntegrationTestCase
 
         $postCacheTags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
         $postKey = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts:genealabslaravelmodelcachingtestsfixturespost-first");
         $this->assertNotNull($this->cache()->tags($postCacheTags)->get($postKey));

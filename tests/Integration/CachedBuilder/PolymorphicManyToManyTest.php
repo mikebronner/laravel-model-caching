@@ -12,6 +12,7 @@ class PolymorphicManyToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturestag",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
 
         $result = (new Post)
@@ -39,6 +40,7 @@ class PolymorphicManyToManyTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturespost",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturestag",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:posts",
         ];
 
         $result = (new Post)

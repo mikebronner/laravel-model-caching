@@ -12,6 +12,7 @@ class HasOneThroughTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturessupplier",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixtureshistory",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:suppliers",
         ];
 
         $history = (new Supplier)
@@ -40,6 +41,8 @@ class HasOneThroughTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:histories:genealabslaravelmodelcachingtestsfixtureshistory-users.supplier_id_=_1-first");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixtureshistory",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:histories",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:users",
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesuser",
         ];
 

@@ -10,6 +10,7 @@ class DeleteCacheFlushTest extends IntegrationTestCase
     {
         return [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
     }
 
@@ -17,6 +18,7 @@ class DeleteCacheFlushTest extends IntegrationTestCase
     {
         return [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
     }
 

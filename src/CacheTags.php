@@ -47,10 +47,50 @@ class CacheTags
             ->filter()
             ->unique()
             ->prepend($this->getTagName())
+            ->push($this->getTableTagName())
+            ->values();
+
+        $joinTags = $this->getJoinTags();
+
+        return $tags->merge($joinTags)
+            ->unique()
             ->values()
             ->toArray();
+    }
 
-        return $tags;
+    protected function getJoinTags() : array
+    {
+        $baseQuery = $this->query;
+
+        if (method_exists($this->query, 'getQuery')) {
+            $baseQuery = $this->query->getQuery();
+        }
+
+        $joins = $baseQuery->joins ?? [];
+
+        if (empty($joins)) {
+            return [];
+        }
+
+        $prefix = $this->getCachePrefix();
+
+        return collect($joins)
+            ->map(function ($join) {
+                $table = $join->table;
+
+                // Strip alias (e.g. "products as p" -> "products")
+                if (stripos($table, ' as ') !== false) {
+                    $table = trim(explode(' as ', strtolower($table))[0]);
+                }
+
+                return $table;
+            })
+            ->map(function ($table) use ($prefix) {
+                return $prefix . (new Str)->slug($table);
+            })
+            ->unique()
+            ->values()
+            ->toArray();
     }
 
     protected function getRelatedModel($carry) : Model
@@ -163,5 +203,11 @@ class CacheTags
     {
         return $this->getCachePrefix()
             . (new Str)->slug(get_class($this->model));
+    }
+
+    protected function getTableTagName() : string
+    {
+        return $this->getCachePrefix()
+            . (new Str)->slug($this->model->getTable());
     }
 }

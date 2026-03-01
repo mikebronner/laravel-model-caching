@@ -31,6 +31,7 @@ class ReorderTest extends IntegrationTestCase
 
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedOrderedResults = $this->cache()->tags($tags)->get($orderedKey)['value'];
@@ -73,6 +74,7 @@ class ReorderTest extends IntegrationTestCase
 
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedResults = $this->cache()->tags($tags)->get($reorderedKey)['value'];
@@ -137,6 +139,7 @@ class ReorderTest extends IntegrationTestCase
 
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $cachedResults = $this->cache()->tags($tags)->get($expectedKey)['value'];
