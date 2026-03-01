@@ -278,6 +278,26 @@ This comes in handy when manually making updates to the database. You could also
 trigger this after making updates to the database from sources outside your
 Laravel app.
 
+### Programmatic Cache Invalidation
+You can also invalidate model caches programmatically using the `ModelCache`
+Facade, without requiring the Artisan kernel:
+
+```php
+use GeneaLabs\LaravelModelCaching\Facades\ModelCache;
+
+// Invalidate a single model's cache
+ModelCache::invalidate(App\Models\User::class);
+
+// Invalidate multiple models at once
+ModelCache::invalidate([
+    App\Models\User::class,
+    App\Models\Post::class,
+]);
+```
+
+This is especially useful after mass updates, in queued jobs or event listeners,
+and in tests where calling Artisan is an anti-pattern.
+
 ## Summary
 **That's all you need to do. All model queries and relationships are now
 cached!**

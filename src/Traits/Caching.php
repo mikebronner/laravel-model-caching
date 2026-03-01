@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use Closure;
@@ -8,6 +10,11 @@ use GeneaLabs\LaravelModelCaching\CacheKey;
 use GeneaLabs\LaravelModelCaching\CacheTags;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use ReflectionClass;
+use ReflectionNamedType;
+use ReflectionMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Query\Builder;
@@ -29,6 +36,30 @@ trait Caching
 
     public function __call($method, $parameters)
     {
+        // Inner builder takes precedence over parent::__call when present.
+        // This means if both the inner builder and a scope define the same
+        // method name, the inner builder wins. This is intentional: custom
+        // builder methods should not be silently overridden by scopes.
+        if (
+            property_exists($this, 'innerBuilder')
+            && $this->innerBuilder
+            && method_exists($this->innerBuilder, $method)
+        ) {
+            // Track the method call in macroKey for cache key differentiation,
+            // matching the same treatment applied to local/global macros below.
+            $this->macroKey .= "-{$method}";
+
+            if ($parameters) {
+                $this->macroKey .= implode("_", $parameters);
+            }
+
+            $result = $this->innerBuilder->{$method}(...$parameters);
+
+            return $result === $this->innerBuilder
+                ? $this
+                : $result;
+        }
+
         $result = parent::__call($method, $parameters);
 
         if (
@@ -285,6 +316,7 @@ trait Caching
 
             if (! $cacheCooldown) {
                 $instance->flushCache();
+                $this->flushMorphToRelatedCaches($instance);
                 $this->flushRelationshipCache($instance, $relationship);
 
                 return;
@@ -294,9 +326,60 @@ trait Caching
 
             if ((new Carbon)->now()->diffInSeconds($invalidatedAt, true) >= $cacheCooldown) {
                 $instance->flushCache();
+                $this->flushMorphToRelatedCaches($instance);
                 $this->flushRelationshipCache($instance, $relationship);
             }
         }, 'cache flush after persisting failed');
+    }
+
+    protected static $morphToMethodCache = [];
+
+    protected function flushMorphToRelatedCaches(Model $instance): void
+    {
+        $className = get_class($instance);
+
+        if (! isset(static::$morphToMethodCache[$className])) {
+            static::$morphToMethodCache[$className] = [];
+            $reflection = new ReflectionClass($instance);
+
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                if ($method->class !== $className
+                    || $method->getNumberOfParameters() > 0
+                ) {
+                    continue;
+                }
+
+                $returnType = $method->getReturnType();
+
+                if (! $returnType
+                    || ! $returnType instanceof ReflectionNamedType
+                    || $returnType->getName() !== MorphTo::class
+                ) {
+                    continue;
+                }
+
+                static::$morphToMethodCache[$className][] = $method->getName();
+            }
+        }
+
+        foreach (static::$morphToMethodCache[$className] as $morphToName) {
+            $relation = $instance->{$morphToName}();
+            $typeColumn = $relation->getMorphType();
+            $idColumn = $relation->getForeignKeyName();
+            $parentType = $instance->getAttribute($typeColumn);
+            $parentId = $instance->getAttribute($idColumn);
+
+            if (! $parentType || ! $parentId) {
+                continue;
+            }
+
+            $parentClass = Relation::getMorphedModel($parentType) ?? $parentType;
+            $parentModel = new $parentClass;
+
+            if (method_exists($parentModel, 'flushCache')) {
+                $parentModel->flushCache();
+            }
+        }
     }
 
     protected function flushRelationshipCache(Model $instance, string $relationship = ""): void
@@ -366,8 +449,21 @@ trait Caching
                 ?? true;
         }
 
+        $hasLock = false;
+
+        if (property_exists($this, 'query') && $this->query) {
+            $baseQuery = $this->query;
+
+            if ($baseQuery instanceof \Illuminate\Database\Eloquent\Builder) {
+                $baseQuery = $baseQuery->getQuery();
+            }
+
+            $hasLock = $baseQuery->lock !== null;
+        }
+
         return $this->isCachable
-            && $allRelationshipsAreCachable;
+            && $allRelationshipsAreCachable
+            && ! $hasLock;
     }
 
     public function shouldFallbackToDatabase() : bool
