@@ -1,72 +1,277 @@
 # Model Caching for Laravel
+
 [![Laravel Package](https://github.com/GeneaLabs/laravel-model-caching/workflows/Laravel%20Package/badge.svg?branch=master)](https://github.com/GeneaLabs/laravel-model-caching/actions?query=workflow%3A%22Laravel+Package%22)
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/GeneaLabs/laravel-model-caching/master.svg)](https://scrutinizer-ci.com/g/GeneaLabs/laravel-model-caching)
-![BCH Compliance](https://bettercodehub.com/edge/badge/GeneaLabs/laravel-model-caching?branch=master)
-[![Coveralls](https://img.shields.io/coveralls/GeneaLabs/laravel-model-caching/master.svg)](https://coveralls.io/github/GeneaLabs/laravel-model-caching)
-[![GitHub (pre-)release](https://img.shields.io/github/release/GeneaLabs/laravel-model-caching/all.svg)](https://github.com/GeneaLabs/laravel-model-caching)
 [![Packagist](https://img.shields.io/packagist/dt/GeneaLabs/laravel-model-caching.svg)](https://packagist.org/packages/genealabs/laravel-model-caching)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/GeneaLabs/laravel-model-caching/master/LICENSE)
 
 ![Model Caching for Laravel masthead image](https://repository-images.githubusercontent.com/103836049/b0d89480-f1b1-11e9-8e13-a7055f008fe6)
 
-## Supporting This Package
-This is an MIT-licensed open source project with its ongoing development made possible by the support of the community. If you'd like to support this, and our other packages, please consider [becoming a sponsor](https://github.com/sponsors/mikebronner).
+## Summary
+Automatic, self-invalidating Eloquent model and relationship caching. Add a
+trait to your models and all query results are cached automatically — no manual
+cache keys, no forgetting to invalidate. When a model is created, updated, or
+deleted the relevant cache entries are flushed for you.
 
-We thank the following sponsors for their generosity, please take a moment to check them out:
+Typical performance improvements range from 100–900% reduction in database
+queries on read-heavy pages.
 
-- [LIX](https://lix-it.com)
+**Use this package when** your application makes many repeated Eloquent queries
+and you want a drop-in caching layer that stays in sync with your data without
+any manual bookkeeping.
 
-## Impetus
-I created this package in response to a client project that had complex, nested
-forms with many `<select>`'s that resulted in over 700 database queries on one
-page. I needed a package that abstracted the caching process out of the model
-for me, and one that would let me cache custom queries, as well as cache model
-relationships. This package is an attempt to address those requirements.
+### What Gets Cached
+- Model queries (`get`, `first`, `find`, `all`, `paginate`, `pluck`, `value`, `exists`)
+- Aggregations (`count`, `sum`, `avg`, `min`, `max`)
+- Eager-loaded relationships (via `with()`)
 
-## Features
--   automatic, self-invalidating relationship (only eager-loading) caching.
--   automatic, self-invalidating model query caching.
--   automatic use of cache tags for cache providers that support them (will
-    flush entire cache for providers that don't).
+### What Does Not Get Cached
+- Lazy-loaded relationships (see [#127](https://github.com/GeneaLabs/laravel-model-caching/issues/127))
+- Queries using `select()` clauses (see [#238](https://github.com/GeneaLabs/laravel-model-caching/issues/238))
+- Queries inside transactions (manual flush required, see [#305](https://github.com/GeneaLabs/laravel-model-caching/issues/305))
+- `inRandomOrder()` queries (caching is automatically disabled)
 
-## Cache Drivers
-This package is best suited for taggable cache drivers:
+### Cache Drivers
+A taggable cache driver is required:
 ```diff
-+ Redis
-+ MemCached
++ Redis (recommended)
++ Memcached
 + APC
-+ Array
++ Array (for testing)
 ```
 
-It will not work with non-taggable drivers:
+Non-taggable drivers are not supported:
 ```diff
-- Database
 - File
+- Database
 - DynamoDB
 ```
 
-> **Note:** Cache invalidation for `BelongsToMany` relationships with custom pivot models (via `->using(CustomPivot::class)`) is supported even when only the parent model uses the `Cachable` trait.
+### Requirements
+- PHP 8.2+
+- Laravel 11, 12, or 13
 
-## Requirements
-- PHP 7.3+
-- Laravel 8.0+
-    ```diff
-    - Please note that prior Laravel versions are not supported and the package
-    - versions that are compatible with prior versions of Laravel contain bugs.
-    - Please only use with the versions of Laravel noted above to be compatible.
-    ```
+## Installation
+```
+composer require mikebronner/laravel-model-caching
+```
+
+The service provider is auto-discovered. No additional setup is required.
+
+### Basic Usage
+Add the `Cachable` trait to your models. The recommended approach is a base
+model that all other models extend:
+
+```php
+<?php
+
+namespace App\Models;
+
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Model;
+
+abstract class BaseModel extends Model
+{
+    use Cachable;
+}
+```
+
+Alternatively, extend the included `CachedModel` directly:
+
+```php
+<?php
+
+namespace App\Models;
+
+use GeneaLabs\LaravelModelCaching\CachedModel;
+
+class Post extends CachedModel
+{
+    // ...
+}
+```
+
+That's it — all Eloquent queries and eager-loaded relationships on these models
+are now cached and automatically invalidated.
+
+> **Note:** Avoid adding `Cachable` to the `User` model. It extends
+> `Illuminate\Foundation\Auth\User`, and overriding that can break
+> authentication. User data should generally be fresh anyway.
+
+## Configuration
+Publish the config file:
+```sh
+php artisan modelCache:publish --config
+```
+
+This creates `config/laravel-model-caching.php`:
+
+```php
+return [
+    'cache-prefix'         => env('MODEL_CACHE_CACHE_PREFIX', ''),
+    'enabled'              => env('MODEL_CACHE_ENABLED', true),
+    'use-database-keying'  => env('MODEL_CACHE_USE_DATABASE_KEYING', true),
+    'store'                => env('MODEL_CACHE_STORE'),
+    'fallback-to-database' => env('MODEL_CACHE_FALLBACK_TO_DB', false),
+];
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MODEL_CACHE_ENABLED` | `true` | Enable or disable caching globally. |
+| `MODEL_CACHE_STORE` | `null` | Cache store name from `config/cache.php`. Uses the default store when not set. |
+| `MODEL_CACHE_USE_DATABASE_KEYING` | `true` | Include database connection and name in cache keys. Important for multi-tenant or multi-database apps. |
+| `MODEL_CACHE_CACHE_PREFIX` | `''` | Global prefix applied to all cache keys. |
+| `MODEL_CACHE_FALLBACK_TO_DB` | `false` | When `true`, falls back to direct database queries if the cache backend is unavailable (e.g. Redis is down) instead of throwing an exception. |
+
+### Custom Cache Store
+To use a dedicated cache store for model caching, define one in
+`config/cache.php` and reference it:
+```
+MODEL_CACHE_STORE=model-cache
+```
+
+### Cache Key Prefix
+For multi-tenant applications you can isolate cache entries per tenant. Set the
+prefix globally in config:
+```php
+'cache-prefix' => 'tenant-123',
+```
+
+Or per-model via a property:
+```php
+class Post extends Model
+{
+    use Cachable;
+
+    protected $cachePrefix = 'tenant-123';
+}
+```
+
+### Multiple Database Connections
+When `use-database-keying` is enabled (the default), cache keys automatically
+include the database connection and name. This keeps cache entries separate
+across connections without any extra configuration.
+
+### Disabling Cache
+There are three ways to bypass caching:
+
+**1. Per-query:**
+```php
+$results = MyModel::disableCache()->where('active', true)->get();
+```
+
+**2. Globally via environment:**
+```
+MODEL_CACHE_ENABLED=false
+```
+
+**3. For a block of code:**
+```php
+$result = app('model-cache')->runDisabled(function () {
+    return MyModel::get();
+});
+
+// or via the Facade
+use GeneaLabs\LaravelModelCaching\Facades\ModelCache;
+
+ModelCache::runDisabled(function () {
+    return MyModel::get();
+});
+```
+
+> **Tip:** Use option 1 in seeders to avoid pulling stale cached data during
+> reseeds.
+
+### Cache Cool-Down Period
+In high-traffic scenarios (e.g. frequent comment submissions) you may want to
+prevent every write from immediately flushing the cache. Set a cool-down period
+on the model:
+
+```php
+class Comment extends Model
+{
+    use Cachable;
+
+    protected $cacheCooldownSeconds = 300; // 5 minutes
+}
+```
+
+Then use it in queries:
+```php
+// Use the model's default cool-down
+Comment::withCacheCooldownSeconds()->get();
+
+// Override with a specific duration
+Comment::withCacheCooldownSeconds(30)->get();
+```
+
+During the cool-down window, cache is not flushed on every write. After it
+expires, the next modification triggers a flush.
+
+### Graceful Fallback
+When enabled, if the cache backend (e.g. Redis) is unavailable the package logs
+a warning and falls back to querying the database directly — your application
+continues to function without caching rather than throwing an exception.
+
+```
+MODEL_CACHE_FALLBACK_TO_DB=true
+```
+
+### Cache Invalidation
+Cache is automatically flushed when:
+
+| Trigger | Behavior |
+|---------|----------|
+| Model created | Flush model cache |
+| Model updated/saved | Flush model cache |
+| Model deleted | Flush only if rows were actually deleted |
+| Model force-deleted | Flush only if rows were actually deleted |
+| Pivot `attach` / `detach` / `sync` / `updateExistingPivot` | Flush relationship cache |
+| `increment` / `decrement` | Flush model cache |
+| `insert` / `update` (builder) | Flush model cache |
+| `truncate` | Flush model cache |
+
+Cache tags are generated for the primary model, each eager-loaded relationship,
+joined tables, and morph-to target types, so only the relevant entries are
+invalidated.
+
+### BelongsToMany with Custom Pivot Models
+Cache invalidation works for `BelongsToMany` relationships using custom pivot
+models (`->using(CustomPivot::class)`) as long as either the parent or the
+related model uses the `Cachable` trait.
+
+### Manual Cache Flushing
+
+**Artisan command — single model:**
+```sh
+php artisan modelCache:clear --model=App\\Models\\Post
+```
+
+**Artisan command — all models:**
+```sh
+php artisan modelCache:clear
+```
+
+**Programmatic via Facade:**
+```php
+use GeneaLabs\LaravelModelCaching\Facades\ModelCache;
+
+// Single model
+ModelCache::invalidate(App\Models\Post::class);
+
+// Multiple models
+ModelCache::invalidate([
+    App\Models\Post::class,
+    App\Models\Comment::class,
+]);
+```
 
 ### Possible Package Conflicts
-Any packages that override `newEloquentModel()` from the `Model` class will
-likely conflict with this package. Of course, any packages that implement their
-own Querybuilder class effectively circumvent this package, rendering them
-incompatible.
+Packages that override `newEloquentBuilder()` or implement their own query
+builder will likely conflict. Known conflicts:
 
-### Pivot Model Compatibility
-When using `BelongsToMany` with a custom pivot model via `->using(CustomPivot::class)`, cache invalidation now works correctly as long as **either** the parent or the related model uses the `Cachable` trait. Previously, both models needed to be cacheable for pivot operations (`attach`, `detach`, `sync`, `updateExistingPivot`) to properly invalidate cached relationship results.
-
-### Packages That Conflict
-The following are packages we have identified as conflicting:
 - [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
 - [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
 - [chelout/laravel-relationship-events](https://github.com/chelout/laravel-relationship-events)
@@ -76,262 +281,20 @@ The following are packages we have identified as conflicting:
 - [laravel-adjacency-list](https://github.com/staudenmeir/laravel-adjacency-list)
 - [archtechx/virtualcolumn](https://github.com/archtechx/virtualcolumn)
 
-### Things That Don't Work Currently
-The following items currently do no work with this package:
-```diff
-- caching of lazy-loaded relationships, see #127. Currently lazy-loaded belongs-to relationships are cached. Caching of other relationships is in the works.
-- using select() clauses in Eloquent queries, see #238 (work-around discussed in the issue)
-- using transactions. If you are using transactions, you will likely have to manually flush the cache, see [issue #305](https://github.com/GeneaLabs/laravel-model-caching/issues/305).
-```
-
-### Model Events on Cache Hits
-Model `retrieved` events are now fired for models and collections returned from the cache, ensuring consistent event behaviour whether or not results came from the database.
-
-[![installation guide cover](https://user-images.githubusercontent.com/1791050/36356190-fc1982b2-14a2-11e8-85ed-06f8e3b57ae8.png)](https://vimeo.com/256318402)
-
-## Installation
-Be sure to not require a specific version of this package when requiring it:
-```
-composer require mikebronner/laravel-model-caching
-```
-
-### Gotchas If Using With Lumen
-The following steps need to be figured out by you and implemented in your Lumen
-app. Googling for ways to do this provided various approaches to this.
-
-1. Register the package to load in Lumen:
-    ```php
-    $app->register(GeneaLabs\LaravelModelCaching\Providers\Service::class);
-    ```
-2. Make sure your Lumen app can load config files.
-3. Publish this package's config file to the location your app loads config
-   files from.
-
-## Upgrade Notes
-### 0.6.0
-The environment and config variables for disabling this package have changed.
-- If you have previously published the config file, publish it again, and adjust as necessary:
-  ```sh
-  php artisan modelCache:publish --config
-  ```
-
-- If you have disabled the package in your .env file, change the entry from `MODEL_CACHE_DISABLED=true` to `MODEL_CACHE_ENABLED=false`.
-
-### 0.5.0
-The following implementations have changed (see the respective sections below):
-- model-specific cache prefix
-
-## Configuration
-### Recommended (Optional) Custom Cache Store
-If you would like to use a different cache store than the default one used by
-your Laravel application, you may do so by setting the `MODEL_CACHE_STORE`
-environment variable in your `.env` file to the name of a cache store configured
-in `config/cache.php` (you can define any custom cache store based on your
-specific needs there). For example:
-```
-MODEL_CACHE_STORE=redis2
-```
-
-## Usage
-For best performance a taggable cache provider is recommended (redis,
-memcached). While this is optional, using a non-taggable cache provider will
-mean that the entire cache is cleared each time a model is created, saved,
-updated, or deleted.
-
-For ease of maintenance, I would recommend adding a `BaseModel` model that
-uses `Cachable`, from which all your other models are extended. If you
-don't want to do that, simply extend your models directly from `CachedModel`.
-
-Here's an example `BaseModel` class:
-
-```php
-<?php namespace App;
-
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-
-abstract class BaseModel
-{
-    use Cachable;
-    //
-}
-```
-
-### Multiple Database Connections
-__Thanks to @dtvmedia for suggestion this feature. This is actually a more robust
-solution than cache-prefixes.__
-
-Keeping keys separate for multiple database connections is automatically handled.
-This is especially important for multi-tenant applications, and of course any
-application using multiple database connections.
-
-### Optional Cache Key Prefix
-Thanks to @lucian-dragomir for suggesting this feature! You can use cache key
-prefixing to keep cache entries separate for multi-tenant applications. For this
-it is recommended to add the Cachable trait to a base model, then set the cache
-key prefix config value there.
-
-Here's is an example:
-```php
-<?php namespace GeneaLabs\LaravelModelCaching\Tests\Fixtures;
-
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
-class BaseModel extends Model
-{
-    use Cachable;
-
-    protected $cachePrefix = "test-prefix";
-}
-```
-
-The cache prefix can also be set in the configuration to prefix all cached
-models across the board:
-```php
-    'cache-prefix' => 'test-prefix',
-```
-
-### Exception: User Model
-I would not recommend caching the user model, as it is a special case, since it
-extends `Illuminate\Foundation\Auth\User`. Overriding that would break functionality.
-Not only that, but it probably isn't a good idea to cache the user model anyway,
-since you always want to pull the most up-to-date info on it.
-
-### Experimental: Cache Cool-down In Specific Models
-In some instances, you may want to add a cache invalidation cool-down period.
-For example you might have a busy site where comments are submitted at a high
-rate, and you don't want every comment submission to invalidate the cache. While
-I don't necessarily recommend this, you might experiment it's effectiveness.
-
-To use it, it must be enabled in the model (or base model if you want to use it on multiple or all models):
-```php
-class MyModel extends Model
-{
-    use Cachable;
-
-    protected $cacheCooldownSeconds = 300; // 5 minutes
-
-    // ...
-}
-```
-
-After that it can be implemented in queries:
-```php
-(new Comment)
-    ->withCacheCooldownSeconds(30) // override default cooldown seconds in model
-    ->get();
-```
-
-or:
-```php
-(new Comment)
-    ->withCacheCooldownSeconds() // use default cooldown seconds in model
-    ->get();
-```
-
-### Disabling Caching of Queries
-There are two methods by which model-caching can be disabled:
-1. Use `->disableCache()` in a query-by-query instance.
-2. Set `MODEL_CACHE_ENABLED=false` in your `.env` file.
-3. If you only need to disable the cache for a block of code, or for non-
-    eloquent queries, this is probably the better option:
-    ```php
-    $result = app("model-cache")->runDisabled(function () {
-        return (new MyModel)->get(); // or any other stuff you need to run with model-caching disabled
-    });
-    ```
-
-**Recommendation: use option #1 in all your seeder queries to avoid pulling in
-cached information when reseeding multiple times.**
-You can disable a given query by using `disableCache()` anywhere in the query chain. For example:
-```php
-$results = $myModel->disableCache()->where('field', $value)->get();
-```
-
-### BelongsToMany with Custom Pivot Models
-When defining a `BelongsToMany` relationship that uses a custom pivot model, cache invalidation works correctly as long as the parent model (or the related model) uses the `Cachable` trait:
-
-```php
-class User extends Model
-{
-    use Cachable;
-
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class)
-            ->using(UserRole::class); // custom pivot model
-    }
-}
-```
-
-Pivot operations such as `attach()`, `detach()`, `sync()`, and `updateExistingPivot()` will automatically invalidate the relevant cached relationship results, even when the related model (`Role` in this example) does not itself use the `Cachable` trait.
-
-### Manual Flushing of Specific Model
-You can flush the cache of a specific model using the following artisan command:
-```sh
-php artisan modelCache:clear --model=App\Model
-```
-
-This comes in handy when manually making updates to the database. You could also
-trigger this after making updates to the database from sources outside your
-Laravel app.
-
-### Programmatic Cache Invalidation
-You can also invalidate model caches programmatically using the `ModelCache`
-Facade, without requiring the Artisan kernel:
-
-```php
-use GeneaLabs\LaravelModelCaching\Facades\ModelCache;
-
-// Invalidate a single model's cache
-ModelCache::invalidate(App\Models\User::class);
-
-// Invalidate multiple models at once
-ModelCache::invalidate([
-    App\Models\User::class,
-    App\Models\Post::class,
-]);
-```
-
-This is especially useful after mass updates, in queued jobs or event listeners,
-and in tests where calling Artisan is an anti-pattern.
-
-## Summary
-**That's all you need to do. All model queries and relationships are now
-cached!**
-
-In testing this has optimized performance on some pages up to 900%! Most often
-you should see somewhere around 100% performance increase.
-
-## Commitment to Quality
-During package development I try as best as possible to embrace good design and development practices, to help ensure that this package is as good as it can
-be. My checklist for package development includes:
-
--   ✅ Achieve as close to 100% code coverage as possible using unit tests.
--   ✅ Eliminate any issues identified by SensioLabs Insight and Scrutinizer.
--   ✅ Be fully PSR1, PSR2, and PSR4 compliant.
--   ✅ Include comprehensive documentation in README.md.
--   ✅ Provide an up-to-date CHANGELOG.md which adheres to the format outlined
-    at <https://keepachangelog.com>.
--   ✅ Have no PHPMD or PHPCS warnings throughout all code.
-
 ## Contributing
-Please observe and respect all aspects of the included Code of Conduct <https://github.com/GeneaLabs/laravel-model-caching/blob/master/CODE_OF_CONDUCT.md>.
+Contributions are welcome. Please review the
+[Contribution Guidelines](https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md)
+and observe the
+[Code of Conduct](https://github.com/GeneaLabs/laravel-model-caching/blob/master/CODE_OF_CONDUCT.md)
+before submitting a pull request.
 
-### Reporting Issues
-When reporting issues, please fill out the included template as completely as
-possible. Incomplete issues may be ignored or closed if there is not enough
-information included to be actionable.
+## Security
+If you discover a security vulnerability, please email
+[hello@genealabs.com](mailto:hello@genealabs.com) instead of opening a public
+issue. All reports will be addressed promptly.
 
-### Submitting Pull Requests
-Please review the Contribution Guidelines <https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md>.
-Only PRs that meet all criterium will be accepted.
+---
 
-## If you ❤️ open-source software, give the repos you use a ⭐️.
-We have included the awesome `symfony/thanks` composer package as a dev
-dependency. Let your OS package maintainers know you appreciate them by starring
-the packages you use. Simply run composer thanks after installing this package.
-(And not to worry, since it's a dev-dependency it won't be installed in your
-live environment.)
+This is an MIT-licensed open-source project. Its continued development is made
+possible by the community. If you find it useful, please consider
+[becoming a sponsor](https://github.com/sponsors/mikebronner).
