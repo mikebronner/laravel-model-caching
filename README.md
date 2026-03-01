@@ -84,7 +84,7 @@ $posts = Post::where('active', true)->with('comments')->paginate();
 
 ## 📦 Installation
 ```
-composer require mikebronner/laravel-model-caching
+composer require genealabs/laravel-model-caching
 ```
 
 > **📝 Note:** This package was previously published as `genealabs/laravel-model-caching`.
