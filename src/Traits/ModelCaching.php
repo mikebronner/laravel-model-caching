@@ -54,17 +54,25 @@ trait ModelCaching
         $class = get_called_class();
         $instance = new $class;
 
-	    if (! $instance->isCachable()) {
-		    return parent::all($columns);
-	    }
+        if (! $instance->isCachable()) {
+            return parent::all($columns);
+        }
 
-        $tags = $instance->makeCacheTags();
-        $key = $instance->makeCacheKey();
+        return $instance->withCacheFallback(
+            function () use ($instance, $columns) {
+                $tags = $instance->makeCacheTags();
+                $key = $instance->makeCacheKey();
 
-        return $instance->cache($tags)
-            ->rememberForever($key, function () use ($columns) {
+                return $instance->cache($tags)
+                    ->rememberForever($key, function () use ($columns) {
+                        return parent::all($columns);
+                    });
+            },
+            'cache read failed, falling back to database',
+            function () use ($columns) {
                 return parent::all($columns);
-            });
+            }
+        );
     }
 
     public static function bootCachable()
@@ -105,11 +113,18 @@ trait ModelCaching
 
     public static function destroy($ids)
     {
-        $class = get_called_class();
-        $instance = new $class;
-        $instance->flushCache();
+        $result = parent::destroy($ids);
 
-        return parent::destroy($ids);
+        if ($result) {
+            $class = get_called_class();
+            $instance = new $class;
+
+            $instance->withCacheFallback(function () use ($instance) {
+                $instance->flushCache();
+            }, 'cache flush failed during destroy');
+        }
+
+        return $result;
     }
 
     /**
@@ -372,20 +387,22 @@ trait ModelCaching
             $seconds = $this->cacheCooldownSeconds;
         }
 
-        $cachePrefix = $this->getCachePrefix();
-        $modelClassName = get_class($this);
-        $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";
+        $this->withCacheFallback(function () use ($seconds) {
+            $cachePrefix = $this->getCachePrefix();
+            $modelClassName = get_class($this);
+            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:seconds";
 
-        $this->cache()
-            ->rememberForever($cacheKey, function () use ($seconds) {
-                return $seconds;
-            });
+            $this->cache()
+                ->rememberForever($cacheKey, function () use ($seconds) {
+                    return $seconds;
+                });
 
-        $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at";
-        $this->cache()
-            ->rememberForever($cacheKey, function () {
-                return (new Carbon)->now();
-            });
+            $cacheKey = "{$cachePrefix}:{$modelClassName}-cooldown:invalidated-at";
+            $this->cache()
+                ->rememberForever($cacheKey, function () {
+                    return (new Carbon)->now();
+                });
+        }, 'cache cooldown write failed');
 
         return $query;
     }

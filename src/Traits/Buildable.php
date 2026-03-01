@@ -48,18 +48,26 @@ trait Buildable
 
     public function decrement($column, $amount = 1, array $extra = [])
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $this->withCacheFallback(function () {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }, 'cache flush failed during decrement');
 
         return $this->executeOnInnerOrParent('decrement', [$column, $amount, $extra]);
     }
 
     public function delete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = $this->executeOnInnerOrParent('delete', []);
 
-        return $this->executeOnInnerOrParent('delete', []);
+        if ($result) {
+            $this->withCacheFallback(function () {
+                $this->cache($this->makeCacheTags())
+                    ->flush();
+            }, 'cache flush failed during delete');
+        }
+
+        return $result;
     }
 
     /**
@@ -96,10 +104,16 @@ trait Buildable
 
     public function forceDelete()
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $result = $this->executeOnInnerOrParent('forceDelete', []);
 
-        return $this->executeOnInnerOrParent('forceDelete', []);
+        if ($result) {
+            $this->withCacheFallback(function () {
+                $this->cache($this->makeCacheTags())
+                    ->flush();
+            }, 'cache flush failed during forceDelete');
+        }
+
+        return $result;
     }
 
     public function get($columns = ["*"])
@@ -116,8 +130,10 @@ trait Buildable
 
     public function increment($column, $amount = 1, array $extra = [])
     {
-        $this->cache($this->makeCacheTags())
-            ->flush();
+        $this->withCacheFallback(function () {
+            $this->cache($this->makeCacheTags())
+                ->flush();
+        }, 'cache flush failed during increment');
 
         return $this->executeOnInnerOrParent('increment', [$column, $amount, $extra]);
     }
@@ -257,21 +273,30 @@ trait Buildable
         $method = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
         $cacheTags = $this->makeCacheTags();
         $hashedCacheKey = sha1($cacheKey);
-        $result = $this->retrieveCachedValue(
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
-        );
 
-        return $this->preventHashCollision(
-            $result,
-            $arguments,
-            $cacheKey,
-            $cacheTags,
-            $hashedCacheKey,
-            $method
+        return $this->withCacheFallback(
+            function () use ($arguments, $cacheKey, $cacheTags, $hashedCacheKey, $method) {
+                $result = $this->retrieveCachedValue(
+                    $arguments,
+                    $cacheKey,
+                    $cacheTags,
+                    $hashedCacheKey,
+                    $method
+                );
+
+                return $this->preventHashCollision(
+                    $result,
+                    $arguments,
+                    $cacheKey,
+                    $cacheTags,
+                    $hashedCacheKey,
+                    $method
+                );
+            },
+            'cache read failed, falling back to database',
+            function () use ($arguments, $method) {
+                return $this->executeOnInnerOrParent($method, $arguments);
+            }
         );
     }
 
