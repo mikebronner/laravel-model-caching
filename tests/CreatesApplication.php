@@ -1,11 +1,7 @@
 <?php namespace GeneaLabs\LaravelModelCaching\Tests;
 
 use GeneaLabs\LaravelModelCaching\Providers\Service as LaravelModelCachingService;
-use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Artisan;
-use Laravel\Nova\Http\Middleware\Authorize;
-use Laravel\Nova\Http\Middleware\BootTools;
-use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
 
 trait CreatesApplication
 {
@@ -120,20 +116,6 @@ trait CreatesApplication
             'connection' => 'model-cache',
         ]);
         $app['config']->set('laravel-model-caching.store', 'model');
-        $app['config']->set("nova", [
-            'name' => 'Nova Site',
-            'url' => env('APP_URL', '/'),
-            'path' => '/nova',
-            'guard' => env('NOVA_GUARD', null),
-            'middleware' => [
-                'web',
-                Authenticate::class,
-                DispatchServingNovaEvent::class,
-                BootTools::class,
-                Authorize::class,
-            ],
-            'pagination' => 'simple',
-        ]);
     }
 
     public function appVersionEightAndNine(): bool

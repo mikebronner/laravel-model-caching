@@ -268,19 +268,6 @@ ModelCache::invalidate([
 ]);
 ```
 
-### Possible Package Conflicts
-Packages that override `newEloquentBuilder()` or implement their own query
-builder will likely conflict. Known conflicts:
-
-- [grimzy/laravel-mysql-spatial](https://github.com/grimzy/laravel-mysql-spatial)
-- [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
-- [chelout/laravel-relationship-events](https://github.com/chelout/laravel-relationship-events)
-- [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
-- [dwightwatson/rememberable](https://github.com/dwightwatson/rememberable)
-- [kalnoy/nestedset](https://github.com/lazychaser/laravel-nestedset)
-- [laravel-adjacency-list](https://github.com/staudenmeir/laravel-adjacency-list)
-- [archtechx/virtualcolumn](https://github.com/archtechx/virtualcolumn)
-
 ## Contributing
 Contributions are welcome. Please review the
 [Contribution Guidelines](https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md)
@@ -289,9 +276,8 @@ and observe the
 before submitting a pull request.
 
 ## Security
-If you discover a security vulnerability, please email
-[hello@genealabs.com](mailto:hello@genealabs.com) instead of opening a public
-issue. All reports will be addressed promptly.
+Please review the [Security Policy](https://github.com/GeneaLabs/laravel-model-caching/blob/master/SECURITY.md)
+for information on supported versions and how to report vulnerabilities.
 
 ---
 

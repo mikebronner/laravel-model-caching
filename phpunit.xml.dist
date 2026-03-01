@@ -16,9 +16,6 @@
         <testsuite name="Integration">
             <directory suffix="Test.php">./tests/Integration</directory>
         </testsuite>
-        <testsuite name="Nova">
-            <directory suffix="Test.php">./tests/Nova</directory>
-        </testsuite>
     </testsuites>
     <php>
         <server name="APP_ENV" value="testing"/>
