@@ -410,8 +410,8 @@ Built with ❤️ for the Laravel community using lots of ☕️ by <a href="htt
 This is an MIT-licensed open-source project. Its continued development is made
 possible by the community. If you find it useful, please consider
 <a href="https://github.com/sponsors/mikebronner">💖 becoming a sponsor</a>
-or giving it a
-<a href="https://github.com/mikebronner/laravel-model-caching">⭐ star on GitHub</a>.
+and 
+<a href="https://github.com/mikebronner/laravel-model-caching">⭐ing it on GitHub</a>.
 </p>
 
 <p align="center">
