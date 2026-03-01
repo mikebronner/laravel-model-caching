@@ -12,6 +12,16 @@
 
 ![Model Caching for Laravel masthead image](https://repository-images.githubusercontent.com/103836049/b0d89480-f1b1-11e9-8e13-a7055f008fe6)
 
+## 🗂️ Table of Contents
+- [📖 Summary](#-summary)
+- [📦 Installation](#-installation)
+- [🚀 Getting Started](#-getting-started)
+- [⚙️ Configuration](#️-configuration)
+- [🤝 Contributing](#-contributing)
+- [⬆️ Upgrading](#️-upgrading)
+- [🔐 Security](#-security)
+- [📚 Further Reading](#-further-reading)
+
 ## 📖 Summary
 Automatic, self-invalidating Eloquent model and relationship caching. Add a
 trait to your models and all query results are cached automatically — no manual
@@ -46,15 +56,15 @@ $posts = Post::where('active', true)->with('comments')->paginate();
 ```
 
 ### ✅ What Gets Cached
-- 🔍 Model queries (`get`, `first`, `find`, `all`, `paginate`, `pluck`, `value`, `exists`)
-- 🔢 Aggregations (`count`, `sum`, `avg`, `min`, `max`)
-- 🔗 Eager-loaded relationships (via `with()`)
+- Model queries (`get`, `first`, `find`, `all`, `paginate`, `pluck`, `value`, `exists`)
+- Aggregations (`count`, `sum`, `avg`, `min`, `max`)
+- Eager-loaded relationships (via `with()`)
 
 ### 🚫 What Does Not Get Cached
-- 🦥 Lazy-loaded relationships — only eager-loaded (`with()`) relationships are cached. Use `with()` to benefit from caching.
-- 📋 Queries using `select()` clauses — custom column selections bypass the cache.
-- 🔒 Queries inside transactions — cache is not automatically flushed when a transaction commits; call `flushCache()` manually if needed.
-- 🎲 `inRandomOrder()` queries — caching is automatically disabled since results should differ each time.
+- Lazy-loaded relationships — only eager-loaded (`with()`) relationships are cached. Use `with()` to benefit from caching.
+- Queries using `select()` clauses — custom column selections bypass the cache.
+- Queries inside transactions — cache is not automatically flushed when a transaction commits; call `flushCache()` manually if needed.
+- `inRandomOrder()` queries — caching is automatically disabled since results should differ each time.
 
 ### 💾 Cache Drivers
 
@@ -63,24 +73,14 @@ $posts = Post::where('active', true)->with('comments')->paginate();
 | Redis | ✅ (recommended) |
 | Memcached | ✅ |
 | APC | ✅ |
-| Array | ✅ (for testing) |
+| Array | ❌ |
 | File | ❌ |
 | Database | ❌ |
 | DynamoDB | ❌ |
 
 ### 📋 Requirements
-- 🐘 PHP 8.2+
-- 🔺 Laravel 11, 12, or 13
-
-## 🗂️ Table of Contents
-- [📖 Summary](#-summary)
-- [📦 Installation](#-installation)
-- [🚀 Getting Started](#-getting-started)
-- [⚙️ Configuration](#️-configuration)
-- [🤝 Contributing](#-contributing)
-- [⬆️ Upgrading](#️-upgrading)
-- [🔐 Security](#-security)
-- [📚 Further Reading](#-further-reading)
+- PHP 8.2+
+- Laravel 11, 12, or 13
 
 ## 📦 Installation
 ```
@@ -129,9 +129,10 @@ class Post extends CachedModel
 🎉 That's it — all Eloquent queries and eager-loaded relationships on these
 models are now cached and automatically invalidated.
 
-> **⚠️ Note:** Avoid adding `Cachable` to the `User` model. It extends
-> `Illuminate\Foundation\Auth\User`, and overriding that can break
-> authentication. User data should generally be fresh anyway.
+> **⚠️ Note:** You can cache the `User` model — the `Cachable` trait does not
+> conflict with Laravel's authentication. Just avoid using cache cool-down
+> periods on it, and ensure user updates always go through Eloquent (not raw
+> `DB::table()` queries) so cache invalidation fires correctly.
 
 ### 🌍 Real-World Example
 Consider a blog with posts, comments, and tags:
@@ -230,17 +231,17 @@ across connections without any extra configuration.
 ### 🚫 Disabling Cache
 There are three ways to bypass caching:
 
-**1️⃣ Per-query** (only affects this query chain, not subsequent queries):
+**1. Per-query** (only affects this query chain, not subsequent queries):
 ```php
 $results = MyModel::disableCache()->where('active', true)->get();
 ```
 
-**2️⃣ Globally via environment:**
+**2. Globally via environment:**
 ```
 MODEL_CACHE_ENABLED=false
 ```
 
-**3️⃣ For a block of code:**
+**3. For a block of code:**
 ```php
 $result = app('model-cache')->runDisabled(function () {
     return MyModel::get();
@@ -262,7 +263,7 @@ In high-traffic scenarios (e.g. frequent comment submissions) you may want to
 prevent every write from immediately flushing the cache. Cool-down requires two
 steps:
 
-**1️⃣ Declare the default duration** on the model (this alone does nothing — it
+**Declare the default duration** on the model (this alone does nothing — it
 just sets the value):
 
 ```php
@@ -281,7 +282,7 @@ class Comment extends Model
 }
 ```
 
-**2️⃣ Activate the cool-down** by calling `withCacheCooldownSeconds()` in your
+**Activate the cool-down** by calling `withCacheCooldownSeconds()` in your
 query. This writes the cool-down window into the cache store:
 
 ```php
@@ -310,14 +311,14 @@ Cache is automatically flushed when:
 
 | Trigger | Behavior |
 |---------|----------|
-| ➕ Model created | Flush model cache |
-| ✏️ Model updated/saved | Flush model cache |
-| 🗑️ Model deleted | Flush only if rows were actually deleted |
-| 💥 Model force-deleted | Flush only if rows were actually deleted |
-| 🔗 Pivot `attach` / `detach` / `sync` / `updateExistingPivot` | Flush relationship cache |
-| 🔢 `increment` / `decrement` | Flush model cache |
-| 📝 `insert` / `update` (builder) | Flush model cache |
-| 🧨 `truncate` | Flush model cache |
+| Model created | Flush model cache |
+| Model updated/saved | Flush model cache |
+| Model deleted | Flush only if rows were actually deleted |
+| Model force-deleted | Flush only if rows were actually deleted |
+| Pivot `attach` / `detach` / `sync` / `updateExistingPivot` | Flush relationship cache |
+| `increment` / `decrement` | Flush model cache |
+| `insert` / `update` (builder) | Flush model cache |
+| `truncate` | Flush model cache |
 
 Cache tags are generated for the primary model, each eager-loaded relationship,
 joined tables, and morph-to target types, so only the relevant entries are
@@ -330,12 +331,12 @@ related model uses the `Cachable` trait.
 
 ### 🧹 Manual Cache Flushing
 
-**🖥️ Artisan command — single model:**
+**Artisan command — single model:**
 ```sh
 php artisan modelCache:clear --model='App\Models\Post'
 ```
 
-**🖥️ Artisan command — all models:**
+**Artisan command — all models:**
 ```sh
 php artisan modelCache:clear
 ```
