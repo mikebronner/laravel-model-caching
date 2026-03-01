@@ -7,7 +7,7 @@
 [![Laravel](https://img.shields.io/badge/Laravel-11%20%7C%2012%20%7C%2013-FF2D20)](https://laravel.com)
 [![Latest Stable Version](https://img.shields.io/packagist/v/mikebronner/laravel-model-caching)](https://packagist.org/packages/mikebronner/laravel-model-caching)
 [![GitHub Stars](https://img.shields.io/github/stars/mikebronner/laravel-model-caching)](https://github.com/mikebronner/laravel-model-caching/stargazers)
-[![codecov](https://codecov.io/gh/mikebronner/laravel-model-caching/branch/master/graph/badge.svg?token=ACk1Kk4OLO)](https://codecov.io/gh/mikebronner/laravel-model-caching)
+[![codecov](https://codecov.io/gh/mikebronner/laravel-model-caching/graph/badge.svg?token=ACk1Kk4OLO)](https://codecov.io/gh/mikebronner/laravel-model-caching)
 [![Tests](https://img.shields.io/badge/tests-335%2B-brightgreen)](https://github.com/mikebronner/laravel-model-caching/tree/master/tests)
 
 ![Model Caching for Laravel masthead image](https://repository-images.githubusercontent.com/103836049/b0d89480-f1b1-11e9-8e13-a7055f008fe6)
