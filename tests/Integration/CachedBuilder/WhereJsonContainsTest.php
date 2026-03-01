@@ -33,6 +33,7 @@ class WhereJsonContainsTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:pgsql:testing:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->total_jsoncontains_5000-authors.deleted_at_null");
         $tags = [
             'genealabs:laravel-model-caching:pgsql:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:pgsql:testing:authors',
         ];
 
         $authors = (new Author)
@@ -59,6 +60,7 @@ class WhereJsonContainsTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:pgsql:testing:authors:genealabslaravelmodelcachingtestsfixturesauthor-finances->tags_jsoncontains_[\"foo\",\"bar\"]-authors.deleted_at_null");
         $tags = [
             'genealabs:laravel-model-caching:pgsql:testing:genealabslaravelmodelcachingtestsfixturesauthor',
+            'genealabs:laravel-model-caching:pgsql:testing:authors',
         ];
 
         $authors = (new Author)

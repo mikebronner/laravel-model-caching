@@ -11,6 +11,7 @@ class PolymorphicOneToManyTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-comments.commentable_id_inraw_1-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturescomment",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments",
         ];
 
         $result = (new Post)
@@ -40,6 +41,7 @@ class PolymorphicOneToManyTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments:genealabslaravelmodelcachingtestsfixturescomment-comments.commentable_type_=_GeneaLabs\LaravelModelCaching\Tests\Fixtures\Post-comments.commentable_id_=_1-comments.commentable_id_notnull");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturescomment",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:comments",
         ];
 
         $result = (new Post)

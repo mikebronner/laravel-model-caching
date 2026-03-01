@@ -9,6 +9,7 @@ class DestroyCacheFlushTest extends IntegrationTestCase
     {
         return [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesbook",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books",
         ];
     }
 

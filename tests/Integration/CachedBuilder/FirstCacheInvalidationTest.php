@@ -78,6 +78,7 @@ class FirstCacheInvalidationTest extends IntegrationTestCase
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite" .
             ":genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
         $cached = $this->cache()->tags($tags)->get($firstKey);
         $this->assertNotNull($cached, 'No cache entry found for ->first()');

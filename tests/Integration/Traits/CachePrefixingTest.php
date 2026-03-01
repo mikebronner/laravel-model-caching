@@ -11,6 +11,7 @@ class CachePrefixingTest extends IntegrationTestCase
         $key = sha1("genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first");
         $tags = [
             "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors",
         ];
 
         $author = (new Author)
@@ -32,7 +33,10 @@ class CachePrefixingTest extends IntegrationTestCase
     {
         config(["laravel-model-caching.use-database-keying" => false]);
         $key = sha1("genealabs:laravel-model-caching:authors:genealabslaravelmodelcachingtestsfixturesauthor-authors.deleted_at_null-first");
-        $tags = ["genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor"];
+        $tags = [
+            "genealabs:laravel-model-caching:genealabslaravelmodelcachingtestsfixturesauthor",
+            "genealabs:laravel-model-caching:authors",
+        ];
 
         $author = (new Author)
             ->first();
