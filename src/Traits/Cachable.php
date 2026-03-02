@@ -13,10 +13,10 @@ trait Cachable
 
     public function __wakeup(): void
     {
-        $original = $this->original ?? [];
-        $attributes = $this->attributes ?? [];
-        $relations = $this->relations ?? [];
-        $exists = $this->exists ?? false;
+        $original = $this->original;
+        $attributes = $this->attributes;
+        $relations = $this->relations;
+        $exists = $this->exists;
         $connection = $this->connection ?? null;
 
         $this->__construct();

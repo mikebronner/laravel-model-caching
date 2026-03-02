@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GeneaLabs\LaravelModelCaching\Traits;
 
 use GeneaLabs\LaravelModelCaching\CachedBelongsToMany;
 use GeneaLabs\LaravelModelCaching\CachedBuilder;
 use GeneaLabs\LaravelModelCaching\CachedHasManyThrough;
 use GeneaLabs\LaravelModelCaching\CachedHasOneThrough;
-use GeneaLabs\LaravelModelCaching\EloquentBuilder;
+use GeneaLabs\LaravelModelCaching\CachedMorphToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use GeneaLabs\LaravelModelCaching\CachedMorphToMany;
 use Illuminate\Support\Carbon;
 
+// phpcs:ignore SlevomatCodingStandard.Classes.ClassLength.ClassTooLong
 trait ModelCaching
 {
     public function __get($key)
@@ -370,9 +372,12 @@ trait ModelCaching
         );
     }
 
-    public function scopeDisableCache(EloquentBuilder $query) : EloquentBuilder
+    public function scopeDisableCache(Builder $query): Builder
     {
-        if ($this->isCachable()) {
+        if (
+            $query instanceof CachedBuilder
+            && $this->isCachable()
+        ) {
             $query = $query->disableModelCaching();
         }
 
@@ -380,9 +385,13 @@ trait ModelCaching
     }
 
     public function scopeWithCacheCooldownSeconds(
-        EloquentBuilder $query,
+        Builder $query,
         ?int $seconds = null,
-    ): EloquentBuilder {
+    ): Builder {
+        if (! ($query instanceof CachedBuilder)) {
+            return $query;
+        }
+
         if (! $seconds) {
             $seconds = $this->cacheCooldownSeconds;
         }

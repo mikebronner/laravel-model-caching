@@ -197,7 +197,8 @@ trait Caching
         string $keyDifferentiator = ''
     ) : string {
         $this->applyScopesToInstance();
-        $eagerLoad = $this->eagerLoad ?? [];
+        $eagerLoad = $this->eagerLoad
+            ?? [];
         $model = $this;
 
         if (property_exists($this, "model")) {

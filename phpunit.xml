@@ -18,9 +18,6 @@
         <testsuite name="Integration">
             <directory suffix="Test.php">./tests/Integration</directory>
         </testsuite>
-        <testsuite name="Nova">
-            <directory suffix="Test.php">./tests/Nova</directory>
-        </testsuite>
     </testsuites>
     <php>
         <env name="APP_KEY" value="base64:Xgs1LQt1GdVHhD6qyYCXnyq61DE3UKqJ5k2SJc+Nw2g="/>

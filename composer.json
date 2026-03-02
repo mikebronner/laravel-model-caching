@@ -8,6 +8,12 @@
             "email": "hello@genealabs.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:mikebronner/development-settings.git"
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "mikebronner/laravel-pivot-events": "*",
@@ -20,10 +26,13 @@
         "illuminate/support": "^11.0|^12.0|^13.0"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.5",
         "doctrine/dbal": "^3.3|^4.2",
         "fakerphp/faker": "^1.11",
         "larastan/larastan": "^2.0|^3.0",
+        "laravel/boost": "^2.0",
         "laravel/pint": "^1.27",
+        "mikebronner/development-settings": "^0.1.12",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "phpunit/phpunit": "^10.5|^11.5.3|^12.5.12",
         "slevomat/coding-standard": "^7.0|^8.14",
@@ -56,7 +65,8 @@
     "config": {
         "allow-plugins": {
             "symfony/thanks": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "mikebronner/development-settings": true
         }
     }
 }

@@ -27,13 +27,6 @@ class Service extends ServiceProvider
 
     public function register()
     {
-        if (! class_exists('GeneaLabs\LaravelModelCaching\EloquentBuilder')) {
-            class_alias(
-                ModelCaching::builder(),
-                'GeneaLabs\LaravelModelCaching\EloquentBuilder'
-            );
-        }
-
         $this->app->bind("model-cache", Helper::class);
     }
 }
