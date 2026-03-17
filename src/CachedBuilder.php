@@ -77,7 +77,8 @@ class CachedBuilder extends Builder
     {
         if ($this->innerBuilder) {
             $this->innerBuilder = clone $this->innerBuilder;
-        } 
+        }
+
         parent::__clone();
     }
 }
