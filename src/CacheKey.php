@@ -526,7 +526,7 @@ class CacheKey
         BackedEnum|UnitEnum|Expression|DateTimeInterface|int|float|bool|string|null $value,
     ): string {
         if ($value instanceof BackedEnum) {
-            return $value->value;
+            return (string) $value->value;
         } elseif ($value instanceof UnitEnum) {
             return $value->name;
         } elseif ($value instanceof Expression) {
