@@ -379,6 +379,35 @@ queued jobs work the same as in HTTP requests. Cache invalidation triggered in a
 web request is immediately visible to queue workers (assuming a shared cache
 store like Redis). No additional configuration is needed.
 
+### 🔍 Static Analysis (Larastan / PHPStan)
+The package is compatible with [Larastan](https://github.com/larastan/larastan)
+at level 5 and above. Because the `Cachable` trait wraps Eloquent's builder,
+PHPStan may report "undefined method" errors for methods like `cache()` or
+`flushCache()` on your models. To resolve these, add a `@mixin` annotation to
+your cached model:
+
+```php
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @mixin \GeneaLabs\LaravelModelCaching\CachedBuilder<\Illuminate\Database\Eloquent\Model>
+ */
+class Post extends Model
+{
+    use Cachable;
+}
+```
+
+If you use a **custom Eloquent builder** that gets wrapped by `CachedBuilder`,
+PHPStan cannot infer the custom methods from the `CachedBuilder` return type.
+Add a `@return` override annotation on your model's `newEloquentBuilder()`
+method, or add `@mixin YourCustomBuilder` to the model class.
+
+The package ships with a `phpstan-baseline.neon` that suppresses internal
+analysis errors in the package's own test fixtures. These do not affect
+consumer projects.
+
 ## 🤝 Contributing
 Contributions are welcome! 🎉 Please review the
 [Contribution Guidelines](https://github.com/GeneaLabs/laravel-model-caching/blob/master/CONTRIBUTING.md)
